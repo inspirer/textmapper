@@ -253,5 +253,121 @@ var tmRuleType = [...]uint32{
 	0,                   // QualifiedName-opt :
 }
 
+// tmRuleAction[rule] is 0 when reducing the rule has no observable effect, -1 when
+// applyRule has to be called, and a positive node type (with flags in the upper 16
+// bits when flags are used) when the only effect is reporting that node.
+var tmRuleAction = [...]int32{
+	0,                 // Declaration_list : Declaration_list Declaration
+	0,                 // Declaration_list : Declaration
+	int32(Test),       // Test : Declaration_list
+	0,                 // Declaration : Decl1
+	0,                 // Declaration : Decl2
+	-1,                // Declaration : '{' '-' '-' Declaration_list '}'
+	-1,                // Declaration : '{' '-' '-' '}'
+	-1,                // Declaration : '{' '-' Declaration_list '}'
+	-1,                // Declaration : '{' '-' '}'
+	int32(Block),      // Declaration : '{' Declaration_list '}'
+	int32(Block),      // Declaration : '{' '}'
+	-1,                // Declaration : lastInt
+	-1,                // Declaration : IntegerConstant '[' ']'
+	-1,                // Declaration : IntegerConstant
+	-1,                // Declaration : 'test' 'decl1' 'test'
+	-1,                // Declaration : 'test' 'decl2' 'test'
+	int32(TestClause), // Declaration : 'test' '{' setof_not_EOI_or_DOT_or_RBRACE_optlist '}'
+	-1,                // Declaration : 'test' '(' empty1 ')'
+	0,                 // Declaration : 'test' '(' foo_nonterm ')'
+	-1,                // Declaration : 'test' IntegerConstant
+	-1,                // Declaration : 'eval' lookahead_notFooLookahead '(' expr ')' empty1
+	int32(EvalFoo),    // Declaration : 'eval' lookahead_FooLookahead '(' foo_nonterm_A ')'
+	int32(EvalFoo2),   // Declaration : 'eval' lookahead_FooLookahead '(' IntegerConstant '.' expr '+' .greedy expr ')'
+	-1,                // Declaration : 'decl2' ':' QualifiedName-opt
+	int32(AX),         // Declaration : 'z' X 'z' 'x'
+	int32(AY),         // Declaration : 'z' Y 'z' 'y'
+	0,                 // lookahead_FooLookahead :
+	0,                 // lookahead_notFooLookahead :
+	0,                 // setof_not_EOI_or_DOT_or_RBRACE : invalid_token
+	0,                 // setof_not_EOI_or_DOT_or_RBRACE : WhiteSpace
+	0,                 // setof_not_EOI_or_DOT_or_RBRACE : SingleLineComment
+	0,                 // setof_not_EOI_or_DOT_or_RBRACE : Identifier
+	0,                 // setof_not_EOI_or_DOT_or_RBRACE : Identifier2
+	0,                 // setof_not_EOI_or_DOT_or_RBRACE : IntegerConstant
+	0,                 // setof_not_EOI_or_DOT_or_RBRACE : lastInt
+	0,                 // setof_not_EOI_or_DOT_or_RBRACE : 'test'
+	0,                 // setof_not_EOI_or_DOT_or_RBRACE : 'decl1'
+	0,                 // setof_not_EOI_or_DOT_or_RBRACE : 'decl2'
+	0,                 // setof_not_EOI_or_DOT_or_RBRACE : 'eval'
+	0,                 // setof_not_EOI_or_DOT_or_RBRACE : 'as'
+	0,                 // setof_not_EOI_or_DOT_or_RBRACE : 'x'
+	0,                 // setof_not_EOI_or_DOT_or_RBRACE : 'y'
+	0,                 // setof_not_EOI_or_DOT_or_RBRACE : 'z'
+	0,                 // setof_not_EOI_or_DOT_or_RBRACE : 'if'
+	0,                 // setof_not_EOI_or_DOT_or_RBRACE : "else"
+	0,                 // setof_not_EOI_or_DOT_or_RBRACE : '{'
+	0,                 // setof_not_EOI_or_DOT_or_RBRACE : '('
+	0,                 // setof_not_EOI_or_DOT_or_RBRACE : ')'
+	0,                 // setof_not_EOI_or_DOT_or_RBRACE : '['
+	0,                 // setof_not_EOI_or_DOT_or_RBRACE : ']'
+	0,                 // setof_not_EOI_or_DOT_or_RBRACE : '...'
+	0,                 // setof_not_EOI_or_DOT_or_RBRACE : ','
+	0,                 // setof_not_EOI_or_DOT_or_RBRACE : ':'
+	0,                 // setof_not_EOI_or_DOT_or_RBRACE : '-'
+	0,                 // setof_not_EOI_or_DOT_or_RBRACE : '->'
+	0,                 // setof_not_EOI_or_DOT_or_RBRACE : '+'
+	0,                 // setof_not_EOI_or_DOT_or_RBRACE : '\\'
+	0,                 // setof_not_EOI_or_DOT_or_RBRACE : '_'
+	0,                 // setof_not_EOI_or_DOT_or_RBRACE : 'foo_'
+	0,                 // setof_not_EOI_or_DOT_or_RBRACE : 'f_a'
+	0,                 // setof_not_EOI_or_DOT_or_RBRACE : multiline
+	0,                 // setof_not_EOI_or_DOT_or_RBRACE : dquote
+	0,                 // setof_not_EOI_or_DOT_or_RBRACE : '\''
+	0,                 // setof_not_EOI_or_DOT_or_RBRACE : SharpAtID
+	0,                 // setof_not_EOI_or_DOT_or_RBRACE : 'Zfoo'
+	0,                 // setof_not_EOI_or_DOT_or_RBRACE : backtrackingToken
+	0,                 // setof_not_EOI_or_DOT_or_RBRACE : error
+	0,                 // setof_not_EOI_or_DOT_or_RBRACE : MultiLineComment
+	0,                 // setof_not_EOI_or_DOT_or_RBRACE_optlist : setof_not_EOI_or_DOT_or_RBRACE_optlist setof_not_EOI_or_DOT_or_RBRACE
+	0,                 // setof_not_EOI_or_DOT_or_RBRACE_optlist :
+	int32(X),          // X : 'z'
+	int32(Y),          // Y : 'z'
+	0,                 // FooLookahead : '(' IntegerConstant '.' setof_foo_la_list ')'
+	0,                 // setof_foo_la : IntegerConstant
+	0,                 // setof_foo_la : 'as'
+	0,                 // setof_foo_la : '.'
+	0,                 // setof_foo_la : '+'
+	0,                 // setof_foo_la : '\\'
+	0,                 // setof_foo_la : 'foo_'
+	0,                 // setof_foo_la_list : setof_foo_la_list setof_foo_la
+	0,                 // setof_foo_la_list : setof_foo_la
+	0,                 // empty1 :
+	0,                 // foo_la : IntegerConstant '.' expr
+	0,                 // foo_la : IntegerConstant 'foo_' expr
+	0,                 // foo_nonterm : IntegerConstant '.' expr
+	0,                 // foo_nonterm_A : IntegerConstant '.' expr
+	0,                 // foo_nonterm_A : IntegerConstant 'foo_' expr
+	0,                 // QualifiedName : Identifier
+	0,                 // QualifiedName : QualifiedName '.' Identifier
+	int32(Decl1),      // Decl1 : 'decl1' '(' QualifiedName ')'
+	int32(Decl2),      // Decl2 : 'decl2'
+	0,                 // Decl2 : If
+	-1,                // If : 'if' '(' O ')' Decl2
+	int32(If),         // If : 'if' '(' O ')' Decl2 "else" Decl2
+	int32(PlusExpr),   // expr : expr '+' primaryExpr
+	0,                 // expr : customPlus
+	0,                 // expr : primaryExpr
+	0,                 // O : elem_list
+	0,                 // elem_list : elem_list elem
+	0,                 // elem_list : elem
+	int32(Elem),       // elem : 'f_a' .greedy
+	int32(Elem),       // elem : 'f_a' 'as'
+	int32(Elem),       // elem : 'as'
+	-1,                // customPlus : '\\' primaryExpr '+' expr
+	int32(AsExpr),     // primaryExpr : primaryExpr_WithoutAs 'as' expr
+	-1,                // primaryExpr : IntegerConstant
+	-1,                // primaryExpr_WithoutAs : IntegerConstant
+	0,                 // QualifiedName-opt : QualifiedName
+	0,                 // QualifiedName-opt :
+	-1,                // lookahead rule
+}
+
 // set(follow ERROR) =
 var afterErr = [...]token.Type{}

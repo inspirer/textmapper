@@ -125,6 +125,49 @@ var tmRuleType = [...]NodeType{
 	0,           // JSONObject$2 :
 }
 
+// tmRuleAction[rule] is 0 when reducing the rule has no observable effect, -1 when
+// applyRule has to be called, and a positive node type (with flags in the upper 16
+// bits when flags are used) when the only effect is reporting that node.
+var tmRuleAction = [...]int32{
+	int32(JSONText),   // JSONText : JSONValue_A
+	int32(JSONValue),  // JSONValue : 'null'
+	int32(JSONValue),  // JSONValue : 'true'
+	int32(JSONValue),  // JSONValue : 'false'
+	int32(JSONValue),  // JSONValue : 'B'
+	int32(JSONValue),  // JSONValue : JSONObject
+	int32(JSONValue),  // JSONValue : EmptyObject
+	int32(JSONValue),  // JSONValue : JSONArray
+	int32(JSONValue),  // JSONValue : JSONString
+	int32(JSONValue),  // JSONValue : JSONNumber
+	int32(JSONValue),  // JSONValue_A : 'null'
+	int32(JSONValue),  // JSONValue_A : 'true'
+	int32(JSONValue),  // JSONValue_A : 'false'
+	int32(JSONValue),  // JSONValue_A : 'A'
+	int32(JSONValue),  // JSONValue_A : JSONObject
+	int32(JSONValue),  // JSONValue_A : EmptyObject
+	int32(JSONValue),  // JSONValue_A : JSONArray
+	int32(JSONValue),  // JSONValue_A : JSONString
+	int32(JSONValue),  // JSONValue_A : JSONNumber
+	-1,                // EmptyObject : lookahead_EmptyObject EmptyObject$1 '{' EmptyObject$2 '}'
+	0,                 // lookahead_EmptyObject :
+	-1,                // JSONObject : lookahead_notEmptyObject '{' JSONMemberList JSONObject$1 '}'
+	-1,                // JSONObject : lookahead_notEmptyObject '{' JSONObject$2 '}'
+	0,                 // lookahead_notEmptyObject :
+	int32(JSONMember), // JSONMember : JSONString ':' JSONValue
+	0,                 // JSONMemberList : JSONMember
+	0,                 // JSONMemberList : JSONMemberList ',' JSONMember
+	int32(JSONArray),  // JSONArray : '[' JSONElementListopt ']'
+	0,                 // JSONElementList : JSONValue_A
+	0,                 // JSONElementList : JSONElementList ',' JSONValue_A
+	0,                 // JSONElementListopt : JSONElementList
+	0,                 // JSONElementListopt :
+	-1,                // EmptyObject$1 :
+	-1,                // EmptyObject$2 :
+	-1,                // JSONObject$1 :
+	-1,                // JSONObject$2 :
+	-1,                // lookahead rule
+}
+
 // set(first JSONValue_A) = LBRACE, LBRACK, JSONSTRING, JSONNUMBER, NULL, TRUE, FALSE, CHAR_A
 var Literals = [...]token.Type{
 	2, 4, 10, 11, 13, 14, 15, 16,

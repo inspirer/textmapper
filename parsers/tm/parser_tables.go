@@ -1016,6 +1016,385 @@ var tmRuleType = [...]NodeType{
 	0,                    // rawTypeopt :
 }
 
+// tmRuleAction[rule] is 0 when reducing the rule has no observable effect, -1 when
+// applyRule has to be called, and a positive node type (with flags in the upper 16
+// bits when flags are used) when the only effect is reporting that node.
+var tmRuleAction = [...]int32{
+	int32(Identifier),           // identifier : ID
+	int32(Identifier),           // identifier : 'brackets'
+	int32(Identifier),           // identifier : 'inline'
+	int32(Identifier),           // identifier : 'prec'
+	int32(Identifier),           // identifier : 'shift'
+	int32(Identifier),           // identifier : 'input'
+	int32(Identifier),           // identifier : 'left'
+	int32(Identifier),           // identifier : 'right'
+	int32(Identifier),           // identifier : 'nonassoc'
+	int32(Identifier),           // identifier : 'generate'
+	int32(Identifier),           // identifier : 'assert'
+	int32(Identifier),           // identifier : 'empty'
+	int32(Identifier),           // identifier : 'nonempty'
+	int32(Identifier),           // identifier : 'global'
+	int32(Identifier),           // identifier : 'explicit'
+	int32(Identifier),           // identifier : 'lookahead'
+	int32(Identifier),           // identifier : 'param'
+	int32(Identifier),           // identifier : 'flag'
+	int32(Identifier),           // identifier : 'no-eoi'
+	int32(Identifier),           // identifier : 's'
+	int32(Identifier),           // identifier : 'x'
+	int32(Identifier),           // identifier : 'expect'
+	int32(Identifier),           // identifier : 'expect-rr'
+	int32(Identifier),           // identifier : 'class'
+	int32(Identifier),           // identifier : 'interface'
+	int32(Identifier),           // identifier : 'space'
+	int32(Identifier),           // identifier : 'extend'
+	int32(Identifier),           // identifier : 'inject'
+	int32(Identifier),           // identifier : 'layout'
+	int32(Identifier),           // identifier : 'language'
+	int32(Identifier),           // identifier : 'lalr'
+	int32(Identifier),           // identifier : 'lexer'
+	int32(Identifier),           // identifier : 'parser'
+	int32(Identifier),           // identifier_Keywords : ID
+	int32(Identifier),           // identifier_Keywords : 'brackets'
+	int32(Identifier),           // identifier_Keywords : 'inline'
+	int32(Identifier),           // identifier_Keywords : 'prec'
+	int32(Identifier),           // identifier_Keywords : 'shift'
+	int32(Identifier),           // identifier_Keywords : 'input'
+	int32(Identifier),           // identifier_Keywords : 'left'
+	int32(Identifier),           // identifier_Keywords : 'right'
+	int32(Identifier),           // identifier_Keywords : 'nonassoc'
+	int32(Identifier),           // identifier_Keywords : 'generate'
+	int32(Identifier),           // identifier_Keywords : 'assert'
+	int32(Identifier),           // identifier_Keywords : 'empty'
+	int32(Identifier),           // identifier_Keywords : 'nonempty'
+	int32(Identifier),           // identifier_Keywords : 'global'
+	int32(Identifier),           // identifier_Keywords : 'explicit'
+	int32(Identifier),           // identifier_Keywords : 'lookahead'
+	int32(Identifier),           // identifier_Keywords : 'param'
+	int32(Identifier),           // identifier_Keywords : 'flag'
+	int32(Identifier),           // identifier_Keywords : 'no-eoi'
+	int32(Identifier),           // identifier_Keywords : 's'
+	int32(Identifier),           // identifier_Keywords : 'x'
+	int32(Identifier),           // identifier_Keywords : 'expect'
+	int32(Identifier),           // identifier_Keywords : 'expect-rr'
+	int32(Identifier),           // identifier_Keywords : 'class'
+	int32(Identifier),           // identifier_Keywords : 'interface'
+	int32(Identifier),           // identifier_Keywords : 'space'
+	int32(Identifier),           // identifier_Keywords : 'extend'
+	int32(Identifier),           // identifier_Keywords : 'inject'
+	int32(Identifier),           // identifier_Keywords : 'layout'
+	int32(Identifier),           // identifier_Keywords : 'language'
+	int32(Identifier),           // identifier_Keywords : 'lalr'
+	int32(Identifier),           // identifier_Keywords : 'lexer'
+	int32(Identifier),           // identifier_Keywords : 'parser'
+	int32(Identifier),           // identifier_Keywords : 'true'
+	int32(Identifier),           // identifier_Keywords : 'false'
+	int32(Identifier),           // identifier_Keywords : 'separator'
+	int32(Identifier),           // identifier_Keywords : 'as'
+	int32(Identifier),           // identifier_Keywords : 'import'
+	int32(Identifier),           // identifier_Keywords : 'set'
+	int32(Identifier),           // identifier_Str : ID
+	int32(Identifier),           // identifier_Str : quoted_id
+	int32(Identifier),           // identifier_Str : scon
+	int32(Identifier),           // identifier_Str : 'brackets'
+	int32(Identifier),           // identifier_Str : 'inline'
+	int32(Identifier),           // identifier_Str : 'prec'
+	int32(Identifier),           // identifier_Str : 'shift'
+	int32(Identifier),           // identifier_Str : 'input'
+	int32(Identifier),           // identifier_Str : 'left'
+	int32(Identifier),           // identifier_Str : 'right'
+	int32(Identifier),           // identifier_Str : 'nonassoc'
+	int32(Identifier),           // identifier_Str : 'generate'
+	int32(Identifier),           // identifier_Str : 'assert'
+	int32(Identifier),           // identifier_Str : 'empty'
+	int32(Identifier),           // identifier_Str : 'nonempty'
+	int32(Identifier),           // identifier_Str : 'global'
+	int32(Identifier),           // identifier_Str : 'explicit'
+	int32(Identifier),           // identifier_Str : 'lookahead'
+	int32(Identifier),           // identifier_Str : 'param'
+	int32(Identifier),           // identifier_Str : 'flag'
+	int32(Identifier),           // identifier_Str : 'no-eoi'
+	int32(Identifier),           // identifier_Str : 's'
+	int32(Identifier),           // identifier_Str : 'x'
+	int32(Identifier),           // identifier_Str : 'expect'
+	int32(Identifier),           // identifier_Str : 'expect-rr'
+	int32(Identifier),           // identifier_Str : 'class'
+	int32(Identifier),           // identifier_Str : 'interface'
+	int32(Identifier),           // identifier_Str : 'space'
+	int32(Identifier),           // identifier_Str : 'extend'
+	int32(Identifier),           // identifier_Str : 'inject'
+	int32(Identifier),           // identifier_Str : 'layout'
+	int32(Identifier),           // identifier_Str : 'language'
+	int32(Identifier),           // identifier_Str : 'lalr'
+	int32(Identifier),           // identifier_Str : 'lexer'
+	int32(Identifier),           // identifier_Str : 'parser'
+	int32(IntegerLiteral),       // integer_literal : icon
+	int32(StringLiteral),        // string_literal : scon
+	int32(BooleanLiteral),       // boolean_literal : 'true'
+	int32(BooleanLiteral),       // boolean_literal : 'false'
+	0,                           // literal : string_literal
+	0,                           // literal : integer_literal
+	0,                           // literal : boolean_literal
+	int32(Pattern),              // pattern : regexp
+	int32(Command),              // command : code
+	int32(SyntaxProblem),        // syntax_problem : error
+	0,                           // file : header import__optlist option_optlist syntax_problem lexer_section parser_section
+	0,                           // file : header import__optlist option_optlist syntax_problem lexer_section
+	0,                           // file : header import__optlist option_optlist syntax_problem parser_section
+	0,                           // file : header import__optlist option_optlist syntax_problem
+	0,                           // file : header import__optlist option_optlist lexer_section parser_section
+	0,                           // file : header import__optlist option_optlist lexer_section
+	0,                           // file : header import__optlist option_optlist parser_section
+	0,                           // file : header import__optlist option_optlist
+	0,                           // import__optlist : import__optlist import_
+	0,                           // import__optlist :
+	0,                           // option_optlist : option_optlist option
+	0,                           // option_optlist :
+	int32(Header),               // header : 'language' identifier_Keywords '(' identifier_Keywords ')' ';'
+	int32(Header),               // header : 'language' identifier_Keywords ';'
+	int32(LexerSection),         // lexer_section : '::' .recoveryScope 'lexer' lexer_parts
+	int32(ParserSection),        // parser_section : '::' .recoveryScope 'parser' 'lalr' '(' integer_literal ')' grammar_parts
+	int32(ParserSection),        // parser_section : '::' .recoveryScope 'parser' grammar_parts
+	int32(Import),               // import_ : 'import' identifier string_literal ';'
+	int32(Import),               // import_ : 'import' string_literal ';'
+	int32(Option),               // option : identifier '=' expression
+	int32(Symref),               // symref : identifier_Str
+	int32(Symref),               // symref_Args : identifier_Str args
+	int32(Symref),               // symref_Args : identifier_Str
+	int32(RawType),              // rawType : code
+	0,                           // lexer_parts : lexer_part
+	0,                           // lexer_parts : lexer_parts lexer_part_OrSyntaxError
+	0,                           // lexer_part : named_pattern
+	0,                           // lexer_part : lexeme
+	0,                           // lexer_part : lexer_directive
+	0,                           // lexer_part : start_conditions_scope
+	0,                           // lexer_part_OrSyntaxError : named_pattern
+	0,                           // lexer_part_OrSyntaxError : lexeme
+	0,                           // lexer_part_OrSyntaxError : lexer_directive
+	0,                           // lexer_part_OrSyntaxError : start_conditions_scope
+	0,                           // lexer_part_OrSyntaxError : syntax_problem
+	int32(NamedPattern),         // named_pattern : identifier '=' pattern
+	int32(StartConditionsScope), // start_conditions_scope : start_conditions '{' .recoveryScope lexer_parts '}'
+	int32(StartConditions),      // start_conditions : '<' '*' '>'
+	int32(StartConditions),      // start_conditions : '<' stateref_list_Comma_separated '>'
+	0,                           // stateref_list_Comma_separated : stateref_list_Comma_separated ',' stateref
+	0,                           // stateref_list_Comma_separated : stateref
+	int32(Lexeme),               // lexeme : start_conditions identifier_Str lexeme_id rawTypeopt ':' pattern integer_literal lexeme_attrs command
+	int32(Lexeme),               // lexeme : start_conditions identifier_Str lexeme_id rawTypeopt ':' pattern integer_literal lexeme_attrs
+	int32(Lexeme),               // lexeme : start_conditions identifier_Str lexeme_id rawTypeopt ':' pattern integer_literal command
+	int32(Lexeme),               // lexeme : start_conditions identifier_Str lexeme_id rawTypeopt ':' pattern integer_literal
+	int32(Lexeme),               // lexeme : start_conditions identifier_Str lexeme_id rawTypeopt ':' pattern lexeme_attrs command
+	int32(Lexeme),               // lexeme : start_conditions identifier_Str lexeme_id rawTypeopt ':' pattern lexeme_attrs
+	int32(Lexeme),               // lexeme : start_conditions identifier_Str lexeme_id rawTypeopt ':' pattern command
+	int32(Lexeme),               // lexeme : start_conditions identifier_Str lexeme_id rawTypeopt ':' pattern
+	int32(Lexeme),               // lexeme : start_conditions identifier_Str lexeme_id rawTypeopt ':' lexeme_attrs
+	int32(Lexeme),               // lexeme : start_conditions identifier_Str lexeme_id rawTypeopt ':'
+	int32(Lexeme),               // lexeme : start_conditions identifier_Str rawTypeopt ':' pattern integer_literal lexeme_attrs command
+	int32(Lexeme),               // lexeme : start_conditions identifier_Str rawTypeopt ':' pattern integer_literal lexeme_attrs
+	int32(Lexeme),               // lexeme : start_conditions identifier_Str rawTypeopt ':' pattern integer_literal command
+	int32(Lexeme),               // lexeme : start_conditions identifier_Str rawTypeopt ':' pattern integer_literal
+	int32(Lexeme),               // lexeme : start_conditions identifier_Str rawTypeopt ':' pattern lexeme_attrs command
+	int32(Lexeme),               // lexeme : start_conditions identifier_Str rawTypeopt ':' pattern lexeme_attrs
+	int32(Lexeme),               // lexeme : start_conditions identifier_Str rawTypeopt ':' pattern command
+	int32(Lexeme),               // lexeme : start_conditions identifier_Str rawTypeopt ':' pattern
+	int32(Lexeme),               // lexeme : start_conditions identifier_Str rawTypeopt ':' lexeme_attrs
+	int32(Lexeme),               // lexeme : start_conditions identifier_Str rawTypeopt ':'
+	int32(Lexeme),               // lexeme : identifier_Str lexeme_id rawTypeopt ':' pattern integer_literal lexeme_attrs command
+	int32(Lexeme),               // lexeme : identifier_Str lexeme_id rawTypeopt ':' pattern integer_literal lexeme_attrs
+	int32(Lexeme),               // lexeme : identifier_Str lexeme_id rawTypeopt ':' pattern integer_literal command
+	int32(Lexeme),               // lexeme : identifier_Str lexeme_id rawTypeopt ':' pattern integer_literal
+	int32(Lexeme),               // lexeme : identifier_Str lexeme_id rawTypeopt ':' pattern lexeme_attrs command
+	int32(Lexeme),               // lexeme : identifier_Str lexeme_id rawTypeopt ':' pattern lexeme_attrs
+	int32(Lexeme),               // lexeme : identifier_Str lexeme_id rawTypeopt ':' pattern command
+	int32(Lexeme),               // lexeme : identifier_Str lexeme_id rawTypeopt ':' pattern
+	int32(Lexeme),               // lexeme : identifier_Str lexeme_id rawTypeopt ':' lexeme_attrs
+	int32(Lexeme),               // lexeme : identifier_Str lexeme_id rawTypeopt ':'
+	int32(Lexeme),               // lexeme : identifier_Str rawTypeopt ':' pattern integer_literal lexeme_attrs command
+	int32(Lexeme),               // lexeme : identifier_Str rawTypeopt ':' pattern integer_literal lexeme_attrs
+	int32(Lexeme),               // lexeme : identifier_Str rawTypeopt ':' pattern integer_literal command
+	int32(Lexeme),               // lexeme : identifier_Str rawTypeopt ':' pattern integer_literal
+	int32(Lexeme),               // lexeme : identifier_Str rawTypeopt ':' pattern lexeme_attrs command
+	int32(Lexeme),               // lexeme : identifier_Str rawTypeopt ':' pattern lexeme_attrs
+	int32(Lexeme),               // lexeme : identifier_Str rawTypeopt ':' pattern command
+	int32(Lexeme),               // lexeme : identifier_Str rawTypeopt ':' pattern
+	int32(Lexeme),               // lexeme : identifier_Str rawTypeopt ':' lexeme_attrs
+	int32(Lexeme),               // lexeme : identifier_Str rawTypeopt ':'
+	int32(LexemeId),             // lexeme_id : '(' identifier_Keywords ')'
+	int32(LexemeAttrs),          // lexeme_attrs : '(' lexeme_attribute ')'
+	int32(LexemeAttribute),      // lexeme_attribute : 'class'
+	int32(LexemeAttribute),      // lexeme_attribute : 'space'
+	int32(DirectiveBrackets),    // lexer_directive : '%' 'brackets' symref symref ';'
+	int32(InclusiveStartConds),  // lexer_directive : '%' 's' lexer_state_list_Comma_separated ';'
+	int32(ExclusiveStartConds),  // lexer_directive : '%' 'x' lexer_state_list_Comma_separated ';'
+	0,                           // lexer_state_list_Comma_separated : lexer_state_list_Comma_separated ',' lexer_state
+	0,                           // lexer_state_list_Comma_separated : lexer_state
+	int32(Stateref),             // stateref : identifier
+	int32(LexerState),           // lexer_state : identifier
+	0,                           // grammar_parts : grammar_part
+	0,                           // grammar_parts : grammar_parts grammar_part_OrSyntaxError
+	0,                           // grammar_part : nonterm
+	0,                           // grammar_part : template_param
+	0,                           // grammar_part : directive
+	0,                           // grammar_part_OrSyntaxError : nonterm
+	0,                           // grammar_part_OrSyntaxError : template_param
+	0,                           // grammar_part_OrSyntaxError : directive
+	0,                           // grammar_part_OrSyntaxError : syntax_problem
+	int32(Nonterm),              // nonterm : identifier nonterm_params nonterm_alias rawType reportClause ':' rules ';'
+	int32(Nonterm),              // nonterm : identifier nonterm_params nonterm_alias rawType ':' rules ';'
+	int32(Nonterm),              // nonterm : identifier nonterm_params nonterm_alias reportClause ':' rules ';'
+	int32(Nonterm),              // nonterm : identifier nonterm_params nonterm_alias ':' rules ';'
+	int32(Nonterm),              // nonterm : identifier nonterm_params rawType reportClause ':' rules ';'
+	int32(Nonterm),              // nonterm : identifier nonterm_params rawType ':' rules ';'
+	int32(Nonterm),              // nonterm : identifier nonterm_params reportClause ':' rules ';'
+	int32(Nonterm),              // nonterm : identifier nonterm_params ':' rules ';'
+	int32(Nonterm),              // nonterm : identifier nonterm_alias rawType reportClause ':' rules ';'
+	int32(Nonterm),              // nonterm : identifier nonterm_alias rawType ':' rules ';'
+	int32(Nonterm),              // nonterm : identifier nonterm_alias reportClause ':' rules ';'
+	int32(Nonterm),              // nonterm : identifier nonterm_alias ':' rules ';'
+	int32(Nonterm),              // nonterm : identifier rawType reportClause ':' rules ';'
+	int32(Nonterm),              // nonterm : identifier rawType ':' rules ';'
+	int32(Nonterm),              // nonterm : identifier reportClause ':' rules ';'
+	int32(Nonterm),              // nonterm : identifier ':' rules ';'
+	-1,                          // nonterm : 'extend' identifier nonterm_alias reportClause ':' rules ';'
+	-1,                          // nonterm : 'extend' identifier nonterm_alias ':' rules ';'
+	-1,                          // nonterm : 'extend' identifier reportClause ':' rules ';'
+	-1,                          // nonterm : 'extend' identifier ':' rules ';'
+	-1,                          // nonterm : 'inline' identifier nonterm_params nonterm_alias reportClause ':' rules ';'
+	-1,                          // nonterm : 'inline' identifier nonterm_params nonterm_alias ':' rules ';'
+	-1,                          // nonterm : 'inline' identifier nonterm_params reportClause ':' rules ';'
+	-1,                          // nonterm : 'inline' identifier nonterm_params ':' rules ';'
+	-1,                          // nonterm : 'inline' identifier nonterm_alias reportClause ':' rules ';'
+	-1,                          // nonterm : 'inline' identifier nonterm_alias ':' rules ';'
+	-1,                          // nonterm : 'inline' identifier reportClause ':' rules ';'
+	-1,                          // nonterm : 'inline' identifier ':' rules ';'
+	int32(NontermAlias),         // nonterm_alias : '[' identifier_Keywords ']'
+	int32(Assoc),                // assoc : 'left'
+	int32(Assoc),                // assoc : 'right'
+	int32(Assoc),                // assoc : 'nonassoc'
+	int32(ParamModifier),        // param_modifier : 'lookahead'
+	int32(TemplateParam),        // template_param : '%' param_modifier param_type identifier '=' param_value ';'
+	int32(TemplateParam),        // template_param : '%' param_modifier param_type identifier ';'
+	int32(TemplateParam),        // template_param : '%' param_type identifier '=' param_value ';'
+	int32(TemplateParam),        // template_param : '%' param_type identifier ';'
+	int32(DirectivePrio),        // directive : '%' assoc references ';'
+	int32(DirectiveInput),       // directive : '%' 'input' inputref_list_Comma_separated ';'
+	int32(DirectiveInterface),   // directive : '%' 'interface' identifier_list_Comma_separated ';'
+	-1,                          // directive : '%' 'assert' 'empty' rhsSet ';'
+	-1,                          // directive : '%' 'assert' 'nonempty' rhsSet ';'
+	int32(DirectiveSet),         // directive : '%' 'generate' identifier '=' rhsSet ';'
+	int32(DirectiveExpect),      // directive : '%' 'expect' integer_literal ';'
+	int32(DirectiveExpectRR),    // directive : '%' 'expect-rr' integer_literal ';'
+	int32(DirectiveInject),      // directive : '%' 'inject' symref reportClause ';'
+	0,                           // identifier_list_Comma_separated : identifier_list_Comma_separated ',' identifier
+	0,                           // identifier_list_Comma_separated : identifier
+	0,                           // inputref_list_Comma_separated : inputref_list_Comma_separated ',' inputref
+	0,                           // inputref_list_Comma_separated : inputref
+	-1,                          // inputref : symref 'no-eoi'
+	int32(Inputref),             // inputref : symref
+	0,                           // references : symref
+	0,                           // references : references symref
+	0,                           // rules : rule0
+	0,                           // rules : rules '|' rule0
+	int32(Rule),                 // rule0 : predicate rhsParts reportClause
+	int32(Rule),                 // rule0 : predicate rhsParts
+	int32(Rule),                 // rule0 : predicate reportClause
+	int32(Rule),                 // rule0 : predicate
+	int32(Rule),                 // rule0 : rhsParts reportClause
+	int32(Rule),                 // rule0 : rhsParts
+	int32(Rule),                 // rule0 : reportClause
+	int32(Rule),                 // rule0 :
+	0,                           // rule0 : syntax_problem
+	int32(Predicate),            // predicate : '[' predicate_expression ']'
+	int32(ReportClause),         // reportClause : '->' identifier '/' identifier_list_Comma_separated reportAs
+	int32(ReportClause),         // reportClause : '->' identifier '/' identifier_list_Comma_separated
+	int32(ReportClause),         // reportClause : '->' identifier reportAs
+	int32(ReportClause),         // reportClause : '->' identifier
+	int32(ReportAs),             // reportAs : 'as' identifier
+	0,                           // rhsParts : rhsPart
+	0,                           // rhsParts : rhsParts rhsPart_OrSyntaxError
+	0,                           // rhsPart : rhsAssignment
+	0,                           // rhsPart : command
+	0,                           // rhsPart : rhsStateMarker
+	0,                           // rhsPart : rhsLookahead
+	int32(RhsEmpty),             // rhsPart : '%' 'empty'
+	int32(RhsPrec),              // rhsPart : '%' 'prec' symref
+	0,                           // rhsPart_OrSyntaxError : rhsAssignment
+	0,                           // rhsPart_OrSyntaxError : command
+	0,                           // rhsPart_OrSyntaxError : rhsStateMarker
+	0,                           // rhsPart_OrSyntaxError : rhsLookahead
+	int32(RhsEmpty),             // rhsPart_OrSyntaxError : '%' 'empty'
+	int32(RhsPrec),              // rhsPart_OrSyntaxError : '%' 'prec' symref
+	0,                           // rhsPart_OrSyntaxError : syntax_problem
+	0,                           // lookahead_predicate_list_And_separated : lookahead_predicate_list_And_separated '&' lookahead_predicate
+	0,                           // lookahead_predicate_list_And_separated : lookahead_predicate
+	int32(RhsLookahead),         // rhsLookahead : '(?=' lookahead_predicate_list_And_separated ')'
+	-1,                          // lookahead_predicate : '!' symref
+	int32(LookaheadPredicate),   // lookahead_predicate : symref
+	int32(StateMarker),          // rhsStateMarker : '.' identifier
+	0,                           // rhsAssignment : rhsOptional
+	int32(RhsAssignment),        // rhsAssignment : identifier_Str '=' rhsOptional
+	int32(RhsPlusAssignment),    // rhsAssignment : identifier_Str '+=' rhsOptional
+	0,                           // rhsOptional : rhsCast
+	int32(RhsOptional),          // rhsOptional : rhsCast '?'
+	0,                           // rhsCast : rhsAlias
+	int32(RhsCast),              // rhsCast : rhsAlias 'as' symref_Args
+	0,                           // rhsAlias : rhsPrimary
+	int32(RhsAlias),             // rhsAlias : rhsPrimary '[' identifier_Keywords ']'
+	int32(ListSeparator),        // listSeparator : 'separator' references
+	int32(RhsSymbol),            // rhsPrimary : symref_Args
+	int32(RhsNested),            // rhsPrimary : '(' .recoveryScope rules ')'
+	int32(RhsPlusList),          // rhsPrimary : '(' .recoveryScope rhsParts listSeparator ')' '+'
+	int32(RhsStarList),          // rhsPrimary : '(' .recoveryScope rhsParts listSeparator ')' '*'
+	int32(RhsPlusQuantifier),    // rhsPrimary : rhsPrimary '+'
+	int32(RhsStarQuantifier),    // rhsPrimary : rhsPrimary '*'
+	int32(RhsIgnored),           // rhsPrimary : '$' '(' .recoveryScope rules ')'
+	0,                           // rhsPrimary : rhsSet
+	int32(RhsSet),               // rhsSet : 'set' '(' .recoveryScope setExpression ')'
+	int32(SetSymbol),            // setPrimary : identifier symref_Args
+	int32(SetSymbol),            // setPrimary : symref_Args
+	int32(SetCompound),          // setPrimary : '(' setExpression ')'
+	int32(SetComplement),        // setPrimary : '~' setPrimary
+	0,                           // setExpression : setPrimary
+	int32(SetOr),                // setExpression : setExpression '|' setExpression
+	int32(SetAnd),               // setExpression : setExpression '&' setExpression
+	0,                           // nonterm_param_list_Comma_separated : nonterm_param_list_Comma_separated ',' nonterm_param
+	0,                           // nonterm_param_list_Comma_separated : nonterm_param
+	int32(NontermParams),        // nonterm_params : '<' nonterm_param_list_Comma_separated '>'
+	0,                           // nonterm_param : param_ref
+	int32(InlineParameter),      // nonterm_param : identifier identifier '=' param_value
+	int32(InlineParameter),      // nonterm_param : identifier identifier
+	int32(ParamRef),             // param_ref : identifier
+	int32(SymrefArgs),           // args : '<' argument_list_Comma_separatedopt '>'
+	0,                           // argument_list_Comma_separated : argument_list_Comma_separated ',' argument
+	0,                           // argument_list_Comma_separated : argument
+	0,                           // argument_list_Comma_separatedopt : argument_list_Comma_separated
+	0,                           // argument_list_Comma_separatedopt :
+	int32(ArgumentVal),          // argument : param_ref ':' param_value
+	int32(ArgumentVal),          // argument : param_ref
+	int32(ArgumentTrue),         // argument : '+' param_ref
+	int32(ArgumentFalse),        // argument : '~' param_ref
+	int32(ParamType),            // param_type : 'flag'
+	int32(ParamType),            // param_type : 'param'
+	0,                           // param_value : literal
+	0,                           // param_value : param_ref
+	0,                           // predicate_primary : param_ref
+	int32(PredicateNot),         // predicate_primary : '!' param_ref
+	int32(PredicateEq),          // predicate_primary : param_ref '==' literal
+	int32(PredicateNotEq),       // predicate_primary : param_ref '!=' literal
+	0,                           // predicate_expression : predicate_primary
+	int32(PredicateAnd),         // predicate_expression : predicate_expression '&&' predicate_expression
+	int32(PredicateOr),          // predicate_expression : predicate_expression '||' predicate_expression
+	0,                           // expression : literal
+	int32(Array),                // expression : '[' expression_list_Comma_separated ',' ']'
+	int32(Array),                // expression : '[' expression_list_Comma_separated ']'
+	int32(Array),                // expression : '[' ',' ']'
+	int32(Array),                // expression : '[' ']'
+	0,                           // expression : syntax_problem
+	0,                           // expression_list_Comma_separated : expression_list_Comma_separated ',' expression
+	0,                           // expression_list_Comma_separated : expression
+	0,                           // rawTypeopt : rawType
+	0,                           // rawTypeopt :
+}
+
 // set(follow ERROR) = SCON, REM, COLONCOLON, OR, SEMICOLON, DOT, COMMA, RBRACK, LPAREN, LPARENQUESTASSIGN, MINUSGT, RPAREN, RBRACE, LT, DOLLAR, ERROR, ID, QUOTED_ID, SEPARATOR, SET, ASSERT, BRACKETS, CLASS, EMPTY, EXPECT, EXPECTMINUSRR, EXPLICIT, EXTEND, FLAG, GENERATE, GLOBAL, INJECT, INLINE, INPUT, INTERFACE, LALR, LANGUAGE, LAYOUT, LEFT, LEXER, LOOKAHEAD, NOMINUSEOI, NONASSOC, NONEMPTY, PARAM, PARSER, PREC, RIGHT, CHAR_S, SHIFT, SPACE, CHAR_X, CODE
 var afterErr = [...]token.Type{
 	2, 8, 9, 10, 15, 16, 17, 20, 21, 22, 23, 24, 25, 26, 36, 40, 41, 42, 46, 47,

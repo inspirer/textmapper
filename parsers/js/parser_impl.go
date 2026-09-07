@@ -77,7 +77,13 @@ func (p *Parser) parse(ctx context.Context, start, end int16, stream *TokenStrea
 				entry.sym.offset = nonEmpty[0].sym.offset
 				entry.sym.endoffset = nonEmpty[len(nonEmpty)-1].sym.endoffset
 			}
-			p.applyRule(ctx, rule, &entry, rhs, stream, &s)
+			if act := tmRuleAction[rule]; act != 0 {
+				if act > 0 {
+					p.listener(NodeType(act), entry.sym.offset, entry.sym.endoffset)
+				} else {
+					p.applyRule(ctx, rule, &entry, rhs, stream, &s)
+				}
+			}
 			if debugSyntax {
 				fmt.Printf("reduced to: %v\n", symbolName(entry.sym.symbol))
 			}

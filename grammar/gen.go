@@ -248,6 +248,19 @@ func (g *Grammar) HasTrailingNulls(r Rule) bool {
 	return false
 }
 
+// NeedsApplyRule returns true if reducing r has effects beyond reporting its default node
+// type, i.e. the generated applyRule function has a dedicated case for the rule.
+func (g *Grammar) NeedsApplyRule(r *Rule) bool {
+	if g.Options.FixWhitespace && !g.Options.TokenStream && g.HasTrailingNulls(*r) {
+		return true
+	}
+	if r.Action == 0 {
+		return false
+	}
+	act := g.Parser.Actions[r.Action]
+	return act.Code != "" || len(act.Report) > 0
+}
+
 func (g *Grammar) AllFlags() []string {
 	var ret []string
 	ret = append(ret, g.Lexer.UsedFlags...)

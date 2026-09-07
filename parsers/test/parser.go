@@ -116,8 +116,12 @@ func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) (int
 				entry.sym.offset = nonEmpty[0].sym.offset
 				entry.sym.endoffset = nonEmpty[len(nonEmpty)-1].sym.endoffset
 			}
-			if err := p.applyRule(ctx, rule, &entry, stack, lexer, &s); err != nil {
-				return nil, err
+			if act := tmRuleAction[rule]; act != 0 {
+				if act > 0 {
+					p.listener(NodeType(act&0xffff), NodeFlags(act>>16), entry.sym.offset, entry.sym.endoffset)
+				} else if err := p.applyRule(ctx, rule, &entry, stack, lexer, &s); err != nil {
+					return nil, err
+				}
 			}
 			stack = stack[:len(stack)-len(rhs)]
 			if debugSyntax {

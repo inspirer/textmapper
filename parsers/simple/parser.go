@@ -86,8 +86,12 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) error {
 				entry.sym.offset = nonEmpty[0].sym.offset
 				entry.sym.endoffset = nonEmpty[len(nonEmpty)-1].sym.endoffset
 			}
-			if err := p.applyRule(rule, &entry, stack, lexer); err != nil {
-				return err
+			if act := tmRuleAction[rule]; act != 0 {
+				if act > 0 {
+					p.listener(NodeType(act), entry.sym.offset, entry.sym.endoffset)
+				} else if err := p.applyRule(rule, &entry, stack, lexer); err != nil {
+					return err
+				}
 			}
 			stack = stack[:len(stack)-len(rhs)]
 			if debugSyntax {

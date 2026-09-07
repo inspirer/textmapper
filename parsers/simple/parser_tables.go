@@ -80,6 +80,26 @@ var tmRuleType = [...]NodeType{
 	0, // Xyz : 'c'
 }
 
+// tmRuleAction[rule] is 0 when reducing the rule has no observable effect, -1 when
+// applyRule has to be called, and a positive node type (with flags in the upper 16
+// bits when flags are used) when the only effect is reporting that node.
+var tmRuleAction = [...]int32{
+	0, // Bar_list : Bar_list Bar
+	0, // Bar_list : Bar
+	0, // Foo_list : Foo_list Foo
+	0, // Foo_list : Foo
+	0, // Xyz_list : Xyz_list Xyz
+	0, // Xyz_list : Xyz
+	0, // input : 'simple' Xyz
+	0, // input : 'simple' .atB 'b'
+	0, // input : Xyz_list .afterList
+	0, // input : Foo_list .afterList
+	0, // input : Bar_list
+	0, // Foo : 'b'
+	0, // Bar : 'a'
+	0, // Xyz : 'c'
+}
+
 // set(follow SIMPLE) = CHAR_B, CHAR_C
 var afterSimple = [...]token.Type{
 	5, 6,

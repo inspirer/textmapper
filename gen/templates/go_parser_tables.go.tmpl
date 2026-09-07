@@ -118,6 +118,25 @@ var tmRuleType = [...]{{template "nodeTypeRef" $}}{
 }
 {{- end }}
 
+// tmRuleAction[rule] is 0 when reducing the rule has no observable effect, -1 when
+// applyRule has to be called, and a positive node type (with flags in the upper 16
+// bits when flags are used) when the only effect is reporting that node.
+var tmRuleAction = [...]int32{
+{{- range .Parser.Rules}}
+{{- if $.NeedsApplyRule .}}
+	-1, // {{$.RuleString .}}
+{{- else if and $.Parser.Types (ne .Type -1) }}
+{{- $val := index $.Parser.Types.RangeTypes .Type }}
+	{{if not (is_file_node $val.Name)}}int32({{template "nodeTypePkg" $}}{{node_id $val.Name}}){{if .Flags}} + int32({{range $index, $flag := .Flags}}{{if ne $index 0}} | {{end}}{{template "nodeFlagsPkg" $}}{{$flag}}{{end}})<<16{{end}}{{else}}0{{end}}, // {{$.RuleString .}}
+{{- else }}
+	0, // {{$.RuleString .}}
+{{- end}}
+{{- end}}
+{{- range .Parser.Tables.Lookaheads}}
+	-1, // lookahead rule
+{{- end}}
+}
+
 {{- range .Sets}}
 
 // {{.Expr}} = {{.ValueString $}}

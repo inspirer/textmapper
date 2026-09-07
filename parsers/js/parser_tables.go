@@ -41687,6 +41687,5426 @@ var tmRuleType = [...]NodeType{
 	0,                         // AssignmentExpressionopt_In_Yield_Await :
 }
 
+// tmRuleAction[rule] is 0 when reducing the rule has no observable effect, -1 when
+// applyRule has to be called, and a positive node type (with flags in the upper 16
+// bits when flags are used) when the only effect is reporting that node.
+var tmRuleAction = [...]int32{
+	0,                                // TypeSnippet : Type
+	0,                                // ExpressionSnippet : Expression_In
+	int32(TsNamespaceName),           // NamespaceNameSnippet : NamespaceName
+	int32(SyntaxProblem),             // SyntaxError : error
+	0,                                // IdentifierName : Identifier
+	0,                                // IdentifierName : 'new'
+	0,                                // IdentifierName : 'asserts'
+	0,                                // IdentifierName : 'await'
+	0,                                // IdentifierName : 'break'
+	0,                                // IdentifierName : 'do'
+	0,                                // IdentifierName : 'in'
+	0,                                // IdentifierName : 'typeof'
+	0,                                // IdentifierName : 'case'
+	0,                                // IdentifierName : 'else'
+	0,                                // IdentifierName : 'instanceof'
+	0,                                // IdentifierName : 'var'
+	0,                                // IdentifierName : 'catch'
+	0,                                // IdentifierName : 'export'
+	0,                                // IdentifierName : 'void'
+	0,                                // IdentifierName : 'class'
+	0,                                // IdentifierName : 'extends'
+	0,                                // IdentifierName : 'return'
+	0,                                // IdentifierName : 'while'
+	0,                                // IdentifierName : 'const'
+	0,                                // IdentifierName : 'finally'
+	0,                                // IdentifierName : 'super'
+	0,                                // IdentifierName : 'with'
+	0,                                // IdentifierName : 'continue'
+	0,                                // IdentifierName : 'for'
+	0,                                // IdentifierName : 'switch'
+	0,                                // IdentifierName : 'yield'
+	0,                                // IdentifierName : 'debugger'
+	0,                                // IdentifierName : 'function'
+	0,                                // IdentifierName : 'this'
+	0,                                // IdentifierName : 'default'
+	0,                                // IdentifierName : 'if'
+	0,                                // IdentifierName : 'throw'
+	0,                                // IdentifierName : 'delete'
+	0,                                // IdentifierName : 'import'
+	0,                                // IdentifierName : 'try'
+	0,                                // IdentifierName : 'enum'
+	0,                                // IdentifierName : 'null'
+	0,                                // IdentifierName : 'true'
+	0,                                // IdentifierName : 'false'
+	0,                                // IdentifierName : 'as'
+	0,                                // IdentifierName : 'from'
+	0,                                // IdentifierName : 'get'
+	0,                                // IdentifierName : 'let'
+	0,                                // IdentifierName : 'of'
+	0,                                // IdentifierName : 'set'
+	0,                                // IdentifierName : 'static'
+	0,                                // IdentifierName : 'target'
+	0,                                // IdentifierName : 'async'
+	0,                                // IdentifierName : 'assert'
+	0,                                // IdentifierName : 'out'
+	0,                                // IdentifierName : 'implements'
+	0,                                // IdentifierName : 'interface'
+	0,                                // IdentifierName : 'private'
+	0,                                // IdentifierName : 'protected'
+	0,                                // IdentifierName : 'public'
+	0,                                // IdentifierName : 'any'
+	0,                                // IdentifierName : 'unknown'
+	0,                                // IdentifierName : 'boolean'
+	0,                                // IdentifierName : 'number'
+	0,                                // IdentifierName : 'string'
+	0,                                // IdentifierName : 'symbol'
+	0,                                // IdentifierName : 'bigint'
+	0,                                // IdentifierName : 'undefined'
+	0,                                // IdentifierName : 'never'
+	0,                                // IdentifierName : 'object'
+	0,                                // IdentifierName : 'abstract'
+	0,                                // IdentifierName : 'constructor'
+	0,                                // IdentifierName : 'declare'
+	0,                                // IdentifierName : 'is'
+	0,                                // IdentifierName : 'module'
+	0,                                // IdentifierName : 'namespace'
+	0,                                // IdentifierName : 'override'
+	0,                                // IdentifierName : 'require'
+	0,                                // IdentifierName : 'type'
+	0,                                // IdentifierName : 'global'
+	0,                                // IdentifierName : 'readonly'
+	0,                                // IdentifierName : 'keyof'
+	0,                                // IdentifierName : 'unique'
+	0,                                // IdentifierName : 'infer'
+	0,                                // IdentifierName : 'accessor'
+	0,                                // IdentifierName : 'satisfies'
+	0,                                // IdentifierName_WithoutAsserts : Identifier
+	0,                                // IdentifierName_WithoutAsserts : 'new'
+	0,                                // IdentifierName_WithoutAsserts : 'await'
+	0,                                // IdentifierName_WithoutAsserts : 'break'
+	0,                                // IdentifierName_WithoutAsserts : 'do'
+	0,                                // IdentifierName_WithoutAsserts : 'in'
+	0,                                // IdentifierName_WithoutAsserts : 'typeof'
+	0,                                // IdentifierName_WithoutAsserts : 'case'
+	0,                                // IdentifierName_WithoutAsserts : 'else'
+	0,                                // IdentifierName_WithoutAsserts : 'instanceof'
+	0,                                // IdentifierName_WithoutAsserts : 'var'
+	0,                                // IdentifierName_WithoutAsserts : 'catch'
+	0,                                // IdentifierName_WithoutAsserts : 'export'
+	0,                                // IdentifierName_WithoutAsserts : 'void'
+	0,                                // IdentifierName_WithoutAsserts : 'class'
+	0,                                // IdentifierName_WithoutAsserts : 'extends'
+	0,                                // IdentifierName_WithoutAsserts : 'return'
+	0,                                // IdentifierName_WithoutAsserts : 'while'
+	0,                                // IdentifierName_WithoutAsserts : 'const'
+	0,                                // IdentifierName_WithoutAsserts : 'finally'
+	0,                                // IdentifierName_WithoutAsserts : 'super'
+	0,                                // IdentifierName_WithoutAsserts : 'with'
+	0,                                // IdentifierName_WithoutAsserts : 'continue'
+	0,                                // IdentifierName_WithoutAsserts : 'for'
+	0,                                // IdentifierName_WithoutAsserts : 'switch'
+	0,                                // IdentifierName_WithoutAsserts : 'yield'
+	0,                                // IdentifierName_WithoutAsserts : 'debugger'
+	0,                                // IdentifierName_WithoutAsserts : 'function'
+	0,                                // IdentifierName_WithoutAsserts : 'this'
+	0,                                // IdentifierName_WithoutAsserts : 'default'
+	0,                                // IdentifierName_WithoutAsserts : 'if'
+	0,                                // IdentifierName_WithoutAsserts : 'throw'
+	0,                                // IdentifierName_WithoutAsserts : 'delete'
+	0,                                // IdentifierName_WithoutAsserts : 'import'
+	0,                                // IdentifierName_WithoutAsserts : 'try'
+	0,                                // IdentifierName_WithoutAsserts : 'enum'
+	0,                                // IdentifierName_WithoutAsserts : 'null'
+	0,                                // IdentifierName_WithoutAsserts : 'true'
+	0,                                // IdentifierName_WithoutAsserts : 'false'
+	0,                                // IdentifierName_WithoutAsserts : 'as'
+	0,                                // IdentifierName_WithoutAsserts : 'from'
+	0,                                // IdentifierName_WithoutAsserts : 'get'
+	0,                                // IdentifierName_WithoutAsserts : 'let'
+	0,                                // IdentifierName_WithoutAsserts : 'of'
+	0,                                // IdentifierName_WithoutAsserts : 'set'
+	0,                                // IdentifierName_WithoutAsserts : 'static'
+	0,                                // IdentifierName_WithoutAsserts : 'target'
+	0,                                // IdentifierName_WithoutAsserts : 'async'
+	0,                                // IdentifierName_WithoutAsserts : 'assert'
+	0,                                // IdentifierName_WithoutAsserts : 'out'
+	0,                                // IdentifierName_WithoutAsserts : 'implements'
+	0,                                // IdentifierName_WithoutAsserts : 'interface'
+	0,                                // IdentifierName_WithoutAsserts : 'private'
+	0,                                // IdentifierName_WithoutAsserts : 'protected'
+	0,                                // IdentifierName_WithoutAsserts : 'public'
+	0,                                // IdentifierName_WithoutAsserts : 'any'
+	0,                                // IdentifierName_WithoutAsserts : 'unknown'
+	0,                                // IdentifierName_WithoutAsserts : 'boolean'
+	0,                                // IdentifierName_WithoutAsserts : 'number'
+	0,                                // IdentifierName_WithoutAsserts : 'string'
+	0,                                // IdentifierName_WithoutAsserts : 'symbol'
+	0,                                // IdentifierName_WithoutAsserts : 'bigint'
+	0,                                // IdentifierName_WithoutAsserts : 'undefined'
+	0,                                // IdentifierName_WithoutAsserts : 'never'
+	0,                                // IdentifierName_WithoutAsserts : 'object'
+	0,                                // IdentifierName_WithoutAsserts : 'abstract'
+	0,                                // IdentifierName_WithoutAsserts : 'constructor'
+	0,                                // IdentifierName_WithoutAsserts : 'declare'
+	0,                                // IdentifierName_WithoutAsserts : 'is'
+	0,                                // IdentifierName_WithoutAsserts : 'module'
+	0,                                // IdentifierName_WithoutAsserts : 'namespace'
+	0,                                // IdentifierName_WithoutAsserts : 'override'
+	0,                                // IdentifierName_WithoutAsserts : 'require'
+	0,                                // IdentifierName_WithoutAsserts : 'type'
+	0,                                // IdentifierName_WithoutAsserts : 'global'
+	0,                                // IdentifierName_WithoutAsserts : 'readonly'
+	0,                                // IdentifierName_WithoutAsserts : 'keyof'
+	0,                                // IdentifierName_WithoutAsserts : 'unique'
+	0,                                // IdentifierName_WithoutAsserts : 'infer'
+	0,                                // IdentifierName_WithoutAsserts : 'accessor'
+	0,                                // IdentifierName_WithoutAsserts : 'satisfies'
+	0,                                // IdentifierName_WithoutFrom : Identifier
+	0,                                // IdentifierName_WithoutFrom : 'new'
+	0,                                // IdentifierName_WithoutFrom : 'asserts'
+	0,                                // IdentifierName_WithoutFrom : 'await'
+	0,                                // IdentifierName_WithoutFrom : 'break'
+	0,                                // IdentifierName_WithoutFrom : 'do'
+	0,                                // IdentifierName_WithoutFrom : 'in'
+	0,                                // IdentifierName_WithoutFrom : 'typeof'
+	0,                                // IdentifierName_WithoutFrom : 'case'
+	0,                                // IdentifierName_WithoutFrom : 'else'
+	0,                                // IdentifierName_WithoutFrom : 'instanceof'
+	0,                                // IdentifierName_WithoutFrom : 'var'
+	0,                                // IdentifierName_WithoutFrom : 'catch'
+	0,                                // IdentifierName_WithoutFrom : 'export'
+	0,                                // IdentifierName_WithoutFrom : 'void'
+	0,                                // IdentifierName_WithoutFrom : 'class'
+	0,                                // IdentifierName_WithoutFrom : 'extends'
+	0,                                // IdentifierName_WithoutFrom : 'return'
+	0,                                // IdentifierName_WithoutFrom : 'while'
+	0,                                // IdentifierName_WithoutFrom : 'const'
+	0,                                // IdentifierName_WithoutFrom : 'finally'
+	0,                                // IdentifierName_WithoutFrom : 'super'
+	0,                                // IdentifierName_WithoutFrom : 'with'
+	0,                                // IdentifierName_WithoutFrom : 'continue'
+	0,                                // IdentifierName_WithoutFrom : 'for'
+	0,                                // IdentifierName_WithoutFrom : 'switch'
+	0,                                // IdentifierName_WithoutFrom : 'yield'
+	0,                                // IdentifierName_WithoutFrom : 'debugger'
+	0,                                // IdentifierName_WithoutFrom : 'function'
+	0,                                // IdentifierName_WithoutFrom : 'this'
+	0,                                // IdentifierName_WithoutFrom : 'default'
+	0,                                // IdentifierName_WithoutFrom : 'if'
+	0,                                // IdentifierName_WithoutFrom : 'throw'
+	0,                                // IdentifierName_WithoutFrom : 'delete'
+	0,                                // IdentifierName_WithoutFrom : 'import'
+	0,                                // IdentifierName_WithoutFrom : 'try'
+	0,                                // IdentifierName_WithoutFrom : 'enum'
+	0,                                // IdentifierName_WithoutFrom : 'null'
+	0,                                // IdentifierName_WithoutFrom : 'true'
+	0,                                // IdentifierName_WithoutFrom : 'false'
+	0,                                // IdentifierName_WithoutFrom : 'as'
+	0,                                // IdentifierName_WithoutFrom : 'get'
+	0,                                // IdentifierName_WithoutFrom : 'let'
+	0,                                // IdentifierName_WithoutFrom : 'of'
+	0,                                // IdentifierName_WithoutFrom : 'set'
+	0,                                // IdentifierName_WithoutFrom : 'static'
+	0,                                // IdentifierName_WithoutFrom : 'target'
+	0,                                // IdentifierName_WithoutFrom : 'async'
+	0,                                // IdentifierName_WithoutFrom : 'assert'
+	0,                                // IdentifierName_WithoutFrom : 'out'
+	0,                                // IdentifierName_WithoutFrom : 'implements'
+	0,                                // IdentifierName_WithoutFrom : 'interface'
+	0,                                // IdentifierName_WithoutFrom : 'private'
+	0,                                // IdentifierName_WithoutFrom : 'protected'
+	0,                                // IdentifierName_WithoutFrom : 'public'
+	0,                                // IdentifierName_WithoutFrom : 'any'
+	0,                                // IdentifierName_WithoutFrom : 'unknown'
+	0,                                // IdentifierName_WithoutFrom : 'boolean'
+	0,                                // IdentifierName_WithoutFrom : 'number'
+	0,                                // IdentifierName_WithoutFrom : 'string'
+	0,                                // IdentifierName_WithoutFrom : 'symbol'
+	0,                                // IdentifierName_WithoutFrom : 'bigint'
+	0,                                // IdentifierName_WithoutFrom : 'undefined'
+	0,                                // IdentifierName_WithoutFrom : 'never'
+	0,                                // IdentifierName_WithoutFrom : 'object'
+	0,                                // IdentifierName_WithoutFrom : 'abstract'
+	0,                                // IdentifierName_WithoutFrom : 'constructor'
+	0,                                // IdentifierName_WithoutFrom : 'declare'
+	0,                                // IdentifierName_WithoutFrom : 'is'
+	0,                                // IdentifierName_WithoutFrom : 'module'
+	0,                                // IdentifierName_WithoutFrom : 'namespace'
+	0,                                // IdentifierName_WithoutFrom : 'override'
+	0,                                // IdentifierName_WithoutFrom : 'require'
+	0,                                // IdentifierName_WithoutFrom : 'type'
+	0,                                // IdentifierName_WithoutFrom : 'global'
+	0,                                // IdentifierName_WithoutFrom : 'readonly'
+	0,                                // IdentifierName_WithoutFrom : 'keyof'
+	0,                                // IdentifierName_WithoutFrom : 'unique'
+	0,                                // IdentifierName_WithoutFrom : 'infer'
+	0,                                // IdentifierName_WithoutFrom : 'accessor'
+	0,                                // IdentifierName_WithoutFrom : 'satisfies'
+	0,                                // IdentifierName_WithoutKeywords_WithoutAs_WithoutSatisfies : Identifier
+	0,                                // IdentifierName_WithoutKeywords_WithoutAs_WithoutSatisfies : 'new'
+	0,                                // IdentifierName_WithoutKeywords_WithoutAs_WithoutSatisfies : 'asserts'
+	0,                                // IdentifierName_WithoutKeywords_WithoutAs_WithoutSatisfies : 'from'
+	0,                                // IdentifierName_WithoutKeywords_WithoutAs_WithoutSatisfies : 'get'
+	0,                                // IdentifierName_WithoutKeywords_WithoutAs_WithoutSatisfies : 'let'
+	0,                                // IdentifierName_WithoutKeywords_WithoutAs_WithoutSatisfies : 'of'
+	0,                                // IdentifierName_WithoutKeywords_WithoutAs_WithoutSatisfies : 'set'
+	0,                                // IdentifierName_WithoutKeywords_WithoutAs_WithoutSatisfies : 'static'
+	0,                                // IdentifierName_WithoutKeywords_WithoutAs_WithoutSatisfies : 'target'
+	0,                                // IdentifierName_WithoutKeywords_WithoutAs_WithoutSatisfies : 'async'
+	0,                                // IdentifierName_WithoutKeywords_WithoutAs_WithoutSatisfies : 'assert'
+	0,                                // IdentifierName_WithoutKeywords_WithoutAs_WithoutSatisfies : 'out'
+	0,                                // IdentifierName_WithoutKeywords_WithoutAs_WithoutSatisfies : 'implements'
+	0,                                // IdentifierName_WithoutKeywords_WithoutAs_WithoutSatisfies : 'interface'
+	0,                                // IdentifierName_WithoutKeywords_WithoutAs_WithoutSatisfies : 'private'
+	0,                                // IdentifierName_WithoutKeywords_WithoutAs_WithoutSatisfies : 'protected'
+	0,                                // IdentifierName_WithoutKeywords_WithoutAs_WithoutSatisfies : 'public'
+	0,                                // IdentifierName_WithoutKeywords_WithoutAs_WithoutSatisfies : 'any'
+	0,                                // IdentifierName_WithoutKeywords_WithoutAs_WithoutSatisfies : 'unknown'
+	0,                                // IdentifierName_WithoutKeywords_WithoutAs_WithoutSatisfies : 'boolean'
+	0,                                // IdentifierName_WithoutKeywords_WithoutAs_WithoutSatisfies : 'number'
+	0,                                // IdentifierName_WithoutKeywords_WithoutAs_WithoutSatisfies : 'string'
+	0,                                // IdentifierName_WithoutKeywords_WithoutAs_WithoutSatisfies : 'symbol'
+	0,                                // IdentifierName_WithoutKeywords_WithoutAs_WithoutSatisfies : 'bigint'
+	0,                                // IdentifierName_WithoutKeywords_WithoutAs_WithoutSatisfies : 'undefined'
+	0,                                // IdentifierName_WithoutKeywords_WithoutAs_WithoutSatisfies : 'never'
+	0,                                // IdentifierName_WithoutKeywords_WithoutAs_WithoutSatisfies : 'object'
+	0,                                // IdentifierName_WithoutKeywords_WithoutAs_WithoutSatisfies : 'abstract'
+	0,                                // IdentifierName_WithoutKeywords_WithoutAs_WithoutSatisfies : 'constructor'
+	0,                                // IdentifierName_WithoutKeywords_WithoutAs_WithoutSatisfies : 'declare'
+	0,                                // IdentifierName_WithoutKeywords_WithoutAs_WithoutSatisfies : 'is'
+	0,                                // IdentifierName_WithoutKeywords_WithoutAs_WithoutSatisfies : 'module'
+	0,                                // IdentifierName_WithoutKeywords_WithoutAs_WithoutSatisfies : 'namespace'
+	0,                                // IdentifierName_WithoutKeywords_WithoutAs_WithoutSatisfies : 'override'
+	0,                                // IdentifierName_WithoutKeywords_WithoutAs_WithoutSatisfies : 'require'
+	0,                                // IdentifierName_WithoutKeywords_WithoutAs_WithoutSatisfies : 'type'
+	0,                                // IdentifierName_WithoutKeywords_WithoutAs_WithoutSatisfies : 'global'
+	0,                                // IdentifierName_WithoutKeywords_WithoutAs_WithoutSatisfies : 'readonly'
+	0,                                // IdentifierName_WithoutKeywords_WithoutAs_WithoutSatisfies : 'keyof'
+	0,                                // IdentifierName_WithoutKeywords_WithoutAs_WithoutSatisfies : 'unique'
+	0,                                // IdentifierName_WithoutKeywords_WithoutAs_WithoutSatisfies : 'infer'
+	0,                                // IdentifierName_WithoutKeywords_WithoutAs_WithoutSatisfies : 'accessor'
+	0,                                // IdentifierName_WithoutNew : Identifier
+	0,                                // IdentifierName_WithoutNew : 'asserts'
+	0,                                // IdentifierName_WithoutNew : 'await'
+	0,                                // IdentifierName_WithoutNew : 'break'
+	0,                                // IdentifierName_WithoutNew : 'do'
+	0,                                // IdentifierName_WithoutNew : 'in'
+	0,                                // IdentifierName_WithoutNew : 'typeof'
+	0,                                // IdentifierName_WithoutNew : 'case'
+	0,                                // IdentifierName_WithoutNew : 'else'
+	0,                                // IdentifierName_WithoutNew : 'instanceof'
+	0,                                // IdentifierName_WithoutNew : 'var'
+	0,                                // IdentifierName_WithoutNew : 'catch'
+	0,                                // IdentifierName_WithoutNew : 'export'
+	0,                                // IdentifierName_WithoutNew : 'void'
+	0,                                // IdentifierName_WithoutNew : 'class'
+	0,                                // IdentifierName_WithoutNew : 'extends'
+	0,                                // IdentifierName_WithoutNew : 'return'
+	0,                                // IdentifierName_WithoutNew : 'while'
+	0,                                // IdentifierName_WithoutNew : 'const'
+	0,                                // IdentifierName_WithoutNew : 'finally'
+	0,                                // IdentifierName_WithoutNew : 'super'
+	0,                                // IdentifierName_WithoutNew : 'with'
+	0,                                // IdentifierName_WithoutNew : 'continue'
+	0,                                // IdentifierName_WithoutNew : 'for'
+	0,                                // IdentifierName_WithoutNew : 'switch'
+	0,                                // IdentifierName_WithoutNew : 'yield'
+	0,                                // IdentifierName_WithoutNew : 'debugger'
+	0,                                // IdentifierName_WithoutNew : 'function'
+	0,                                // IdentifierName_WithoutNew : 'this'
+	0,                                // IdentifierName_WithoutNew : 'default'
+	0,                                // IdentifierName_WithoutNew : 'if'
+	0,                                // IdentifierName_WithoutNew : 'throw'
+	0,                                // IdentifierName_WithoutNew : 'delete'
+	0,                                // IdentifierName_WithoutNew : 'import'
+	0,                                // IdentifierName_WithoutNew : 'try'
+	0,                                // IdentifierName_WithoutNew : 'enum'
+	0,                                // IdentifierName_WithoutNew : 'null'
+	0,                                // IdentifierName_WithoutNew : 'true'
+	0,                                // IdentifierName_WithoutNew : 'false'
+	0,                                // IdentifierName_WithoutNew : 'as'
+	0,                                // IdentifierName_WithoutNew : 'from'
+	0,                                // IdentifierName_WithoutNew : 'get'
+	0,                                // IdentifierName_WithoutNew : 'let'
+	0,                                // IdentifierName_WithoutNew : 'of'
+	0,                                // IdentifierName_WithoutNew : 'set'
+	0,                                // IdentifierName_WithoutNew : 'static'
+	0,                                // IdentifierName_WithoutNew : 'target'
+	0,                                // IdentifierName_WithoutNew : 'async'
+	0,                                // IdentifierName_WithoutNew : 'assert'
+	0,                                // IdentifierName_WithoutNew : 'out'
+	0,                                // IdentifierName_WithoutNew : 'implements'
+	0,                                // IdentifierName_WithoutNew : 'interface'
+	0,                                // IdentifierName_WithoutNew : 'private'
+	0,                                // IdentifierName_WithoutNew : 'protected'
+	0,                                // IdentifierName_WithoutNew : 'public'
+	0,                                // IdentifierName_WithoutNew : 'any'
+	0,                                // IdentifierName_WithoutNew : 'unknown'
+	0,                                // IdentifierName_WithoutNew : 'boolean'
+	0,                                // IdentifierName_WithoutNew : 'number'
+	0,                                // IdentifierName_WithoutNew : 'string'
+	0,                                // IdentifierName_WithoutNew : 'symbol'
+	0,                                // IdentifierName_WithoutNew : 'bigint'
+	0,                                // IdentifierName_WithoutNew : 'undefined'
+	0,                                // IdentifierName_WithoutNew : 'never'
+	0,                                // IdentifierName_WithoutNew : 'object'
+	0,                                // IdentifierName_WithoutNew : 'abstract'
+	0,                                // IdentifierName_WithoutNew : 'constructor'
+	0,                                // IdentifierName_WithoutNew : 'declare'
+	0,                                // IdentifierName_WithoutNew : 'is'
+	0,                                // IdentifierName_WithoutNew : 'module'
+	0,                                // IdentifierName_WithoutNew : 'namespace'
+	0,                                // IdentifierName_WithoutNew : 'override'
+	0,                                // IdentifierName_WithoutNew : 'require'
+	0,                                // IdentifierName_WithoutNew : 'type'
+	0,                                // IdentifierName_WithoutNew : 'global'
+	0,                                // IdentifierName_WithoutNew : 'readonly'
+	0,                                // IdentifierName_WithoutNew : 'keyof'
+	0,                                // IdentifierName_WithoutNew : 'unique'
+	0,                                // IdentifierName_WithoutNew : 'infer'
+	0,                                // IdentifierName_WithoutNew : 'accessor'
+	0,                                // IdentifierName_WithoutNew : 'satisfies'
+	0,                                // IdentifierName_WithoutType : Identifier
+	0,                                // IdentifierName_WithoutType : 'new'
+	0,                                // IdentifierName_WithoutType : 'asserts'
+	0,                                // IdentifierName_WithoutType : 'await'
+	0,                                // IdentifierName_WithoutType : 'break'
+	0,                                // IdentifierName_WithoutType : 'do'
+	0,                                // IdentifierName_WithoutType : 'in'
+	0,                                // IdentifierName_WithoutType : 'typeof'
+	0,                                // IdentifierName_WithoutType : 'case'
+	0,                                // IdentifierName_WithoutType : 'else'
+	0,                                // IdentifierName_WithoutType : 'instanceof'
+	0,                                // IdentifierName_WithoutType : 'var'
+	0,                                // IdentifierName_WithoutType : 'catch'
+	0,                                // IdentifierName_WithoutType : 'export'
+	0,                                // IdentifierName_WithoutType : 'void'
+	0,                                // IdentifierName_WithoutType : 'class'
+	0,                                // IdentifierName_WithoutType : 'extends'
+	0,                                // IdentifierName_WithoutType : 'return'
+	0,                                // IdentifierName_WithoutType : 'while'
+	0,                                // IdentifierName_WithoutType : 'const'
+	0,                                // IdentifierName_WithoutType : 'finally'
+	0,                                // IdentifierName_WithoutType : 'super'
+	0,                                // IdentifierName_WithoutType : 'with'
+	0,                                // IdentifierName_WithoutType : 'continue'
+	0,                                // IdentifierName_WithoutType : 'for'
+	0,                                // IdentifierName_WithoutType : 'switch'
+	0,                                // IdentifierName_WithoutType : 'yield'
+	0,                                // IdentifierName_WithoutType : 'debugger'
+	0,                                // IdentifierName_WithoutType : 'function'
+	0,                                // IdentifierName_WithoutType : 'this'
+	0,                                // IdentifierName_WithoutType : 'default'
+	0,                                // IdentifierName_WithoutType : 'if'
+	0,                                // IdentifierName_WithoutType : 'throw'
+	0,                                // IdentifierName_WithoutType : 'delete'
+	0,                                // IdentifierName_WithoutType : 'import'
+	0,                                // IdentifierName_WithoutType : 'try'
+	0,                                // IdentifierName_WithoutType : 'enum'
+	0,                                // IdentifierName_WithoutType : 'null'
+	0,                                // IdentifierName_WithoutType : 'true'
+	0,                                // IdentifierName_WithoutType : 'false'
+	0,                                // IdentifierName_WithoutType : 'as'
+	0,                                // IdentifierName_WithoutType : 'from'
+	0,                                // IdentifierName_WithoutType : 'get'
+	0,                                // IdentifierName_WithoutType : 'let'
+	0,                                // IdentifierName_WithoutType : 'of'
+	0,                                // IdentifierName_WithoutType : 'set'
+	0,                                // IdentifierName_WithoutType : 'static'
+	0,                                // IdentifierName_WithoutType : 'target'
+	0,                                // IdentifierName_WithoutType : 'async'
+	0,                                // IdentifierName_WithoutType : 'assert'
+	0,                                // IdentifierName_WithoutType : 'out'
+	0,                                // IdentifierName_WithoutType : 'implements'
+	0,                                // IdentifierName_WithoutType : 'interface'
+	0,                                // IdentifierName_WithoutType : 'private'
+	0,                                // IdentifierName_WithoutType : 'protected'
+	0,                                // IdentifierName_WithoutType : 'public'
+	0,                                // IdentifierName_WithoutType : 'any'
+	0,                                // IdentifierName_WithoutType : 'unknown'
+	0,                                // IdentifierName_WithoutType : 'boolean'
+	0,                                // IdentifierName_WithoutType : 'number'
+	0,                                // IdentifierName_WithoutType : 'string'
+	0,                                // IdentifierName_WithoutType : 'symbol'
+	0,                                // IdentifierName_WithoutType : 'bigint'
+	0,                                // IdentifierName_WithoutType : 'undefined'
+	0,                                // IdentifierName_WithoutType : 'never'
+	0,                                // IdentifierName_WithoutType : 'object'
+	0,                                // IdentifierName_WithoutType : 'abstract'
+	0,                                // IdentifierName_WithoutType : 'constructor'
+	0,                                // IdentifierName_WithoutType : 'declare'
+	0,                                // IdentifierName_WithoutType : 'is'
+	0,                                // IdentifierName_WithoutType : 'module'
+	0,                                // IdentifierName_WithoutType : 'namespace'
+	0,                                // IdentifierName_WithoutType : 'override'
+	0,                                // IdentifierName_WithoutType : 'require'
+	0,                                // IdentifierName_WithoutType : 'global'
+	0,                                // IdentifierName_WithoutType : 'readonly'
+	0,                                // IdentifierName_WithoutType : 'keyof'
+	0,                                // IdentifierName_WithoutType : 'unique'
+	0,                                // IdentifierName_WithoutType : 'infer'
+	0,                                // IdentifierName_WithoutType : 'accessor'
+	0,                                // IdentifierName_WithoutType : 'satisfies'
+	int32(NameIdent),                 // IdentifierNameDecl : IdentifierName
+	int32(NameIdent),                 // IdentifierNameDecl_WithoutNew : IdentifierName_WithoutNew
+	int32(ReferenceIdent),            // IdentifierNameRef : IdentifierName
+	int32(ReferenceIdent),            // IdentifierNameRef_WithoutAsserts : IdentifierName_WithoutAsserts
+	int32(ReferenceIdent),            // IdentifierNameRef_WithoutType : IdentifierName_WithoutType
+	int32(ReferenceIdent),            // ClassPrivateRef : PrivateIdentifier
+	int32(ReferenceIdent),            // IdentifierReference : Identifier
+	int32(ReferenceIdent),            // IdentifierReference : '%' Identifier
+	int32(ReferenceIdent),            // IdentifierReference : 'yield'
+	int32(ReferenceIdent),            // IdentifierReference : 'await'
+	int32(ReferenceIdent),            // IdentifierReference : 'let'
+	int32(ReferenceIdent),            // IdentifierReference : 'async' lookahead_notStartOfArrowFunction
+	int32(ReferenceIdent),            // IdentifierReference : 'as'
+	int32(ReferenceIdent),            // IdentifierReference : 'assert'
+	int32(ReferenceIdent),            // IdentifierReference : 'asserts'
+	int32(ReferenceIdent),            // IdentifierReference : 'from'
+	int32(ReferenceIdent),            // IdentifierReference : 'get'
+	int32(ReferenceIdent),            // IdentifierReference : 'of'
+	int32(ReferenceIdent),            // IdentifierReference : 'set'
+	int32(ReferenceIdent),            // IdentifierReference : 'static'
+	int32(ReferenceIdent),            // IdentifierReference : 'target'
+	int32(ReferenceIdent),            // IdentifierReference : 'out'
+	int32(ReferenceIdent),            // IdentifierReference : 'implements'
+	int32(ReferenceIdent),            // IdentifierReference : 'interface'
+	int32(ReferenceIdent),            // IdentifierReference : 'private'
+	int32(ReferenceIdent),            // IdentifierReference : 'protected'
+	int32(ReferenceIdent),            // IdentifierReference : 'public'
+	int32(ReferenceIdent),            // IdentifierReference : 'satisfies'
+	int32(ReferenceIdent),            // IdentifierReference : 'any'
+	int32(ReferenceIdent),            // IdentifierReference : 'unknown'
+	int32(ReferenceIdent),            // IdentifierReference : 'boolean'
+	int32(ReferenceIdent),            // IdentifierReference : 'number'
+	int32(ReferenceIdent),            // IdentifierReference : 'string'
+	int32(ReferenceIdent),            // IdentifierReference : 'symbol'
+	int32(ReferenceIdent),            // IdentifierReference : 'bigint'
+	int32(ReferenceIdent),            // IdentifierReference : 'undefined'
+	int32(ReferenceIdent),            // IdentifierReference : 'never'
+	int32(ReferenceIdent),            // IdentifierReference : 'object'
+	int32(ReferenceIdent),            // IdentifierReference : 'abstract'
+	int32(ReferenceIdent),            // IdentifierReference : 'constructor'
+	int32(ReferenceIdent),            // IdentifierReference : 'declare'
+	int32(ReferenceIdent),            // IdentifierReference : 'is'
+	int32(ReferenceIdent),            // IdentifierReference : 'module'
+	int32(ReferenceIdent),            // IdentifierReference : 'namespace'
+	int32(ReferenceIdent),            // IdentifierReference : 'override'
+	int32(ReferenceIdent),            // IdentifierReference : 'require'
+	int32(ReferenceIdent),            // IdentifierReference : 'type'
+	int32(ReferenceIdent),            // IdentifierReference : 'global'
+	int32(ReferenceIdent),            // IdentifierReference : 'accessor'
+	int32(ReferenceIdent),            // IdentifierReference : 'keyof'
+	int32(ReferenceIdent),            // IdentifierReference : 'unique'
+	int32(ReferenceIdent),            // IdentifierReference : 'readonly'
+	int32(ReferenceIdent),            // IdentifierReference : 'infer'
+	int32(ReferenceIdent),            // IdentifierReference_Await : Identifier
+	int32(ReferenceIdent),            // IdentifierReference_Await : '%' Identifier
+	int32(ReferenceIdent),            // IdentifierReference_Await : 'yield'
+	int32(ReferenceIdent),            // IdentifierReference_Await : 'let'
+	int32(ReferenceIdent),            // IdentifierReference_Await : 'async' lookahead_notStartOfArrowFunction
+	int32(ReferenceIdent),            // IdentifierReference_Await : 'as'
+	int32(ReferenceIdent),            // IdentifierReference_Await : 'assert'
+	int32(ReferenceIdent),            // IdentifierReference_Await : 'asserts'
+	int32(ReferenceIdent),            // IdentifierReference_Await : 'from'
+	int32(ReferenceIdent),            // IdentifierReference_Await : 'get'
+	int32(ReferenceIdent),            // IdentifierReference_Await : 'of'
+	int32(ReferenceIdent),            // IdentifierReference_Await : 'set'
+	int32(ReferenceIdent),            // IdentifierReference_Await : 'static'
+	int32(ReferenceIdent),            // IdentifierReference_Await : 'target'
+	int32(ReferenceIdent),            // IdentifierReference_Await : 'out'
+	int32(ReferenceIdent),            // IdentifierReference_Await : 'implements'
+	int32(ReferenceIdent),            // IdentifierReference_Await : 'interface'
+	int32(ReferenceIdent),            // IdentifierReference_Await : 'private'
+	int32(ReferenceIdent),            // IdentifierReference_Await : 'protected'
+	int32(ReferenceIdent),            // IdentifierReference_Await : 'public'
+	int32(ReferenceIdent),            // IdentifierReference_Await : 'satisfies'
+	int32(ReferenceIdent),            // IdentifierReference_Await : 'any'
+	int32(ReferenceIdent),            // IdentifierReference_Await : 'unknown'
+	int32(ReferenceIdent),            // IdentifierReference_Await : 'boolean'
+	int32(ReferenceIdent),            // IdentifierReference_Await : 'number'
+	int32(ReferenceIdent),            // IdentifierReference_Await : 'string'
+	int32(ReferenceIdent),            // IdentifierReference_Await : 'symbol'
+	int32(ReferenceIdent),            // IdentifierReference_Await : 'bigint'
+	int32(ReferenceIdent),            // IdentifierReference_Await : 'undefined'
+	int32(ReferenceIdent),            // IdentifierReference_Await : 'never'
+	int32(ReferenceIdent),            // IdentifierReference_Await : 'object'
+	int32(ReferenceIdent),            // IdentifierReference_Await : 'abstract'
+	int32(ReferenceIdent),            // IdentifierReference_Await : 'constructor'
+	int32(ReferenceIdent),            // IdentifierReference_Await : 'declare'
+	int32(ReferenceIdent),            // IdentifierReference_Await : 'is'
+	int32(ReferenceIdent),            // IdentifierReference_Await : 'module'
+	int32(ReferenceIdent),            // IdentifierReference_Await : 'namespace'
+	int32(ReferenceIdent),            // IdentifierReference_Await : 'override'
+	int32(ReferenceIdent),            // IdentifierReference_Await : 'require'
+	int32(ReferenceIdent),            // IdentifierReference_Await : 'type'
+	int32(ReferenceIdent),            // IdentifierReference_Await : 'global'
+	int32(ReferenceIdent),            // IdentifierReference_Await : 'accessor'
+	int32(ReferenceIdent),            // IdentifierReference_Await : 'keyof'
+	int32(ReferenceIdent),            // IdentifierReference_Await : 'unique'
+	int32(ReferenceIdent),            // IdentifierReference_Await : 'readonly'
+	int32(ReferenceIdent),            // IdentifierReference_Await : 'infer'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoAsync_NoLet : Identifier
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoAsync_NoLet : '%' Identifier
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoAsync_NoLet : 'yield'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoAsync_NoLet : 'as'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoAsync_NoLet : 'assert'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoAsync_NoLet : 'asserts'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoAsync_NoLet : 'from'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoAsync_NoLet : 'get'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoAsync_NoLet : 'of'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoAsync_NoLet : 'set'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoAsync_NoLet : 'static'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoAsync_NoLet : 'target'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoAsync_NoLet : 'out'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoAsync_NoLet : 'implements'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoAsync_NoLet : 'interface'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoAsync_NoLet : 'private'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoAsync_NoLet : 'protected'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoAsync_NoLet : 'public'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoAsync_NoLet : 'satisfies'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoAsync_NoLet : 'any'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoAsync_NoLet : 'unknown'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoAsync_NoLet : 'boolean'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoAsync_NoLet : 'number'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoAsync_NoLet : 'string'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoAsync_NoLet : 'symbol'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoAsync_NoLet : 'bigint'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoAsync_NoLet : 'undefined'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoAsync_NoLet : 'never'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoAsync_NoLet : 'object'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoAsync_NoLet : 'abstract'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoAsync_NoLet : 'constructor'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoAsync_NoLet : 'declare'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoAsync_NoLet : 'is'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoAsync_NoLet : 'module'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoAsync_NoLet : 'namespace'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoAsync_NoLet : 'override'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoAsync_NoLet : 'require'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoAsync_NoLet : 'type'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoAsync_NoLet : 'global'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoAsync_NoLet : 'accessor'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoAsync_NoLet : 'keyof'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoAsync_NoLet : 'unique'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoAsync_NoLet : 'readonly'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoAsync_NoLet : 'infer'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoLet : Identifier
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoLet : '%' Identifier
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoLet : 'yield'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoLet : 'async' lookahead_notStartOfArrowFunction
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoLet : 'as'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoLet : 'assert'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoLet : 'asserts'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoLet : 'from'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoLet : 'get'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoLet : 'of'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoLet : 'set'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoLet : 'static'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoLet : 'target'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoLet : 'out'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoLet : 'implements'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoLet : 'interface'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoLet : 'private'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoLet : 'protected'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoLet : 'public'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoLet : 'satisfies'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoLet : 'any'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoLet : 'unknown'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoLet : 'boolean'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoLet : 'number'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoLet : 'string'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoLet : 'symbol'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoLet : 'bigint'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoLet : 'undefined'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoLet : 'never'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoLet : 'object'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoLet : 'abstract'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoLet : 'constructor'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoLet : 'declare'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoLet : 'is'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoLet : 'module'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoLet : 'namespace'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoLet : 'override'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoLet : 'require'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoLet : 'type'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoLet : 'global'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoLet : 'accessor'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoLet : 'keyof'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoLet : 'unique'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoLet : 'readonly'
+	int32(ReferenceIdent),            // IdentifierReference_Await_NoLet : 'infer'
+	int32(ReferenceIdent),            // IdentifierReference_NoAsync_NoLet : Identifier
+	int32(ReferenceIdent),            // IdentifierReference_NoAsync_NoLet : '%' Identifier
+	int32(ReferenceIdent),            // IdentifierReference_NoAsync_NoLet : 'yield'
+	int32(ReferenceIdent),            // IdentifierReference_NoAsync_NoLet : 'await'
+	int32(ReferenceIdent),            // IdentifierReference_NoAsync_NoLet : 'as'
+	int32(ReferenceIdent),            // IdentifierReference_NoAsync_NoLet : 'assert'
+	int32(ReferenceIdent),            // IdentifierReference_NoAsync_NoLet : 'asserts'
+	int32(ReferenceIdent),            // IdentifierReference_NoAsync_NoLet : 'from'
+	int32(ReferenceIdent),            // IdentifierReference_NoAsync_NoLet : 'get'
+	int32(ReferenceIdent),            // IdentifierReference_NoAsync_NoLet : 'of'
+	int32(ReferenceIdent),            // IdentifierReference_NoAsync_NoLet : 'set'
+	int32(ReferenceIdent),            // IdentifierReference_NoAsync_NoLet : 'static'
+	int32(ReferenceIdent),            // IdentifierReference_NoAsync_NoLet : 'target'
+	int32(ReferenceIdent),            // IdentifierReference_NoAsync_NoLet : 'out'
+	int32(ReferenceIdent),            // IdentifierReference_NoAsync_NoLet : 'implements'
+	int32(ReferenceIdent),            // IdentifierReference_NoAsync_NoLet : 'interface'
+	int32(ReferenceIdent),            // IdentifierReference_NoAsync_NoLet : 'private'
+	int32(ReferenceIdent),            // IdentifierReference_NoAsync_NoLet : 'protected'
+	int32(ReferenceIdent),            // IdentifierReference_NoAsync_NoLet : 'public'
+	int32(ReferenceIdent),            // IdentifierReference_NoAsync_NoLet : 'satisfies'
+	int32(ReferenceIdent),            // IdentifierReference_NoAsync_NoLet : 'any'
+	int32(ReferenceIdent),            // IdentifierReference_NoAsync_NoLet : 'unknown'
+	int32(ReferenceIdent),            // IdentifierReference_NoAsync_NoLet : 'boolean'
+	int32(ReferenceIdent),            // IdentifierReference_NoAsync_NoLet : 'number'
+	int32(ReferenceIdent),            // IdentifierReference_NoAsync_NoLet : 'string'
+	int32(ReferenceIdent),            // IdentifierReference_NoAsync_NoLet : 'symbol'
+	int32(ReferenceIdent),            // IdentifierReference_NoAsync_NoLet : 'bigint'
+	int32(ReferenceIdent),            // IdentifierReference_NoAsync_NoLet : 'undefined'
+	int32(ReferenceIdent),            // IdentifierReference_NoAsync_NoLet : 'never'
+	int32(ReferenceIdent),            // IdentifierReference_NoAsync_NoLet : 'object'
+	int32(ReferenceIdent),            // IdentifierReference_NoAsync_NoLet : 'abstract'
+	int32(ReferenceIdent),            // IdentifierReference_NoAsync_NoLet : 'constructor'
+	int32(ReferenceIdent),            // IdentifierReference_NoAsync_NoLet : 'declare'
+	int32(ReferenceIdent),            // IdentifierReference_NoAsync_NoLet : 'is'
+	int32(ReferenceIdent),            // IdentifierReference_NoAsync_NoLet : 'module'
+	int32(ReferenceIdent),            // IdentifierReference_NoAsync_NoLet : 'namespace'
+	int32(ReferenceIdent),            // IdentifierReference_NoAsync_NoLet : 'override'
+	int32(ReferenceIdent),            // IdentifierReference_NoAsync_NoLet : 'require'
+	int32(ReferenceIdent),            // IdentifierReference_NoAsync_NoLet : 'type'
+	int32(ReferenceIdent),            // IdentifierReference_NoAsync_NoLet : 'global'
+	int32(ReferenceIdent),            // IdentifierReference_NoAsync_NoLet : 'accessor'
+	int32(ReferenceIdent),            // IdentifierReference_NoAsync_NoLet : 'keyof'
+	int32(ReferenceIdent),            // IdentifierReference_NoAsync_NoLet : 'unique'
+	int32(ReferenceIdent),            // IdentifierReference_NoAsync_NoLet : 'readonly'
+	int32(ReferenceIdent),            // IdentifierReference_NoAsync_NoLet : 'infer'
+	int32(ReferenceIdent),            // IdentifierReference_NoLet : Identifier
+	int32(ReferenceIdent),            // IdentifierReference_NoLet : '%' Identifier
+	int32(ReferenceIdent),            // IdentifierReference_NoLet : 'yield'
+	int32(ReferenceIdent),            // IdentifierReference_NoLet : 'await'
+	int32(ReferenceIdent),            // IdentifierReference_NoLet : 'async' lookahead_notStartOfArrowFunction
+	int32(ReferenceIdent),            // IdentifierReference_NoLet : 'as'
+	int32(ReferenceIdent),            // IdentifierReference_NoLet : 'assert'
+	int32(ReferenceIdent),            // IdentifierReference_NoLet : 'asserts'
+	int32(ReferenceIdent),            // IdentifierReference_NoLet : 'from'
+	int32(ReferenceIdent),            // IdentifierReference_NoLet : 'get'
+	int32(ReferenceIdent),            // IdentifierReference_NoLet : 'of'
+	int32(ReferenceIdent),            // IdentifierReference_NoLet : 'set'
+	int32(ReferenceIdent),            // IdentifierReference_NoLet : 'static'
+	int32(ReferenceIdent),            // IdentifierReference_NoLet : 'target'
+	int32(ReferenceIdent),            // IdentifierReference_NoLet : 'out'
+	int32(ReferenceIdent),            // IdentifierReference_NoLet : 'implements'
+	int32(ReferenceIdent),            // IdentifierReference_NoLet : 'interface'
+	int32(ReferenceIdent),            // IdentifierReference_NoLet : 'private'
+	int32(ReferenceIdent),            // IdentifierReference_NoLet : 'protected'
+	int32(ReferenceIdent),            // IdentifierReference_NoLet : 'public'
+	int32(ReferenceIdent),            // IdentifierReference_NoLet : 'satisfies'
+	int32(ReferenceIdent),            // IdentifierReference_NoLet : 'any'
+	int32(ReferenceIdent),            // IdentifierReference_NoLet : 'unknown'
+	int32(ReferenceIdent),            // IdentifierReference_NoLet : 'boolean'
+	int32(ReferenceIdent),            // IdentifierReference_NoLet : 'number'
+	int32(ReferenceIdent),            // IdentifierReference_NoLet : 'string'
+	int32(ReferenceIdent),            // IdentifierReference_NoLet : 'symbol'
+	int32(ReferenceIdent),            // IdentifierReference_NoLet : 'bigint'
+	int32(ReferenceIdent),            // IdentifierReference_NoLet : 'undefined'
+	int32(ReferenceIdent),            // IdentifierReference_NoLet : 'never'
+	int32(ReferenceIdent),            // IdentifierReference_NoLet : 'object'
+	int32(ReferenceIdent),            // IdentifierReference_NoLet : 'abstract'
+	int32(ReferenceIdent),            // IdentifierReference_NoLet : 'constructor'
+	int32(ReferenceIdent),            // IdentifierReference_NoLet : 'declare'
+	int32(ReferenceIdent),            // IdentifierReference_NoLet : 'is'
+	int32(ReferenceIdent),            // IdentifierReference_NoLet : 'module'
+	int32(ReferenceIdent),            // IdentifierReference_NoLet : 'namespace'
+	int32(ReferenceIdent),            // IdentifierReference_NoLet : 'override'
+	int32(ReferenceIdent),            // IdentifierReference_NoLet : 'require'
+	int32(ReferenceIdent),            // IdentifierReference_NoLet : 'type'
+	int32(ReferenceIdent),            // IdentifierReference_NoLet : 'global'
+	int32(ReferenceIdent),            // IdentifierReference_NoLet : 'accessor'
+	int32(ReferenceIdent),            // IdentifierReference_NoLet : 'keyof'
+	int32(ReferenceIdent),            // IdentifierReference_NoLet : 'unique'
+	int32(ReferenceIdent),            // IdentifierReference_NoLet : 'readonly'
+	int32(ReferenceIdent),            // IdentifierReference_NoLet : 'infer'
+	int32(ReferenceIdent),            // IdentifierReference_WithDefault : Identifier
+	int32(ReferenceIdent),            // IdentifierReference_WithDefault : '%' Identifier
+	int32(ReferenceIdent),            // IdentifierReference_WithDefault : 'yield'
+	int32(ReferenceIdent),            // IdentifierReference_WithDefault : 'await'
+	int32(ReferenceIdent),            // IdentifierReference_WithDefault : 'let'
+	int32(ReferenceIdent),            // IdentifierReference_WithDefault : 'default'
+	int32(ReferenceIdent),            // IdentifierReference_WithDefault : 'async' lookahead_notStartOfArrowFunction
+	int32(ReferenceIdent),            // IdentifierReference_WithDefault : 'as'
+	int32(ReferenceIdent),            // IdentifierReference_WithDefault : 'assert'
+	int32(ReferenceIdent),            // IdentifierReference_WithDefault : 'asserts'
+	int32(ReferenceIdent),            // IdentifierReference_WithDefault : 'from'
+	int32(ReferenceIdent),            // IdentifierReference_WithDefault : 'get'
+	int32(ReferenceIdent),            // IdentifierReference_WithDefault : 'of'
+	int32(ReferenceIdent),            // IdentifierReference_WithDefault : 'set'
+	int32(ReferenceIdent),            // IdentifierReference_WithDefault : 'static'
+	int32(ReferenceIdent),            // IdentifierReference_WithDefault : 'target'
+	int32(ReferenceIdent),            // IdentifierReference_WithDefault : 'out'
+	int32(ReferenceIdent),            // IdentifierReference_WithDefault : 'implements'
+	int32(ReferenceIdent),            // IdentifierReference_WithDefault : 'interface'
+	int32(ReferenceIdent),            // IdentifierReference_WithDefault : 'private'
+	int32(ReferenceIdent),            // IdentifierReference_WithDefault : 'protected'
+	int32(ReferenceIdent),            // IdentifierReference_WithDefault : 'public'
+	int32(ReferenceIdent),            // IdentifierReference_WithDefault : 'satisfies'
+	int32(ReferenceIdent),            // IdentifierReference_WithDefault : 'any'
+	int32(ReferenceIdent),            // IdentifierReference_WithDefault : 'unknown'
+	int32(ReferenceIdent),            // IdentifierReference_WithDefault : 'boolean'
+	int32(ReferenceIdent),            // IdentifierReference_WithDefault : 'number'
+	int32(ReferenceIdent),            // IdentifierReference_WithDefault : 'string'
+	int32(ReferenceIdent),            // IdentifierReference_WithDefault : 'symbol'
+	int32(ReferenceIdent),            // IdentifierReference_WithDefault : 'bigint'
+	int32(ReferenceIdent),            // IdentifierReference_WithDefault : 'undefined'
+	int32(ReferenceIdent),            // IdentifierReference_WithDefault : 'never'
+	int32(ReferenceIdent),            // IdentifierReference_WithDefault : 'object'
+	int32(ReferenceIdent),            // IdentifierReference_WithDefault : 'abstract'
+	int32(ReferenceIdent),            // IdentifierReference_WithDefault : 'constructor'
+	int32(ReferenceIdent),            // IdentifierReference_WithDefault : 'declare'
+	int32(ReferenceIdent),            // IdentifierReference_WithDefault : 'is'
+	int32(ReferenceIdent),            // IdentifierReference_WithDefault : 'module'
+	int32(ReferenceIdent),            // IdentifierReference_WithDefault : 'namespace'
+	int32(ReferenceIdent),            // IdentifierReference_WithDefault : 'override'
+	int32(ReferenceIdent),            // IdentifierReference_WithDefault : 'require'
+	int32(ReferenceIdent),            // IdentifierReference_WithDefault : 'type'
+	int32(ReferenceIdent),            // IdentifierReference_WithDefault : 'global'
+	int32(ReferenceIdent),            // IdentifierReference_WithDefault : 'accessor'
+	int32(ReferenceIdent),            // IdentifierReference_WithDefault : 'keyof'
+	int32(ReferenceIdent),            // IdentifierReference_WithDefault : 'unique'
+	int32(ReferenceIdent),            // IdentifierReference_WithDefault : 'readonly'
+	int32(ReferenceIdent),            // IdentifierReference_WithDefault : 'infer'
+	int32(ReferenceIdent),            // IdentifierReference_WithoutPredefinedTypes : Identifier
+	int32(ReferenceIdent),            // IdentifierReference_WithoutPredefinedTypes : '%' Identifier
+	int32(ReferenceIdent),            // IdentifierReference_WithoutPredefinedTypes : 'yield'
+	int32(ReferenceIdent),            // IdentifierReference_WithoutPredefinedTypes : 'await'
+	int32(ReferenceIdent),            // IdentifierReference_WithoutPredefinedTypes : 'let'
+	int32(ReferenceIdent),            // IdentifierReference_WithoutPredefinedTypes : 'async' lookahead_notStartOfArrowFunction
+	int32(ReferenceIdent),            // IdentifierReference_WithoutPredefinedTypes : 'as'
+	int32(ReferenceIdent),            // IdentifierReference_WithoutPredefinedTypes : 'assert'
+	int32(ReferenceIdent),            // IdentifierReference_WithoutPredefinedTypes : 'asserts'
+	int32(ReferenceIdent),            // IdentifierReference_WithoutPredefinedTypes : 'from'
+	int32(ReferenceIdent),            // IdentifierReference_WithoutPredefinedTypes : 'get'
+	int32(ReferenceIdent),            // IdentifierReference_WithoutPredefinedTypes : 'of'
+	int32(ReferenceIdent),            // IdentifierReference_WithoutPredefinedTypes : 'set'
+	int32(ReferenceIdent),            // IdentifierReference_WithoutPredefinedTypes : 'static'
+	int32(ReferenceIdent),            // IdentifierReference_WithoutPredefinedTypes : 'target'
+	int32(ReferenceIdent),            // IdentifierReference_WithoutPredefinedTypes : 'out'
+	int32(ReferenceIdent),            // IdentifierReference_WithoutPredefinedTypes : 'implements'
+	int32(ReferenceIdent),            // IdentifierReference_WithoutPredefinedTypes : 'interface'
+	int32(ReferenceIdent),            // IdentifierReference_WithoutPredefinedTypes : 'private'
+	int32(ReferenceIdent),            // IdentifierReference_WithoutPredefinedTypes : 'protected'
+	int32(ReferenceIdent),            // IdentifierReference_WithoutPredefinedTypes : 'public'
+	int32(ReferenceIdent),            // IdentifierReference_WithoutPredefinedTypes : 'satisfies'
+	int32(ReferenceIdent),            // IdentifierReference_WithoutPredefinedTypes : 'abstract'
+	int32(ReferenceIdent),            // IdentifierReference_WithoutPredefinedTypes : 'constructor'
+	int32(ReferenceIdent),            // IdentifierReference_WithoutPredefinedTypes : 'declare'
+	int32(ReferenceIdent),            // IdentifierReference_WithoutPredefinedTypes : 'is'
+	int32(ReferenceIdent),            // IdentifierReference_WithoutPredefinedTypes : 'module'
+	int32(ReferenceIdent),            // IdentifierReference_WithoutPredefinedTypes : 'namespace'
+	int32(ReferenceIdent),            // IdentifierReference_WithoutPredefinedTypes : 'override'
+	int32(ReferenceIdent),            // IdentifierReference_WithoutPredefinedTypes : 'require'
+	int32(ReferenceIdent),            // IdentifierReference_WithoutPredefinedTypes : 'type'
+	int32(ReferenceIdent),            // IdentifierReference_WithoutPredefinedTypes : 'global'
+	int32(ReferenceIdent),            // IdentifierReference_WithoutPredefinedTypes : 'accessor'
+	int32(ReferenceIdent),            // IdentifierReference_Yield : Identifier
+	int32(ReferenceIdent),            // IdentifierReference_Yield : '%' Identifier
+	int32(ReferenceIdent),            // IdentifierReference_Yield : 'await'
+	int32(ReferenceIdent),            // IdentifierReference_Yield : 'let'
+	int32(ReferenceIdent),            // IdentifierReference_Yield : 'async' lookahead_notStartOfArrowFunction
+	int32(ReferenceIdent),            // IdentifierReference_Yield : 'as'
+	int32(ReferenceIdent),            // IdentifierReference_Yield : 'assert'
+	int32(ReferenceIdent),            // IdentifierReference_Yield : 'asserts'
+	int32(ReferenceIdent),            // IdentifierReference_Yield : 'from'
+	int32(ReferenceIdent),            // IdentifierReference_Yield : 'get'
+	int32(ReferenceIdent),            // IdentifierReference_Yield : 'of'
+	int32(ReferenceIdent),            // IdentifierReference_Yield : 'set'
+	int32(ReferenceIdent),            // IdentifierReference_Yield : 'static'
+	int32(ReferenceIdent),            // IdentifierReference_Yield : 'target'
+	int32(ReferenceIdent),            // IdentifierReference_Yield : 'out'
+	int32(ReferenceIdent),            // IdentifierReference_Yield : 'implements'
+	int32(ReferenceIdent),            // IdentifierReference_Yield : 'interface'
+	int32(ReferenceIdent),            // IdentifierReference_Yield : 'private'
+	int32(ReferenceIdent),            // IdentifierReference_Yield : 'protected'
+	int32(ReferenceIdent),            // IdentifierReference_Yield : 'public'
+	int32(ReferenceIdent),            // IdentifierReference_Yield : 'satisfies'
+	int32(ReferenceIdent),            // IdentifierReference_Yield : 'any'
+	int32(ReferenceIdent),            // IdentifierReference_Yield : 'unknown'
+	int32(ReferenceIdent),            // IdentifierReference_Yield : 'boolean'
+	int32(ReferenceIdent),            // IdentifierReference_Yield : 'number'
+	int32(ReferenceIdent),            // IdentifierReference_Yield : 'string'
+	int32(ReferenceIdent),            // IdentifierReference_Yield : 'symbol'
+	int32(ReferenceIdent),            // IdentifierReference_Yield : 'bigint'
+	int32(ReferenceIdent),            // IdentifierReference_Yield : 'undefined'
+	int32(ReferenceIdent),            // IdentifierReference_Yield : 'never'
+	int32(ReferenceIdent),            // IdentifierReference_Yield : 'object'
+	int32(ReferenceIdent),            // IdentifierReference_Yield : 'abstract'
+	int32(ReferenceIdent),            // IdentifierReference_Yield : 'constructor'
+	int32(ReferenceIdent),            // IdentifierReference_Yield : 'declare'
+	int32(ReferenceIdent),            // IdentifierReference_Yield : 'is'
+	int32(ReferenceIdent),            // IdentifierReference_Yield : 'module'
+	int32(ReferenceIdent),            // IdentifierReference_Yield : 'namespace'
+	int32(ReferenceIdent),            // IdentifierReference_Yield : 'override'
+	int32(ReferenceIdent),            // IdentifierReference_Yield : 'require'
+	int32(ReferenceIdent),            // IdentifierReference_Yield : 'type'
+	int32(ReferenceIdent),            // IdentifierReference_Yield : 'global'
+	int32(ReferenceIdent),            // IdentifierReference_Yield : 'accessor'
+	int32(ReferenceIdent),            // IdentifierReference_Yield : 'keyof'
+	int32(ReferenceIdent),            // IdentifierReference_Yield : 'unique'
+	int32(ReferenceIdent),            // IdentifierReference_Yield : 'readonly'
+	int32(ReferenceIdent),            // IdentifierReference_Yield : 'infer'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await : Identifier
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await : '%' Identifier
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await : 'let'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await : 'async' lookahead_notStartOfArrowFunction
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await : 'as'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await : 'assert'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await : 'asserts'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await : 'from'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await : 'get'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await : 'of'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await : 'set'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await : 'static'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await : 'target'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await : 'out'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await : 'implements'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await : 'interface'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await : 'private'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await : 'protected'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await : 'public'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await : 'satisfies'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await : 'any'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await : 'unknown'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await : 'boolean'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await : 'number'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await : 'string'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await : 'symbol'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await : 'bigint'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await : 'undefined'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await : 'never'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await : 'object'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await : 'abstract'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await : 'constructor'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await : 'declare'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await : 'is'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await : 'module'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await : 'namespace'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await : 'override'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await : 'require'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await : 'type'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await : 'global'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await : 'accessor'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await : 'keyof'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await : 'unique'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await : 'readonly'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await : 'infer'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoAsync_NoLet : Identifier
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoAsync_NoLet : '%' Identifier
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoAsync_NoLet : 'as'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoAsync_NoLet : 'assert'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoAsync_NoLet : 'asserts'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoAsync_NoLet : 'from'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoAsync_NoLet : 'get'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoAsync_NoLet : 'of'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoAsync_NoLet : 'set'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoAsync_NoLet : 'static'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoAsync_NoLet : 'target'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoAsync_NoLet : 'out'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoAsync_NoLet : 'implements'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoAsync_NoLet : 'interface'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoAsync_NoLet : 'private'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoAsync_NoLet : 'protected'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoAsync_NoLet : 'public'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoAsync_NoLet : 'satisfies'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoAsync_NoLet : 'any'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoAsync_NoLet : 'unknown'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoAsync_NoLet : 'boolean'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoAsync_NoLet : 'number'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoAsync_NoLet : 'string'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoAsync_NoLet : 'symbol'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoAsync_NoLet : 'bigint'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoAsync_NoLet : 'undefined'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoAsync_NoLet : 'never'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoAsync_NoLet : 'object'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoAsync_NoLet : 'abstract'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoAsync_NoLet : 'constructor'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoAsync_NoLet : 'declare'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoAsync_NoLet : 'is'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoAsync_NoLet : 'module'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoAsync_NoLet : 'namespace'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoAsync_NoLet : 'override'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoAsync_NoLet : 'require'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoAsync_NoLet : 'type'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoAsync_NoLet : 'global'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoAsync_NoLet : 'accessor'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoAsync_NoLet : 'keyof'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoAsync_NoLet : 'unique'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoAsync_NoLet : 'readonly'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoAsync_NoLet : 'infer'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoLet : Identifier
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoLet : '%' Identifier
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoLet : 'async' lookahead_notStartOfArrowFunction
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoLet : 'as'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoLet : 'assert'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoLet : 'asserts'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoLet : 'from'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoLet : 'get'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoLet : 'of'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoLet : 'set'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoLet : 'static'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoLet : 'target'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoLet : 'out'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoLet : 'implements'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoLet : 'interface'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoLet : 'private'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoLet : 'protected'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoLet : 'public'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoLet : 'satisfies'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoLet : 'any'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoLet : 'unknown'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoLet : 'boolean'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoLet : 'number'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoLet : 'string'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoLet : 'symbol'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoLet : 'bigint'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoLet : 'undefined'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoLet : 'never'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoLet : 'object'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoLet : 'abstract'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoLet : 'constructor'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoLet : 'declare'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoLet : 'is'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoLet : 'module'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoLet : 'namespace'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoLet : 'override'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoLet : 'require'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoLet : 'type'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoLet : 'global'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoLet : 'accessor'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoLet : 'keyof'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoLet : 'unique'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoLet : 'readonly'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_Await_NoLet : 'infer'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoAsync_NoLet : Identifier
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoAsync_NoLet : '%' Identifier
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoAsync_NoLet : 'await'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoAsync_NoLet : 'as'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoAsync_NoLet : 'assert'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoAsync_NoLet : 'asserts'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoAsync_NoLet : 'from'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoAsync_NoLet : 'get'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoAsync_NoLet : 'of'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoAsync_NoLet : 'set'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoAsync_NoLet : 'static'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoAsync_NoLet : 'target'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoAsync_NoLet : 'out'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoAsync_NoLet : 'implements'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoAsync_NoLet : 'interface'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoAsync_NoLet : 'private'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoAsync_NoLet : 'protected'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoAsync_NoLet : 'public'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoAsync_NoLet : 'satisfies'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoAsync_NoLet : 'any'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoAsync_NoLet : 'unknown'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoAsync_NoLet : 'boolean'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoAsync_NoLet : 'number'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoAsync_NoLet : 'string'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoAsync_NoLet : 'symbol'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoAsync_NoLet : 'bigint'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoAsync_NoLet : 'undefined'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoAsync_NoLet : 'never'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoAsync_NoLet : 'object'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoAsync_NoLet : 'abstract'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoAsync_NoLet : 'constructor'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoAsync_NoLet : 'declare'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoAsync_NoLet : 'is'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoAsync_NoLet : 'module'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoAsync_NoLet : 'namespace'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoAsync_NoLet : 'override'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoAsync_NoLet : 'require'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoAsync_NoLet : 'type'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoAsync_NoLet : 'global'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoAsync_NoLet : 'accessor'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoAsync_NoLet : 'keyof'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoAsync_NoLet : 'unique'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoAsync_NoLet : 'readonly'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoAsync_NoLet : 'infer'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoLet : Identifier
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoLet : '%' Identifier
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoLet : 'await'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoLet : 'async' lookahead_notStartOfArrowFunction
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoLet : 'as'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoLet : 'assert'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoLet : 'asserts'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoLet : 'from'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoLet : 'get'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoLet : 'of'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoLet : 'set'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoLet : 'static'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoLet : 'target'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoLet : 'out'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoLet : 'implements'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoLet : 'interface'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoLet : 'private'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoLet : 'protected'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoLet : 'public'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoLet : 'satisfies'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoLet : 'any'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoLet : 'unknown'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoLet : 'boolean'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoLet : 'number'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoLet : 'string'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoLet : 'symbol'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoLet : 'bigint'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoLet : 'undefined'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoLet : 'never'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoLet : 'object'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoLet : 'abstract'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoLet : 'constructor'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoLet : 'declare'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoLet : 'is'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoLet : 'module'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoLet : 'namespace'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoLet : 'override'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoLet : 'require'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoLet : 'type'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoLet : 'global'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoLet : 'accessor'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoLet : 'keyof'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoLet : 'unique'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoLet : 'readonly'
+	int32(ReferenceIdent),            // IdentifierReference_Yield_NoLet : 'infer'
+	0,                                // lookahead_notStartOfArrowFunction :
+	int32(NameIdent),                 // BindingIdentifier : Identifier
+	int32(NameIdent),                 // BindingIdentifier : 'yield'
+	int32(NameIdent),                 // BindingIdentifier : 'await'
+	int32(NameIdent),                 // BindingIdentifier : 'as'
+	int32(NameIdent),                 // BindingIdentifier : 'assert'
+	int32(NameIdent),                 // BindingIdentifier : 'asserts'
+	int32(NameIdent),                 // BindingIdentifier : 'from'
+	int32(NameIdent),                 // BindingIdentifier : 'get'
+	int32(NameIdent),                 // BindingIdentifier : 'let'
+	int32(NameIdent),                 // BindingIdentifier : 'of'
+	int32(NameIdent),                 // BindingIdentifier : 'set'
+	int32(NameIdent),                 // BindingIdentifier : 'static'
+	int32(NameIdent),                 // BindingIdentifier : 'target'
+	int32(NameIdent),                 // BindingIdentifier : 'async'
+	int32(NameIdent),                 // BindingIdentifier : 'out'
+	int32(NameIdent),                 // BindingIdentifier : 'implements'
+	int32(NameIdent),                 // BindingIdentifier : 'interface'
+	int32(NameIdent),                 // BindingIdentifier : 'private'
+	int32(NameIdent),                 // BindingIdentifier : 'protected'
+	int32(NameIdent),                 // BindingIdentifier : 'public'
+	int32(NameIdent),                 // BindingIdentifier : 'any'
+	int32(NameIdent),                 // BindingIdentifier : 'unknown'
+	int32(NameIdent),                 // BindingIdentifier : 'boolean'
+	int32(NameIdent),                 // BindingIdentifier : 'number'
+	int32(NameIdent),                 // BindingIdentifier : 'string'
+	int32(NameIdent),                 // BindingIdentifier : 'symbol'
+	int32(NameIdent),                 // BindingIdentifier : 'bigint'
+	int32(NameIdent),                 // BindingIdentifier : 'undefined'
+	int32(NameIdent),                 // BindingIdentifier : 'never'
+	int32(NameIdent),                 // BindingIdentifier : 'object'
+	int32(NameIdent),                 // BindingIdentifier : 'abstract'
+	int32(NameIdent),                 // BindingIdentifier : 'constructor'
+	int32(NameIdent),                 // BindingIdentifier : 'declare'
+	int32(NameIdent),                 // BindingIdentifier : 'is'
+	int32(NameIdent),                 // BindingIdentifier : 'module'
+	int32(NameIdent),                 // BindingIdentifier : 'namespace'
+	int32(NameIdent),                 // BindingIdentifier : 'override'
+	int32(NameIdent),                 // BindingIdentifier : 'require'
+	int32(NameIdent),                 // BindingIdentifier : 'type'
+	int32(NameIdent),                 // BindingIdentifier : 'global'
+	int32(NameIdent),                 // BindingIdentifier : 'readonly'
+	int32(NameIdent),                 // BindingIdentifier : 'keyof'
+	int32(NameIdent),                 // BindingIdentifier : 'unique'
+	int32(NameIdent),                 // BindingIdentifier : 'infer'
+	int32(NameIdent),                 // BindingIdentifier : 'satisfies'
+	int32(NameIdent),                 // BindingIdentifier : 'accessor'
+	int32(NameIdent),                 // BindingIdentifier_WithoutImplements : Identifier
+	int32(NameIdent),                 // BindingIdentifier_WithoutImplements : 'yield'
+	int32(NameIdent),                 // BindingIdentifier_WithoutImplements : 'await'
+	int32(NameIdent),                 // BindingIdentifier_WithoutImplements : 'as'
+	int32(NameIdent),                 // BindingIdentifier_WithoutImplements : 'assert'
+	int32(NameIdent),                 // BindingIdentifier_WithoutImplements : 'asserts'
+	int32(NameIdent),                 // BindingIdentifier_WithoutImplements : 'from'
+	int32(NameIdent),                 // BindingIdentifier_WithoutImplements : 'get'
+	int32(NameIdent),                 // BindingIdentifier_WithoutImplements : 'let'
+	int32(NameIdent),                 // BindingIdentifier_WithoutImplements : 'of'
+	int32(NameIdent),                 // BindingIdentifier_WithoutImplements : 'set'
+	int32(NameIdent),                 // BindingIdentifier_WithoutImplements : 'static'
+	int32(NameIdent),                 // BindingIdentifier_WithoutImplements : 'target'
+	int32(NameIdent),                 // BindingIdentifier_WithoutImplements : 'async'
+	int32(NameIdent),                 // BindingIdentifier_WithoutImplements : 'out'
+	int32(NameIdent),                 // BindingIdentifier_WithoutImplements : 'interface'
+	int32(NameIdent),                 // BindingIdentifier_WithoutImplements : 'private'
+	int32(NameIdent),                 // BindingIdentifier_WithoutImplements : 'protected'
+	int32(NameIdent),                 // BindingIdentifier_WithoutImplements : 'public'
+	int32(NameIdent),                 // BindingIdentifier_WithoutImplements : 'any'
+	int32(NameIdent),                 // BindingIdentifier_WithoutImplements : 'unknown'
+	int32(NameIdent),                 // BindingIdentifier_WithoutImplements : 'boolean'
+	int32(NameIdent),                 // BindingIdentifier_WithoutImplements : 'number'
+	int32(NameIdent),                 // BindingIdentifier_WithoutImplements : 'string'
+	int32(NameIdent),                 // BindingIdentifier_WithoutImplements : 'symbol'
+	int32(NameIdent),                 // BindingIdentifier_WithoutImplements : 'bigint'
+	int32(NameIdent),                 // BindingIdentifier_WithoutImplements : 'undefined'
+	int32(NameIdent),                 // BindingIdentifier_WithoutImplements : 'never'
+	int32(NameIdent),                 // BindingIdentifier_WithoutImplements : 'object'
+	int32(NameIdent),                 // BindingIdentifier_WithoutImplements : 'abstract'
+	int32(NameIdent),                 // BindingIdentifier_WithoutImplements : 'constructor'
+	int32(NameIdent),                 // BindingIdentifier_WithoutImplements : 'declare'
+	int32(NameIdent),                 // BindingIdentifier_WithoutImplements : 'is'
+	int32(NameIdent),                 // BindingIdentifier_WithoutImplements : 'module'
+	int32(NameIdent),                 // BindingIdentifier_WithoutImplements : 'namespace'
+	int32(NameIdent),                 // BindingIdentifier_WithoutImplements : 'override'
+	int32(NameIdent),                 // BindingIdentifier_WithoutImplements : 'require'
+	int32(NameIdent),                 // BindingIdentifier_WithoutImplements : 'type'
+	int32(NameIdent),                 // BindingIdentifier_WithoutImplements : 'global'
+	int32(NameIdent),                 // BindingIdentifier_WithoutImplements : 'readonly'
+	int32(NameIdent),                 // BindingIdentifier_WithoutImplements : 'keyof'
+	int32(NameIdent),                 // BindingIdentifier_WithoutImplements : 'unique'
+	int32(NameIdent),                 // BindingIdentifier_WithoutImplements : 'infer'
+	int32(NameIdent),                 // BindingIdentifier_WithoutImplements : 'satisfies'
+	int32(NameIdent),                 // BindingIdentifier_WithoutImplements : 'accessor'
+	int32(LabelIdent),                // LabelIdentifier : Identifier
+	int32(LabelIdent),                // LabelIdentifier : 'yield'
+	int32(LabelIdent),                // LabelIdentifier : 'await'
+	int32(LabelIdent),                // LabelIdentifier : 'as'
+	int32(LabelIdent),                // LabelIdentifier : 'assert'
+	int32(LabelIdent),                // LabelIdentifier : 'asserts'
+	int32(LabelIdent),                // LabelIdentifier : 'from'
+	int32(LabelIdent),                // LabelIdentifier : 'get'
+	int32(LabelIdent),                // LabelIdentifier : 'let'
+	int32(LabelIdent),                // LabelIdentifier : 'of'
+	int32(LabelIdent),                // LabelIdentifier : 'set'
+	int32(LabelIdent),                // LabelIdentifier : 'static'
+	int32(LabelIdent),                // LabelIdentifier : 'target'
+	int32(LabelIdent),                // LabelIdentifier : 'async'
+	int32(LabelIdent),                // LabelIdentifier : 'out'
+	int32(LabelIdent),                // LabelIdentifier : 'implements'
+	int32(LabelIdent),                // LabelIdentifier : 'interface'
+	int32(LabelIdent),                // LabelIdentifier : 'private'
+	int32(LabelIdent),                // LabelIdentifier : 'protected'
+	int32(LabelIdent),                // LabelIdentifier : 'public'
+	int32(LabelIdent),                // LabelIdentifier : 'any'
+	int32(LabelIdent),                // LabelIdentifier : 'unknown'
+	int32(LabelIdent),                // LabelIdentifier : 'boolean'
+	int32(LabelIdent),                // LabelIdentifier : 'number'
+	int32(LabelIdent),                // LabelIdentifier : 'string'
+	int32(LabelIdent),                // LabelIdentifier : 'symbol'
+	int32(LabelIdent),                // LabelIdentifier : 'bigint'
+	int32(LabelIdent),                // LabelIdentifier : 'undefined'
+	int32(LabelIdent),                // LabelIdentifier : 'never'
+	int32(LabelIdent),                // LabelIdentifier : 'object'
+	int32(LabelIdent),                // LabelIdentifier : 'declare'
+	int32(LabelIdent),                // LabelIdentifier : 'is'
+	int32(LabelIdent),                // LabelIdentifier : 'module'
+	int32(LabelIdent),                // LabelIdentifier : 'namespace'
+	int32(LabelIdent),                // LabelIdentifier : 'override'
+	int32(LabelIdent),                // LabelIdentifier : 'require'
+	int32(LabelIdent),                // LabelIdentifier : 'type'
+	int32(LabelIdent),                // LabelIdentifier : 'global'
+	int32(LabelIdent),                // LabelIdentifier : 'readonly'
+	int32(LabelIdent),                // LabelIdentifier : 'keyof'
+	int32(LabelIdent),                // LabelIdentifier : 'unique'
+	int32(LabelIdent),                // LabelIdentifier : 'infer'
+	int32(LabelIdent),                // LabelIdentifier : 'satisfies'
+	int32(LabelIdent),                // LabelIdentifier : 'accessor'
+	-1,                               // PrimaryExpression : 'this'
+	int32(IdentExpr),                 // PrimaryExpression : IdentifierReference
+	0,                                // PrimaryExpression : Literal
+	0,                                // PrimaryExpression : ArrayLiteral
+	0,                                // PrimaryExpression : ObjectLiteral
+	0,                                // PrimaryExpression : FunctionExpression
+	0,                                // PrimaryExpression : ClassExpression
+	0,                                // PrimaryExpression : GeneratorExpression
+	0,                                // PrimaryExpression : AsyncFunctionExpression
+	0,                                // PrimaryExpression : AsyncGeneratorExpression
+	int32(Regexp),                    // PrimaryExpression : RegularExpressionLiteral
+	0,                                // PrimaryExpression : TemplateLiteral
+	0,                                // PrimaryExpression : lookahead_notStartOfArrowFunction Parenthesized
+	0,                                // PrimaryExpression : lookahead_notStartOfArrowFunction JSXElement
+	0,                                // PrimaryExpression : lookahead_notStartOfArrowFunction JSXFragment
+	-1,                               // PrimaryExpression_Await : 'this'
+	int32(IdentExpr),                 // PrimaryExpression_Await : IdentifierReference_Await
+	0,                                // PrimaryExpression_Await : Literal
+	0,                                // PrimaryExpression_Await : ArrayLiteral_Await
+	0,                                // PrimaryExpression_Await : ObjectLiteral_Await
+	0,                                // PrimaryExpression_Await : FunctionExpression
+	0,                                // PrimaryExpression_Await : ClassExpression_Await
+	0,                                // PrimaryExpression_Await : GeneratorExpression
+	0,                                // PrimaryExpression_Await : AsyncFunctionExpression
+	0,                                // PrimaryExpression_Await : AsyncGeneratorExpression
+	int32(Regexp),                    // PrimaryExpression_Await : RegularExpressionLiteral
+	0,                                // PrimaryExpression_Await : TemplateLiteral_Await
+	0,                                // PrimaryExpression_Await : lookahead_notStartOfArrowFunction Parenthesized_Await
+	0,                                // PrimaryExpression_Await : lookahead_notStartOfArrowFunction JSXElement_Await
+	0,                                // PrimaryExpression_Await : lookahead_notStartOfArrowFunction JSXFragment_Await
+	-1,                               // PrimaryExpression_Await_NoAsync_NoLet : 'this'
+	int32(IdentExpr),                 // PrimaryExpression_Await_NoAsync_NoLet : IdentifierReference_Await_NoAsync_NoLet
+	0,                                // PrimaryExpression_Await_NoAsync_NoLet : Literal
+	0,                                // PrimaryExpression_Await_NoAsync_NoLet : ArrayLiteral_Await
+	0,                                // PrimaryExpression_Await_NoAsync_NoLet : ObjectLiteral_Await
+	0,                                // PrimaryExpression_Await_NoAsync_NoLet : FunctionExpression
+	0,                                // PrimaryExpression_Await_NoAsync_NoLet : ClassExpression_Await
+	0,                                // PrimaryExpression_Await_NoAsync_NoLet : GeneratorExpression
+	0,                                // PrimaryExpression_Await_NoAsync_NoLet : AsyncFunctionExpression
+	0,                                // PrimaryExpression_Await_NoAsync_NoLet : AsyncGeneratorExpression
+	int32(Regexp),                    // PrimaryExpression_Await_NoAsync_NoLet : RegularExpressionLiteral
+	0,                                // PrimaryExpression_Await_NoAsync_NoLet : TemplateLiteral_Await
+	0,                                // PrimaryExpression_Await_NoAsync_NoLet : lookahead_notStartOfArrowFunction Parenthesized_Await
+	0,                                // PrimaryExpression_Await_NoAsync_NoLet : lookahead_notStartOfArrowFunction JSXElement_Await
+	0,                                // PrimaryExpression_Await_NoAsync_NoLet : lookahead_notStartOfArrowFunction JSXFragment_Await
+	-1,                               // PrimaryExpression_Await_NoLet : 'this'
+	int32(IdentExpr),                 // PrimaryExpression_Await_NoLet : IdentifierReference_Await_NoLet
+	0,                                // PrimaryExpression_Await_NoLet : Literal
+	0,                                // PrimaryExpression_Await_NoLet : ArrayLiteral_Await
+	0,                                // PrimaryExpression_Await_NoLet : ObjectLiteral_Await
+	0,                                // PrimaryExpression_Await_NoLet : FunctionExpression
+	0,                                // PrimaryExpression_Await_NoLet : ClassExpression_Await
+	0,                                // PrimaryExpression_Await_NoLet : GeneratorExpression
+	0,                                // PrimaryExpression_Await_NoLet : AsyncFunctionExpression
+	0,                                // PrimaryExpression_Await_NoLet : AsyncGeneratorExpression
+	int32(Regexp),                    // PrimaryExpression_Await_NoLet : RegularExpressionLiteral
+	0,                                // PrimaryExpression_Await_NoLet : TemplateLiteral_Await
+	0,                                // PrimaryExpression_Await_NoLet : lookahead_notStartOfArrowFunction Parenthesized_Await
+	0,                                // PrimaryExpression_Await_NoLet : lookahead_notStartOfArrowFunction JSXElement_Await
+	0,                                // PrimaryExpression_Await_NoLet : lookahead_notStartOfArrowFunction JSXFragment_Await
+	-1,                               // PrimaryExpression_Await_NoLet_NoObjLiteral_NoFuncClass : 'this'
+	int32(IdentExpr),                 // PrimaryExpression_Await_NoLet_NoObjLiteral_NoFuncClass : IdentifierReference_Await_NoLet
+	0,                                // PrimaryExpression_Await_NoLet_NoObjLiteral_NoFuncClass : Literal
+	0,                                // PrimaryExpression_Await_NoLet_NoObjLiteral_NoFuncClass : ArrayLiteral_Await
+	int32(Regexp),                    // PrimaryExpression_Await_NoLet_NoObjLiteral_NoFuncClass : RegularExpressionLiteral
+	0,                                // PrimaryExpression_Await_NoLet_NoObjLiteral_NoFuncClass : TemplateLiteral_Await
+	0,                                // PrimaryExpression_Await_NoLet_NoObjLiteral_NoFuncClass : lookahead_notStartOfArrowFunction Parenthesized_Await
+	0,                                // PrimaryExpression_Await_NoLet_NoObjLiteral_NoFuncClass : lookahead_notStartOfArrowFunction JSXElement_Await
+	0,                                // PrimaryExpression_Await_NoLet_NoObjLiteral_NoFuncClass : lookahead_notStartOfArrowFunction JSXFragment_Await
+	-1,                               // PrimaryExpression_Await_NoObjLiteral : 'this'
+	int32(IdentExpr),                 // PrimaryExpression_Await_NoObjLiteral : IdentifierReference_Await
+	0,                                // PrimaryExpression_Await_NoObjLiteral : Literal
+	0,                                // PrimaryExpression_Await_NoObjLiteral : ArrayLiteral_Await
+	0,                                // PrimaryExpression_Await_NoObjLiteral : FunctionExpression
+	0,                                // PrimaryExpression_Await_NoObjLiteral : ClassExpression_Await
+	0,                                // PrimaryExpression_Await_NoObjLiteral : GeneratorExpression
+	0,                                // PrimaryExpression_Await_NoObjLiteral : AsyncFunctionExpression
+	0,                                // PrimaryExpression_Await_NoObjLiteral : AsyncGeneratorExpression
+	int32(Regexp),                    // PrimaryExpression_Await_NoObjLiteral : RegularExpressionLiteral
+	0,                                // PrimaryExpression_Await_NoObjLiteral : TemplateLiteral_Await
+	0,                                // PrimaryExpression_Await_NoObjLiteral : lookahead_notStartOfArrowFunction Parenthesized_Await
+	0,                                // PrimaryExpression_Await_NoObjLiteral : lookahead_notStartOfArrowFunction JSXElement_Await
+	0,                                // PrimaryExpression_Await_NoObjLiteral : lookahead_notStartOfArrowFunction JSXFragment_Await
+	-1,                               // PrimaryExpression_Await_NoObjLiteral_NoFuncClass : 'this'
+	int32(IdentExpr),                 // PrimaryExpression_Await_NoObjLiteral_NoFuncClass : IdentifierReference_Await
+	0,                                // PrimaryExpression_Await_NoObjLiteral_NoFuncClass : Literal
+	0,                                // PrimaryExpression_Await_NoObjLiteral_NoFuncClass : ArrayLiteral_Await
+	int32(Regexp),                    // PrimaryExpression_Await_NoObjLiteral_NoFuncClass : RegularExpressionLiteral
+	0,                                // PrimaryExpression_Await_NoObjLiteral_NoFuncClass : TemplateLiteral_Await
+	0,                                // PrimaryExpression_Await_NoObjLiteral_NoFuncClass : lookahead_notStartOfArrowFunction Parenthesized_Await
+	0,                                // PrimaryExpression_Await_NoObjLiteral_NoFuncClass : lookahead_notStartOfArrowFunction JSXElement_Await
+	0,                                // PrimaryExpression_Await_NoObjLiteral_NoFuncClass : lookahead_notStartOfArrowFunction JSXFragment_Await
+	-1,                               // PrimaryExpression_NoAsync_NoLet : 'this'
+	int32(IdentExpr),                 // PrimaryExpression_NoAsync_NoLet : IdentifierReference_NoAsync_NoLet
+	0,                                // PrimaryExpression_NoAsync_NoLet : Literal
+	0,                                // PrimaryExpression_NoAsync_NoLet : ArrayLiteral
+	0,                                // PrimaryExpression_NoAsync_NoLet : ObjectLiteral
+	0,                                // PrimaryExpression_NoAsync_NoLet : FunctionExpression
+	0,                                // PrimaryExpression_NoAsync_NoLet : ClassExpression
+	0,                                // PrimaryExpression_NoAsync_NoLet : GeneratorExpression
+	0,                                // PrimaryExpression_NoAsync_NoLet : AsyncFunctionExpression
+	0,                                // PrimaryExpression_NoAsync_NoLet : AsyncGeneratorExpression
+	int32(Regexp),                    // PrimaryExpression_NoAsync_NoLet : RegularExpressionLiteral
+	0,                                // PrimaryExpression_NoAsync_NoLet : TemplateLiteral
+	0,                                // PrimaryExpression_NoAsync_NoLet : lookahead_notStartOfArrowFunction Parenthesized
+	0,                                // PrimaryExpression_NoAsync_NoLet : lookahead_notStartOfArrowFunction JSXElement
+	0,                                // PrimaryExpression_NoAsync_NoLet : lookahead_notStartOfArrowFunction JSXFragment
+	-1,                               // PrimaryExpression_NoFuncClass : 'this'
+	int32(IdentExpr),                 // PrimaryExpression_NoFuncClass : IdentifierReference
+	0,                                // PrimaryExpression_NoFuncClass : Literal
+	0,                                // PrimaryExpression_NoFuncClass : ArrayLiteral
+	0,                                // PrimaryExpression_NoFuncClass : ObjectLiteral
+	int32(Regexp),                    // PrimaryExpression_NoFuncClass : RegularExpressionLiteral
+	0,                                // PrimaryExpression_NoFuncClass : TemplateLiteral
+	0,                                // PrimaryExpression_NoFuncClass : lookahead_notStartOfArrowFunction Parenthesized
+	0,                                // PrimaryExpression_NoFuncClass : lookahead_notStartOfArrowFunction JSXElement
+	0,                                // PrimaryExpression_NoFuncClass : lookahead_notStartOfArrowFunction JSXFragment
+	-1,                               // PrimaryExpression_NoLet : 'this'
+	int32(IdentExpr),                 // PrimaryExpression_NoLet : IdentifierReference_NoLet
+	0,                                // PrimaryExpression_NoLet : Literal
+	0,                                // PrimaryExpression_NoLet : ArrayLiteral
+	0,                                // PrimaryExpression_NoLet : ObjectLiteral
+	0,                                // PrimaryExpression_NoLet : FunctionExpression
+	0,                                // PrimaryExpression_NoLet : ClassExpression
+	0,                                // PrimaryExpression_NoLet : GeneratorExpression
+	0,                                // PrimaryExpression_NoLet : AsyncFunctionExpression
+	0,                                // PrimaryExpression_NoLet : AsyncGeneratorExpression
+	int32(Regexp),                    // PrimaryExpression_NoLet : RegularExpressionLiteral
+	0,                                // PrimaryExpression_NoLet : TemplateLiteral
+	0,                                // PrimaryExpression_NoLet : lookahead_notStartOfArrowFunction Parenthesized
+	0,                                // PrimaryExpression_NoLet : lookahead_notStartOfArrowFunction JSXElement
+	0,                                // PrimaryExpression_NoLet : lookahead_notStartOfArrowFunction JSXFragment
+	-1,                               // PrimaryExpression_NoLet_NoObjLiteral_NoFuncClass : 'this'
+	int32(IdentExpr),                 // PrimaryExpression_NoLet_NoObjLiteral_NoFuncClass : IdentifierReference_NoLet
+	0,                                // PrimaryExpression_NoLet_NoObjLiteral_NoFuncClass : Literal
+	0,                                // PrimaryExpression_NoLet_NoObjLiteral_NoFuncClass : ArrayLiteral
+	int32(Regexp),                    // PrimaryExpression_NoLet_NoObjLiteral_NoFuncClass : RegularExpressionLiteral
+	0,                                // PrimaryExpression_NoLet_NoObjLiteral_NoFuncClass : TemplateLiteral
+	0,                                // PrimaryExpression_NoLet_NoObjLiteral_NoFuncClass : lookahead_notStartOfArrowFunction Parenthesized
+	0,                                // PrimaryExpression_NoLet_NoObjLiteral_NoFuncClass : lookahead_notStartOfArrowFunction JSXElement
+	0,                                // PrimaryExpression_NoLet_NoObjLiteral_NoFuncClass : lookahead_notStartOfArrowFunction JSXFragment
+	-1,                               // PrimaryExpression_NoObjLiteral : 'this'
+	int32(IdentExpr),                 // PrimaryExpression_NoObjLiteral : IdentifierReference
+	0,                                // PrimaryExpression_NoObjLiteral : Literal
+	0,                                // PrimaryExpression_NoObjLiteral : ArrayLiteral
+	0,                                // PrimaryExpression_NoObjLiteral : FunctionExpression
+	0,                                // PrimaryExpression_NoObjLiteral : ClassExpression
+	0,                                // PrimaryExpression_NoObjLiteral : GeneratorExpression
+	0,                                // PrimaryExpression_NoObjLiteral : AsyncFunctionExpression
+	0,                                // PrimaryExpression_NoObjLiteral : AsyncGeneratorExpression
+	int32(Regexp),                    // PrimaryExpression_NoObjLiteral : RegularExpressionLiteral
+	0,                                // PrimaryExpression_NoObjLiteral : TemplateLiteral
+	0,                                // PrimaryExpression_NoObjLiteral : lookahead_notStartOfArrowFunction Parenthesized
+	0,                                // PrimaryExpression_NoObjLiteral : lookahead_notStartOfArrowFunction JSXElement
+	0,                                // PrimaryExpression_NoObjLiteral : lookahead_notStartOfArrowFunction JSXFragment
+	-1,                               // PrimaryExpression_NoObjLiteral_NoFuncClass : 'this'
+	int32(IdentExpr),                 // PrimaryExpression_NoObjLiteral_NoFuncClass : IdentifierReference
+	0,                                // PrimaryExpression_NoObjLiteral_NoFuncClass : Literal
+	0,                                // PrimaryExpression_NoObjLiteral_NoFuncClass : ArrayLiteral
+	int32(Regexp),                    // PrimaryExpression_NoObjLiteral_NoFuncClass : RegularExpressionLiteral
+	0,                                // PrimaryExpression_NoObjLiteral_NoFuncClass : TemplateLiteral
+	0,                                // PrimaryExpression_NoObjLiteral_NoFuncClass : lookahead_notStartOfArrowFunction Parenthesized
+	0,                                // PrimaryExpression_NoObjLiteral_NoFuncClass : lookahead_notStartOfArrowFunction JSXElement
+	0,                                // PrimaryExpression_NoObjLiteral_NoFuncClass : lookahead_notStartOfArrowFunction JSXFragment
+	-1,                               // PrimaryExpression_Yield : 'this'
+	int32(IdentExpr),                 // PrimaryExpression_Yield : IdentifierReference_Yield
+	0,                                // PrimaryExpression_Yield : Literal
+	0,                                // PrimaryExpression_Yield : ArrayLiteral_Yield
+	0,                                // PrimaryExpression_Yield : ObjectLiteral_Yield
+	0,                                // PrimaryExpression_Yield : FunctionExpression
+	0,                                // PrimaryExpression_Yield : ClassExpression_Yield
+	0,                                // PrimaryExpression_Yield : GeneratorExpression
+	0,                                // PrimaryExpression_Yield : AsyncFunctionExpression
+	0,                                // PrimaryExpression_Yield : AsyncGeneratorExpression
+	int32(Regexp),                    // PrimaryExpression_Yield : RegularExpressionLiteral
+	0,                                // PrimaryExpression_Yield : TemplateLiteral_Yield
+	0,                                // PrimaryExpression_Yield : lookahead_notStartOfArrowFunction Parenthesized_Yield
+	0,                                // PrimaryExpression_Yield : lookahead_notStartOfArrowFunction JSXElement_Yield
+	0,                                // PrimaryExpression_Yield : lookahead_notStartOfArrowFunction JSXFragment_Yield
+	-1,                               // PrimaryExpression_Yield_Await : 'this'
+	int32(IdentExpr),                 // PrimaryExpression_Yield_Await : IdentifierReference_Yield_Await
+	0,                                // PrimaryExpression_Yield_Await : Literal
+	0,                                // PrimaryExpression_Yield_Await : ArrayLiteral_Yield_Await
+	0,                                // PrimaryExpression_Yield_Await : ObjectLiteral_Yield_Await
+	0,                                // PrimaryExpression_Yield_Await : FunctionExpression
+	0,                                // PrimaryExpression_Yield_Await : ClassExpression_Yield_Await
+	0,                                // PrimaryExpression_Yield_Await : GeneratorExpression
+	0,                                // PrimaryExpression_Yield_Await : AsyncFunctionExpression
+	0,                                // PrimaryExpression_Yield_Await : AsyncGeneratorExpression
+	int32(Regexp),                    // PrimaryExpression_Yield_Await : RegularExpressionLiteral
+	0,                                // PrimaryExpression_Yield_Await : TemplateLiteral_Yield_Await
+	0,                                // PrimaryExpression_Yield_Await : lookahead_notStartOfArrowFunction Parenthesized_Yield_Await
+	0,                                // PrimaryExpression_Yield_Await : lookahead_notStartOfArrowFunction JSXElement_Yield_Await
+	0,                                // PrimaryExpression_Yield_Await : lookahead_notStartOfArrowFunction JSXFragment_Yield_Await
+	-1,                               // PrimaryExpression_Yield_Await_NoAsync_NoLet : 'this'
+	int32(IdentExpr),                 // PrimaryExpression_Yield_Await_NoAsync_NoLet : IdentifierReference_Yield_Await_NoAsync_NoLet
+	0,                                // PrimaryExpression_Yield_Await_NoAsync_NoLet : Literal
+	0,                                // PrimaryExpression_Yield_Await_NoAsync_NoLet : ArrayLiteral_Yield_Await
+	0,                                // PrimaryExpression_Yield_Await_NoAsync_NoLet : ObjectLiteral_Yield_Await
+	0,                                // PrimaryExpression_Yield_Await_NoAsync_NoLet : FunctionExpression
+	0,                                // PrimaryExpression_Yield_Await_NoAsync_NoLet : ClassExpression_Yield_Await
+	0,                                // PrimaryExpression_Yield_Await_NoAsync_NoLet : GeneratorExpression
+	0,                                // PrimaryExpression_Yield_Await_NoAsync_NoLet : AsyncFunctionExpression
+	0,                                // PrimaryExpression_Yield_Await_NoAsync_NoLet : AsyncGeneratorExpression
+	int32(Regexp),                    // PrimaryExpression_Yield_Await_NoAsync_NoLet : RegularExpressionLiteral
+	0,                                // PrimaryExpression_Yield_Await_NoAsync_NoLet : TemplateLiteral_Yield_Await
+	0,                                // PrimaryExpression_Yield_Await_NoAsync_NoLet : lookahead_notStartOfArrowFunction Parenthesized_Yield_Await
+	0,                                // PrimaryExpression_Yield_Await_NoAsync_NoLet : lookahead_notStartOfArrowFunction JSXElement_Yield_Await
+	0,                                // PrimaryExpression_Yield_Await_NoAsync_NoLet : lookahead_notStartOfArrowFunction JSXFragment_Yield_Await
+	-1,                               // PrimaryExpression_Yield_Await_NoLet : 'this'
+	int32(IdentExpr),                 // PrimaryExpression_Yield_Await_NoLet : IdentifierReference_Yield_Await_NoLet
+	0,                                // PrimaryExpression_Yield_Await_NoLet : Literal
+	0,                                // PrimaryExpression_Yield_Await_NoLet : ArrayLiteral_Yield_Await
+	0,                                // PrimaryExpression_Yield_Await_NoLet : ObjectLiteral_Yield_Await
+	0,                                // PrimaryExpression_Yield_Await_NoLet : FunctionExpression
+	0,                                // PrimaryExpression_Yield_Await_NoLet : ClassExpression_Yield_Await
+	0,                                // PrimaryExpression_Yield_Await_NoLet : GeneratorExpression
+	0,                                // PrimaryExpression_Yield_Await_NoLet : AsyncFunctionExpression
+	0,                                // PrimaryExpression_Yield_Await_NoLet : AsyncGeneratorExpression
+	int32(Regexp),                    // PrimaryExpression_Yield_Await_NoLet : RegularExpressionLiteral
+	0,                                // PrimaryExpression_Yield_Await_NoLet : TemplateLiteral_Yield_Await
+	0,                                // PrimaryExpression_Yield_Await_NoLet : lookahead_notStartOfArrowFunction Parenthesized_Yield_Await
+	0,                                // PrimaryExpression_Yield_Await_NoLet : lookahead_notStartOfArrowFunction JSXElement_Yield_Await
+	0,                                // PrimaryExpression_Yield_Await_NoLet : lookahead_notStartOfArrowFunction JSXFragment_Yield_Await
+	-1,                               // PrimaryExpression_Yield_Await_NoLet_NoObjLiteral_NoFuncClass : 'this'
+	int32(IdentExpr),                 // PrimaryExpression_Yield_Await_NoLet_NoObjLiteral_NoFuncClass : IdentifierReference_Yield_Await_NoLet
+	0,                                // PrimaryExpression_Yield_Await_NoLet_NoObjLiteral_NoFuncClass : Literal
+	0,                                // PrimaryExpression_Yield_Await_NoLet_NoObjLiteral_NoFuncClass : ArrayLiteral_Yield_Await
+	int32(Regexp),                    // PrimaryExpression_Yield_Await_NoLet_NoObjLiteral_NoFuncClass : RegularExpressionLiteral
+	0,                                // PrimaryExpression_Yield_Await_NoLet_NoObjLiteral_NoFuncClass : TemplateLiteral_Yield_Await
+	0,                                // PrimaryExpression_Yield_Await_NoLet_NoObjLiteral_NoFuncClass : lookahead_notStartOfArrowFunction Parenthesized_Yield_Await
+	0,                                // PrimaryExpression_Yield_Await_NoLet_NoObjLiteral_NoFuncClass : lookahead_notStartOfArrowFunction JSXElement_Yield_Await
+	0,                                // PrimaryExpression_Yield_Await_NoLet_NoObjLiteral_NoFuncClass : lookahead_notStartOfArrowFunction JSXFragment_Yield_Await
+	-1,                               // PrimaryExpression_Yield_Await_NoObjLiteral_NoFuncClass : 'this'
+	int32(IdentExpr),                 // PrimaryExpression_Yield_Await_NoObjLiteral_NoFuncClass : IdentifierReference_Yield_Await
+	0,                                // PrimaryExpression_Yield_Await_NoObjLiteral_NoFuncClass : Literal
+	0,                                // PrimaryExpression_Yield_Await_NoObjLiteral_NoFuncClass : ArrayLiteral_Yield_Await
+	int32(Regexp),                    // PrimaryExpression_Yield_Await_NoObjLiteral_NoFuncClass : RegularExpressionLiteral
+	0,                                // PrimaryExpression_Yield_Await_NoObjLiteral_NoFuncClass : TemplateLiteral_Yield_Await
+	0,                                // PrimaryExpression_Yield_Await_NoObjLiteral_NoFuncClass : lookahead_notStartOfArrowFunction Parenthesized_Yield_Await
+	0,                                // PrimaryExpression_Yield_Await_NoObjLiteral_NoFuncClass : lookahead_notStartOfArrowFunction JSXElement_Yield_Await
+	0,                                // PrimaryExpression_Yield_Await_NoObjLiteral_NoFuncClass : lookahead_notStartOfArrowFunction JSXFragment_Yield_Await
+	-1,                               // PrimaryExpression_Yield_NoAsync_NoLet : 'this'
+	int32(IdentExpr),                 // PrimaryExpression_Yield_NoAsync_NoLet : IdentifierReference_Yield_NoAsync_NoLet
+	0,                                // PrimaryExpression_Yield_NoAsync_NoLet : Literal
+	0,                                // PrimaryExpression_Yield_NoAsync_NoLet : ArrayLiteral_Yield
+	0,                                // PrimaryExpression_Yield_NoAsync_NoLet : ObjectLiteral_Yield
+	0,                                // PrimaryExpression_Yield_NoAsync_NoLet : FunctionExpression
+	0,                                // PrimaryExpression_Yield_NoAsync_NoLet : ClassExpression_Yield
+	0,                                // PrimaryExpression_Yield_NoAsync_NoLet : GeneratorExpression
+	0,                                // PrimaryExpression_Yield_NoAsync_NoLet : AsyncFunctionExpression
+	0,                                // PrimaryExpression_Yield_NoAsync_NoLet : AsyncGeneratorExpression
+	int32(Regexp),                    // PrimaryExpression_Yield_NoAsync_NoLet : RegularExpressionLiteral
+	0,                                // PrimaryExpression_Yield_NoAsync_NoLet : TemplateLiteral_Yield
+	0,                                // PrimaryExpression_Yield_NoAsync_NoLet : lookahead_notStartOfArrowFunction Parenthesized_Yield
+	0,                                // PrimaryExpression_Yield_NoAsync_NoLet : lookahead_notStartOfArrowFunction JSXElement_Yield
+	0,                                // PrimaryExpression_Yield_NoAsync_NoLet : lookahead_notStartOfArrowFunction JSXFragment_Yield
+	-1,                               // PrimaryExpression_Yield_NoLet : 'this'
+	int32(IdentExpr),                 // PrimaryExpression_Yield_NoLet : IdentifierReference_Yield_NoLet
+	0,                                // PrimaryExpression_Yield_NoLet : Literal
+	0,                                // PrimaryExpression_Yield_NoLet : ArrayLiteral_Yield
+	0,                                // PrimaryExpression_Yield_NoLet : ObjectLiteral_Yield
+	0,                                // PrimaryExpression_Yield_NoLet : FunctionExpression
+	0,                                // PrimaryExpression_Yield_NoLet : ClassExpression_Yield
+	0,                                // PrimaryExpression_Yield_NoLet : GeneratorExpression
+	0,                                // PrimaryExpression_Yield_NoLet : AsyncFunctionExpression
+	0,                                // PrimaryExpression_Yield_NoLet : AsyncGeneratorExpression
+	int32(Regexp),                    // PrimaryExpression_Yield_NoLet : RegularExpressionLiteral
+	0,                                // PrimaryExpression_Yield_NoLet : TemplateLiteral_Yield
+	0,                                // PrimaryExpression_Yield_NoLet : lookahead_notStartOfArrowFunction Parenthesized_Yield
+	0,                                // PrimaryExpression_Yield_NoLet : lookahead_notStartOfArrowFunction JSXElement_Yield
+	0,                                // PrimaryExpression_Yield_NoLet : lookahead_notStartOfArrowFunction JSXFragment_Yield
+	-1,                               // PrimaryExpression_Yield_NoLet_NoObjLiteral_NoFuncClass : 'this'
+	int32(IdentExpr),                 // PrimaryExpression_Yield_NoLet_NoObjLiteral_NoFuncClass : IdentifierReference_Yield_NoLet
+	0,                                // PrimaryExpression_Yield_NoLet_NoObjLiteral_NoFuncClass : Literal
+	0,                                // PrimaryExpression_Yield_NoLet_NoObjLiteral_NoFuncClass : ArrayLiteral_Yield
+	int32(Regexp),                    // PrimaryExpression_Yield_NoLet_NoObjLiteral_NoFuncClass : RegularExpressionLiteral
+	0,                                // PrimaryExpression_Yield_NoLet_NoObjLiteral_NoFuncClass : TemplateLiteral_Yield
+	0,                                // PrimaryExpression_Yield_NoLet_NoObjLiteral_NoFuncClass : lookahead_notStartOfArrowFunction Parenthesized_Yield
+	0,                                // PrimaryExpression_Yield_NoLet_NoObjLiteral_NoFuncClass : lookahead_notStartOfArrowFunction JSXElement_Yield
+	0,                                // PrimaryExpression_Yield_NoLet_NoObjLiteral_NoFuncClass : lookahead_notStartOfArrowFunction JSXFragment_Yield
+	-1,                               // PrimaryExpression_Yield_NoObjLiteral_NoFuncClass : 'this'
+	int32(IdentExpr),                 // PrimaryExpression_Yield_NoObjLiteral_NoFuncClass : IdentifierReference_Yield
+	0,                                // PrimaryExpression_Yield_NoObjLiteral_NoFuncClass : Literal
+	0,                                // PrimaryExpression_Yield_NoObjLiteral_NoFuncClass : ArrayLiteral_Yield
+	int32(Regexp),                    // PrimaryExpression_Yield_NoObjLiteral_NoFuncClass : RegularExpressionLiteral
+	0,                                // PrimaryExpression_Yield_NoObjLiteral_NoFuncClass : TemplateLiteral_Yield
+	0,                                // PrimaryExpression_Yield_NoObjLiteral_NoFuncClass : lookahead_notStartOfArrowFunction Parenthesized_Yield
+	0,                                // PrimaryExpression_Yield_NoObjLiteral_NoFuncClass : lookahead_notStartOfArrowFunction JSXElement_Yield
+	0,                                // PrimaryExpression_Yield_NoObjLiteral_NoFuncClass : lookahead_notStartOfArrowFunction JSXFragment_Yield
+	int32(Parenthesized),             // Parenthesized : '(' Expression_In ')'
+	int32(Parenthesized),             // Parenthesized : '(' BrokenExpr ')'
+	int32(Parenthesized),             // Parenthesized_Await : '(' Expression_In_Await ')'
+	int32(Parenthesized),             // Parenthesized_Await : '(' BrokenExpr ')'
+	int32(Parenthesized),             // Parenthesized_Yield : '(' Expression_In_Yield ')'
+	int32(Parenthesized),             // Parenthesized_Yield : '(' BrokenExpr ')'
+	int32(Parenthesized),             // Parenthesized_Yield_Await : '(' Expression_In_Yield_Await ')'
+	int32(Parenthesized),             // Parenthesized_Yield_Await : '(' BrokenExpr ')'
+	int32(Literal),                   // Literal : 'null'
+	int32(Literal),                   // Literal : 'true'
+	int32(Literal),                   // Literal : 'false'
+	int32(Literal),                   // Literal : NumericLiteral
+	int32(Literal),                   // Literal : StringLiteral
+	int32(ArrayLiteral),              // ArrayLiteral : '[' Elisionopt ']'
+	int32(ArrayLiteral),              // ArrayLiteral : '[' ElementList ']'
+	int32(ArrayLiteral),              // ArrayLiteral : '[' ElementList ',' Elisionopt ']'
+	int32(ArrayLiteral),              // ArrayLiteral_Await : '[' Elisionopt ']'
+	int32(ArrayLiteral),              // ArrayLiteral_Await : '[' ElementList_Await ']'
+	int32(ArrayLiteral),              // ArrayLiteral_Await : '[' ElementList_Await ',' Elisionopt ']'
+	int32(ArrayLiteral),              // ArrayLiteral_Yield : '[' Elisionopt ']'
+	int32(ArrayLiteral),              // ArrayLiteral_Yield : '[' ElementList_Yield ']'
+	int32(ArrayLiteral),              // ArrayLiteral_Yield : '[' ElementList_Yield ',' Elisionopt ']'
+	int32(ArrayLiteral),              // ArrayLiteral_Yield_Await : '[' Elisionopt ']'
+	int32(ArrayLiteral),              // ArrayLiteral_Yield_Await : '[' ElementList_Yield_Await ']'
+	int32(ArrayLiteral),              // ArrayLiteral_Yield_Await : '[' ElementList_Yield_Await ',' Elisionopt ']'
+	0,                                // ElementList : Elisionopt AssignmentExpression_In
+	0,                                // ElementList : Elisionopt SpreadElement
+	0,                                // ElementList : ElementList ',' Elisionopt AssignmentExpression_In
+	0,                                // ElementList : ElementList ',' Elisionopt SpreadElement
+	0,                                // ElementList_Await : Elisionopt AssignmentExpression_In_Await
+	0,                                // ElementList_Await : Elisionopt SpreadElement_Await
+	0,                                // ElementList_Await : ElementList_Await ',' Elisionopt AssignmentExpression_In_Await
+	0,                                // ElementList_Await : ElementList_Await ',' Elisionopt SpreadElement_Await
+	0,                                // ElementList_Yield : Elisionopt AssignmentExpression_In_Yield
+	0,                                // ElementList_Yield : Elisionopt SpreadElement_Yield
+	0,                                // ElementList_Yield : ElementList_Yield ',' Elisionopt AssignmentExpression_In_Yield
+	0,                                // ElementList_Yield : ElementList_Yield ',' Elisionopt SpreadElement_Yield
+	0,                                // ElementList_Yield_Await : Elisionopt AssignmentExpression_In_Yield_Await
+	0,                                // ElementList_Yield_Await : Elisionopt SpreadElement_Yield_Await
+	0,                                // ElementList_Yield_Await : ElementList_Yield_Await ',' Elisionopt AssignmentExpression_In_Yield_Await
+	0,                                // ElementList_Yield_Await : ElementList_Yield_Await ',' Elisionopt SpreadElement_Yield_Await
+	int32(NoElement),                 // Elision : ','
+	-1,                               // Elision : Elision ','
+	int32(SpreadElement),             // SpreadElement : '...' AssignmentExpression_In
+	int32(SpreadElement),             // SpreadElement_Await : '...' AssignmentExpression_In_Await
+	int32(SpreadElement),             // SpreadElement_Yield : '...' AssignmentExpression_In_Yield
+	int32(SpreadElement),             // SpreadElement_Yield_Await : '...' AssignmentExpression_In_Yield_Await
+	int32(ObjectLiteral),             // ObjectLiteral : '{' '}'
+	int32(ObjectLiteral),             // ObjectLiteral : '{' .recoveryScope PropertyDefinitionList '}'
+	int32(ObjectLiteral),             // ObjectLiteral : '{' .recoveryScope PropertyDefinitionList ',' '}'
+	int32(ObjectLiteral),             // ObjectLiteral_Await : '{' '}'
+	int32(ObjectLiteral),             // ObjectLiteral_Await : '{' .recoveryScope PropertyDefinitionList_Await '}'
+	int32(ObjectLiteral),             // ObjectLiteral_Await : '{' .recoveryScope PropertyDefinitionList_Await ',' '}'
+	int32(ObjectLiteral),             // ObjectLiteral_Yield : '{' '}'
+	int32(ObjectLiteral),             // ObjectLiteral_Yield : '{' .recoveryScope PropertyDefinitionList_Yield '}'
+	int32(ObjectLiteral),             // ObjectLiteral_Yield : '{' .recoveryScope PropertyDefinitionList_Yield ',' '}'
+	int32(ObjectLiteral),             // ObjectLiteral_Yield_Await : '{' '}'
+	int32(ObjectLiteral),             // ObjectLiteral_Yield_Await : '{' .recoveryScope PropertyDefinitionList_Yield_Await '}'
+	int32(ObjectLiteral),             // ObjectLiteral_Yield_Await : '{' .recoveryScope PropertyDefinitionList_Yield_Await ',' '}'
+	0,                                // PropertyDefinitionList : PropertyDefinition
+	0,                                // PropertyDefinitionList : PropertyDefinitionList ',' PropertyDefinition
+	0,                                // PropertyDefinitionList_Await : PropertyDefinition_Await
+	0,                                // PropertyDefinitionList_Await : PropertyDefinitionList_Await ',' PropertyDefinition_Await
+	0,                                // PropertyDefinitionList_Yield : PropertyDefinition_Yield
+	0,                                // PropertyDefinitionList_Yield : PropertyDefinitionList_Yield ',' PropertyDefinition_Yield
+	0,                                // PropertyDefinitionList_Yield_Await : PropertyDefinition_Yield_Await
+	0,                                // PropertyDefinitionList_Yield_Await : PropertyDefinitionList_Yield_Await ',' PropertyDefinition_Yield_Await
+	-1,                               // PropertyDefinition : IdentifierReference
+	int32(Property),                  // PropertyDefinition : Modifiers PropertyName ':' AssignmentExpression_In
+	int32(Property),                  // PropertyDefinition : PropertyName ':' AssignmentExpression_In
+	int32(ObjectMethod),              // PropertyDefinition : Modifiers MethodDefinition
+	int32(ObjectMethod),              // PropertyDefinition : MethodDefinition
+	int32(SyntaxProblem),             // PropertyDefinition : CoverInitializedName
+	0,                                // PropertyDefinition : SyntaxError
+	int32(SpreadProperty),            // PropertyDefinition : '...' AssignmentExpression_In
+	-1,                               // PropertyDefinition_Await : IdentifierReference_Await
+	int32(Property),                  // PropertyDefinition_Await : Modifiers PropertyName_Await ':' AssignmentExpression_In_Await
+	int32(Property),                  // PropertyDefinition_Await : PropertyName_Await ':' AssignmentExpression_In_Await
+	int32(ObjectMethod),              // PropertyDefinition_Await : Modifiers MethodDefinition_Await
+	int32(ObjectMethod),              // PropertyDefinition_Await : MethodDefinition_Await
+	int32(SyntaxProblem),             // PropertyDefinition_Await : CoverInitializedName_Await
+	0,                                // PropertyDefinition_Await : SyntaxError
+	int32(SpreadProperty),            // PropertyDefinition_Await : '...' AssignmentExpression_In_Await
+	-1,                               // PropertyDefinition_Yield : IdentifierReference_Yield
+	int32(Property),                  // PropertyDefinition_Yield : Modifiers PropertyName_Yield ':' AssignmentExpression_In_Yield
+	int32(Property),                  // PropertyDefinition_Yield : PropertyName_Yield ':' AssignmentExpression_In_Yield
+	int32(ObjectMethod),              // PropertyDefinition_Yield : Modifiers MethodDefinition_Yield
+	int32(ObjectMethod),              // PropertyDefinition_Yield : MethodDefinition_Yield
+	int32(SyntaxProblem),             // PropertyDefinition_Yield : CoverInitializedName_Yield
+	0,                                // PropertyDefinition_Yield : SyntaxError
+	int32(SpreadProperty),            // PropertyDefinition_Yield : '...' AssignmentExpression_In_Yield
+	-1,                               // PropertyDefinition_Yield_Await : IdentifierReference_Yield_Await
+	int32(Property),                  // PropertyDefinition_Yield_Await : Modifiers PropertyName_Yield_Await ':' AssignmentExpression_In_Yield_Await
+	int32(Property),                  // PropertyDefinition_Yield_Await : PropertyName_Yield_Await ':' AssignmentExpression_In_Yield_Await
+	int32(ObjectMethod),              // PropertyDefinition_Yield_Await : Modifiers MethodDefinition_Yield_Await
+	int32(ObjectMethod),              // PropertyDefinition_Yield_Await : MethodDefinition_Yield_Await
+	int32(SyntaxProblem),             // PropertyDefinition_Yield_Await : CoverInitializedName_Yield_Await
+	0,                                // PropertyDefinition_Yield_Await : SyntaxError
+	int32(SpreadProperty),            // PropertyDefinition_Yield_Await : '...' AssignmentExpression_In_Yield_Await
+	0,                                // PropertyName : LiteralPropertyName
+	0,                                // PropertyName : ComputedPropertyName
+	0,                                // PropertyName_Await : LiteralPropertyName
+	0,                                // PropertyName_Await : ComputedPropertyName_Await
+	0,                                // PropertyName_WithoutNew : LiteralPropertyName_WithoutNew
+	0,                                // PropertyName_WithoutNew : ComputedPropertyName
+	0,                                // PropertyName_Yield : LiteralPropertyName
+	0,                                // PropertyName_Yield : ComputedPropertyName_Yield
+	0,                                // PropertyName_Yield_Await : LiteralPropertyName
+	0,                                // PropertyName_Yield_Await : ComputedPropertyName_Yield_Await
+	int32(LiteralPropertyName),       // LiteralPropertyName : IdentifierNameDecl
+	-1,                               // LiteralPropertyName : PrivateIdentifier
+	-1,                               // LiteralPropertyName : StringLiteral
+	-1,                               // LiteralPropertyName : NumericLiteral
+	int32(LiteralPropertyName),       // LiteralPropertyName_WithoutNew : IdentifierNameDecl_WithoutNew
+	-1,                               // LiteralPropertyName_WithoutNew : PrivateIdentifier
+	-1,                               // LiteralPropertyName_WithoutNew : StringLiteral
+	-1,                               // LiteralPropertyName_WithoutNew : NumericLiteral
+	int32(ComputedPropertyName),      // ComputedPropertyName : '[' AssignmentExpression_In ']'
+	int32(ComputedPropertyName),      // ComputedPropertyName_Await : '[' AssignmentExpression_In_Await ']'
+	int32(ComputedPropertyName),      // ComputedPropertyName_Yield : '[' AssignmentExpression_In_Yield ']'
+	int32(ComputedPropertyName),      // ComputedPropertyName_Yield_Await : '[' AssignmentExpression_In_Yield_Await ']'
+	0,                                // CoverInitializedName : IdentifierReference Initializer_In
+	0,                                // CoverInitializedName_Await : IdentifierReference_Await Initializer_In_Await
+	0,                                // CoverInitializedName_Yield : IdentifierReference_Yield Initializer_In_Yield
+	0,                                // CoverInitializedName_Yield_Await : IdentifierReference_Yield_Await Initializer_In_Yield_Await
+	int32(Initializer),               // Initializer : '=' AssignmentExpression
+	int32(Initializer),               // Initializer : '=' BrokenExpr
+	int32(Initializer),               // Initializer_Await : '=' AssignmentExpression_Await
+	int32(Initializer),               // Initializer_Await : '=' BrokenExpr
+	int32(Initializer),               // Initializer_In : '=' AssignmentExpression_In
+	int32(Initializer),               // Initializer_In : '=' BrokenExpr
+	int32(Initializer),               // Initializer_In_Await : '=' AssignmentExpression_In_Await
+	int32(Initializer),               // Initializer_In_Await : '=' BrokenExpr
+	int32(Initializer),               // Initializer_In_Yield : '=' AssignmentExpression_In_Yield
+	int32(Initializer),               // Initializer_In_Yield : '=' BrokenExpr
+	int32(Initializer),               // Initializer_In_Yield_Await : '=' AssignmentExpression_In_Yield_Await
+	int32(Initializer),               // Initializer_In_Yield_Await : '=' BrokenExpr
+	int32(Initializer),               // Initializer_Yield : '=' AssignmentExpression_Yield
+	int32(Initializer),               // Initializer_Yield : '=' BrokenExpr
+	int32(Initializer),               // Initializer_Yield_Await : '=' AssignmentExpression_Yield_Await
+	int32(Initializer),               // Initializer_Yield_Await : '=' BrokenExpr
+	int32(TemplateLiteral),           // TemplateLiteral : NoSubstitutionTemplate
+	int32(TemplateLiteral),           // TemplateLiteral : TemplateHead Expression_In TemplateSpans
+	int32(TemplateLiteral),           // TemplateLiteral_Await : NoSubstitutionTemplate
+	int32(TemplateLiteral),           // TemplateLiteral_Await : TemplateHead Expression_In_Await TemplateSpans_Await
+	int32(TemplateLiteral),           // TemplateLiteral_Yield : NoSubstitutionTemplate
+	int32(TemplateLiteral),           // TemplateLiteral_Yield : TemplateHead Expression_In_Yield TemplateSpans_Yield
+	int32(TemplateLiteral),           // TemplateLiteral_Yield_Await : NoSubstitutionTemplate
+	int32(TemplateLiteral),           // TemplateLiteral_Yield_Await : TemplateHead Expression_In_Yield_Await TemplateSpans_Yield_Await
+	0,                                // TemplateSpans : TemplateTail
+	0,                                // TemplateSpans : TemplateMiddleList TemplateTail
+	0,                                // TemplateSpans_Await : TemplateTail
+	0,                                // TemplateSpans_Await : TemplateMiddleList_Await TemplateTail
+	0,                                // TemplateSpans_Yield : TemplateTail
+	0,                                // TemplateSpans_Yield : TemplateMiddleList_Yield TemplateTail
+	0,                                // TemplateSpans_Yield_Await : TemplateTail
+	0,                                // TemplateSpans_Yield_Await : TemplateMiddleList_Yield_Await TemplateTail
+	0,                                // TemplateMiddleList : TemplateMiddle Expression_In
+	0,                                // TemplateMiddleList : TemplateMiddleList TemplateMiddle Expression_In
+	0,                                // TemplateMiddleList_Await : TemplateMiddle Expression_In_Await
+	0,                                // TemplateMiddleList_Await : TemplateMiddleList_Await TemplateMiddle Expression_In_Await
+	0,                                // TemplateMiddleList_Yield : TemplateMiddle Expression_In_Yield
+	0,                                // TemplateMiddleList_Yield : TemplateMiddleList_Yield TemplateMiddle Expression_In_Yield
+	0,                                // TemplateMiddleList_Yield_Await : TemplateMiddle Expression_In_Yield_Await
+	0,                                // TemplateMiddleList_Yield_Await : TemplateMiddleList_Yield_Await TemplateMiddle Expression_In_Yield_Await
+	int32(TsTemplateLiteralType),     // TemplateLiteralType : NoSubstitutionTemplate
+	int32(TsTemplateLiteralType),     // TemplateLiteralType : TemplateHead Type TemplateSpansType
+	0,                                // TemplateSpansType : TemplateTail
+	0,                                // TemplateSpansType : TemplateMiddleListType TemplateTail
+	0,                                // TemplateMiddleListType : TemplateMiddle Type
+	0,                                // TemplateMiddleListType : TemplateMiddleListType TemplateMiddle Type
+	0,                                // MemberExpression : PrimaryExpression
+	int32(IndexAccess),               // MemberExpression : MemberExpression '[' Expression_In ']'
+	int32(PropertyAccess),            // MemberExpression : MemberExpression '.' IdentifierNameRef
+	int32(PropertyAccess),            // MemberExpression : MemberExpression '.' ClassPrivateRef
+	int32(TaggedTemplate),            // MemberExpression : MemberExpression TemplateLiteral
+	int32(TsNonNull),                 // MemberExpression : MemberExpression .noLineBreak '!'
+	0,                                // MemberExpression : SuperProperty
+	0,                                // MemberExpression : MetaProperty
+	int32(NewExpr),                   // MemberExpression : 'new' MemberExpression Arguments
+	0,                                // MemberExpression_Await : PrimaryExpression_Await
+	int32(IndexAccess),               // MemberExpression_Await : MemberExpression_Await '[' Expression_In_Await ']'
+	int32(PropertyAccess),            // MemberExpression_Await : MemberExpression_Await '.' IdentifierNameRef
+	int32(PropertyAccess),            // MemberExpression_Await : MemberExpression_Await '.' ClassPrivateRef
+	int32(TaggedTemplate),            // MemberExpression_Await : MemberExpression_Await TemplateLiteral_Await
+	int32(TsNonNull),                 // MemberExpression_Await : MemberExpression_Await .noLineBreak '!'
+	0,                                // MemberExpression_Await : SuperProperty_Await
+	0,                                // MemberExpression_Await : MetaProperty
+	int32(NewExpr),                   // MemberExpression_Await : 'new' MemberExpression_Await Arguments_Await
+	0,                                // MemberExpression_Await_NoAsync_NoLet : PrimaryExpression_Await_NoAsync_NoLet
+	int32(IndexAccess),               // MemberExpression_Await_NoAsync_NoLet : MemberExpression_Await_NoLet '[' Expression_In_Await ']'
+	int32(PropertyAccess),            // MemberExpression_Await_NoAsync_NoLet : MemberExpression_Await_NoLet '.' IdentifierNameRef
+	int32(PropertyAccess),            // MemberExpression_Await_NoAsync_NoLet : MemberExpression_Await_NoLet '.' ClassPrivateRef
+	int32(TaggedTemplate),            // MemberExpression_Await_NoAsync_NoLet : MemberExpression_Await_NoLet TemplateLiteral_Await
+	int32(TsNonNull),                 // MemberExpression_Await_NoAsync_NoLet : MemberExpression_Await_NoLet .noLineBreak '!'
+	0,                                // MemberExpression_Await_NoAsync_NoLet : SuperProperty_Await
+	0,                                // MemberExpression_Await_NoAsync_NoLet : MetaProperty
+	int32(NewExpr),                   // MemberExpression_Await_NoAsync_NoLet : 'new' MemberExpression_Await Arguments_Await
+	0,                                // MemberExpression_Await_NoLet : PrimaryExpression_Await_NoLet
+	int32(IndexAccess),               // MemberExpression_Await_NoLet : MemberExpression_Await_NoLet '[' Expression_In_Await ']'
+	int32(PropertyAccess),            // MemberExpression_Await_NoLet : MemberExpression_Await_NoLet '.' IdentifierNameRef
+	int32(PropertyAccess),            // MemberExpression_Await_NoLet : MemberExpression_Await_NoLet '.' ClassPrivateRef
+	int32(TaggedTemplate),            // MemberExpression_Await_NoLet : MemberExpression_Await_NoLet TemplateLiteral_Await
+	int32(TsNonNull),                 // MemberExpression_Await_NoLet : MemberExpression_Await_NoLet .noLineBreak '!'
+	0,                                // MemberExpression_Await_NoLet : SuperProperty_Await
+	0,                                // MemberExpression_Await_NoLet : MetaProperty
+	int32(NewExpr),                   // MemberExpression_Await_NoLet : 'new' MemberExpression_Await Arguments_Await
+	0,                                // MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : PrimaryExpression_Await_NoObjLiteral_NoFuncClass
+	int32(IndexAccess),               // MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly '[' Expression_In_Await ']'
+	int32(PropertyAccess),            // MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass '.' IdentifierNameRef
+	int32(PropertyAccess),            // MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass '.' ClassPrivateRef
+	int32(TaggedTemplate),            // MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass TemplateLiteral_Await
+	int32(TsNonNull),                 // MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass .noLineBreak '!'
+	0,                                // MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : SuperProperty_Await
+	0,                                // MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : MetaProperty
+	int32(NewExpr),                   // MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : 'new' MemberExpression_Await Arguments_Await
+	0,                                // MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly : PrimaryExpression_Await_NoLet_NoObjLiteral_NoFuncClass
+	int32(IndexAccess),               // MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly : MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly '[' Expression_In_Await ']'
+	int32(PropertyAccess),            // MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly : MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass '.' IdentifierNameRef
+	int32(PropertyAccess),            // MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly : MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass '.' ClassPrivateRef
+	int32(TaggedTemplate),            // MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly : MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass TemplateLiteral_Await
+	int32(TsNonNull),                 // MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly : MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass .noLineBreak '!'
+	0,                                // MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly : SuperProperty_Await
+	0,                                // MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly : MetaProperty
+	int32(NewExpr),                   // MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly : 'new' MemberExpression_Await Arguments_Await
+	0,                                // MemberExpression_Await_NoObjLiteral : PrimaryExpression_Await_NoObjLiteral
+	int32(IndexAccess),               // MemberExpression_Await_NoObjLiteral : MemberExpression_Await_NoObjLiteral '[' Expression_In_Await ']'
+	int32(PropertyAccess),            // MemberExpression_Await_NoObjLiteral : MemberExpression_Await_NoObjLiteral '.' IdentifierNameRef
+	int32(PropertyAccess),            // MemberExpression_Await_NoObjLiteral : MemberExpression_Await_NoObjLiteral '.' ClassPrivateRef
+	int32(TaggedTemplate),            // MemberExpression_Await_NoObjLiteral : MemberExpression_Await_NoObjLiteral TemplateLiteral_Await
+	int32(TsNonNull),                 // MemberExpression_Await_NoObjLiteral : MemberExpression_Await_NoObjLiteral .noLineBreak '!'
+	0,                                // MemberExpression_Await_NoObjLiteral : SuperProperty_Await
+	0,                                // MemberExpression_Await_NoObjLiteral : MetaProperty
+	int32(NewExpr),                   // MemberExpression_Await_NoObjLiteral : 'new' MemberExpression_Await Arguments_Await
+	-1,                               // MemberExpression_Await_StartWithLet : 'let'
+	int32(IndexAccess),               // MemberExpression_Await_StartWithLet : MemberExpression_Await_StartWithLet_NoLetOnly '[' Expression_In_Await ']'
+	int32(PropertyAccess),            // MemberExpression_Await_StartWithLet : MemberExpression_Await_StartWithLet '.' IdentifierNameRef
+	int32(PropertyAccess),            // MemberExpression_Await_StartWithLet : MemberExpression_Await_StartWithLet '.' ClassPrivateRef
+	int32(TaggedTemplate),            // MemberExpression_Await_StartWithLet : MemberExpression_Await_StartWithLet TemplateLiteral_Await
+	int32(TsNonNull),                 // MemberExpression_Await_StartWithLet : MemberExpression_Await_StartWithLet .noLineBreak '!'
+	int32(IndexAccess),               // MemberExpression_Await_StartWithLet_NoLetOnly : MemberExpression_Await_StartWithLet_NoLetOnly '[' Expression_In_Await ']'
+	int32(PropertyAccess),            // MemberExpression_Await_StartWithLet_NoLetOnly : MemberExpression_Await_StartWithLet '.' IdentifierNameRef
+	int32(PropertyAccess),            // MemberExpression_Await_StartWithLet_NoLetOnly : MemberExpression_Await_StartWithLet '.' ClassPrivateRef
+	int32(TaggedTemplate),            // MemberExpression_Await_StartWithLet_NoLetOnly : MemberExpression_Await_StartWithLet TemplateLiteral_Await
+	int32(TsNonNull),                 // MemberExpression_Await_StartWithLet_NoLetOnly : MemberExpression_Await_StartWithLet .noLineBreak '!'
+	0,                                // MemberExpression_NoAsync_NoLet : PrimaryExpression_NoAsync_NoLet
+	int32(IndexAccess),               // MemberExpression_NoAsync_NoLet : MemberExpression_NoLet '[' Expression_In ']'
+	int32(PropertyAccess),            // MemberExpression_NoAsync_NoLet : MemberExpression_NoLet '.' IdentifierNameRef
+	int32(PropertyAccess),            // MemberExpression_NoAsync_NoLet : MemberExpression_NoLet '.' ClassPrivateRef
+	int32(TaggedTemplate),            // MemberExpression_NoAsync_NoLet : MemberExpression_NoLet TemplateLiteral
+	int32(TsNonNull),                 // MemberExpression_NoAsync_NoLet : MemberExpression_NoLet .noLineBreak '!'
+	0,                                // MemberExpression_NoAsync_NoLet : SuperProperty
+	0,                                // MemberExpression_NoAsync_NoLet : MetaProperty
+	int32(NewExpr),                   // MemberExpression_NoAsync_NoLet : 'new' MemberExpression Arguments
+	0,                                // MemberExpression_NoFuncClass : PrimaryExpression_NoFuncClass
+	int32(IndexAccess),               // MemberExpression_NoFuncClass : MemberExpression_NoFuncClass '[' Expression_In ']'
+	int32(PropertyAccess),            // MemberExpression_NoFuncClass : MemberExpression_NoFuncClass '.' IdentifierNameRef
+	int32(PropertyAccess),            // MemberExpression_NoFuncClass : MemberExpression_NoFuncClass '.' ClassPrivateRef
+	int32(TaggedTemplate),            // MemberExpression_NoFuncClass : MemberExpression_NoFuncClass TemplateLiteral
+	int32(TsNonNull),                 // MemberExpression_NoFuncClass : MemberExpression_NoFuncClass .noLineBreak '!'
+	0,                                // MemberExpression_NoFuncClass : SuperProperty
+	0,                                // MemberExpression_NoFuncClass : MetaProperty
+	int32(NewExpr),                   // MemberExpression_NoFuncClass : 'new' MemberExpression Arguments
+	0,                                // MemberExpression_NoLet : PrimaryExpression_NoLet
+	int32(IndexAccess),               // MemberExpression_NoLet : MemberExpression_NoLet '[' Expression_In ']'
+	int32(PropertyAccess),            // MemberExpression_NoLet : MemberExpression_NoLet '.' IdentifierNameRef
+	int32(PropertyAccess),            // MemberExpression_NoLet : MemberExpression_NoLet '.' ClassPrivateRef
+	int32(TaggedTemplate),            // MemberExpression_NoLet : MemberExpression_NoLet TemplateLiteral
+	int32(TsNonNull),                 // MemberExpression_NoLet : MemberExpression_NoLet .noLineBreak '!'
+	0,                                // MemberExpression_NoLet : SuperProperty
+	0,                                // MemberExpression_NoLet : MetaProperty
+	int32(NewExpr),                   // MemberExpression_NoLet : 'new' MemberExpression Arguments
+	0,                                // MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass : PrimaryExpression_NoObjLiteral_NoFuncClass
+	int32(IndexAccess),               // MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass : MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly '[' Expression_In ']'
+	int32(PropertyAccess),            // MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass : MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass '.' IdentifierNameRef
+	int32(PropertyAccess),            // MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass : MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass '.' ClassPrivateRef
+	int32(TaggedTemplate),            // MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass : MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass TemplateLiteral
+	int32(TsNonNull),                 // MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass : MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass .noLineBreak '!'
+	0,                                // MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass : SuperProperty
+	0,                                // MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass : MetaProperty
+	int32(NewExpr),                   // MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass : 'new' MemberExpression Arguments
+	0,                                // MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly : PrimaryExpression_NoLet_NoObjLiteral_NoFuncClass
+	int32(IndexAccess),               // MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly : MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly '[' Expression_In ']'
+	int32(PropertyAccess),            // MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly : MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass '.' IdentifierNameRef
+	int32(PropertyAccess),            // MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly : MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass '.' ClassPrivateRef
+	int32(TaggedTemplate),            // MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly : MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass TemplateLiteral
+	int32(TsNonNull),                 // MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly : MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass .noLineBreak '!'
+	0,                                // MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly : SuperProperty
+	0,                                // MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly : MetaProperty
+	int32(NewExpr),                   // MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly : 'new' MemberExpression Arguments
+	0,                                // MemberExpression_NoObjLiteral : PrimaryExpression_NoObjLiteral
+	int32(IndexAccess),               // MemberExpression_NoObjLiteral : MemberExpression_NoObjLiteral '[' Expression_In ']'
+	int32(PropertyAccess),            // MemberExpression_NoObjLiteral : MemberExpression_NoObjLiteral '.' IdentifierNameRef
+	int32(PropertyAccess),            // MemberExpression_NoObjLiteral : MemberExpression_NoObjLiteral '.' ClassPrivateRef
+	int32(TaggedTemplate),            // MemberExpression_NoObjLiteral : MemberExpression_NoObjLiteral TemplateLiteral
+	int32(TsNonNull),                 // MemberExpression_NoObjLiteral : MemberExpression_NoObjLiteral .noLineBreak '!'
+	0,                                // MemberExpression_NoObjLiteral : SuperProperty
+	0,                                // MemberExpression_NoObjLiteral : MetaProperty
+	int32(NewExpr),                   // MemberExpression_NoObjLiteral : 'new' MemberExpression Arguments
+	-1,                               // MemberExpression_StartWithLet : 'let'
+	int32(IndexAccess),               // MemberExpression_StartWithLet : MemberExpression_StartWithLet_NoLetOnly '[' Expression_In ']'
+	int32(PropertyAccess),            // MemberExpression_StartWithLet : MemberExpression_StartWithLet '.' IdentifierNameRef
+	int32(PropertyAccess),            // MemberExpression_StartWithLet : MemberExpression_StartWithLet '.' ClassPrivateRef
+	int32(TaggedTemplate),            // MemberExpression_StartWithLet : MemberExpression_StartWithLet TemplateLiteral
+	int32(TsNonNull),                 // MemberExpression_StartWithLet : MemberExpression_StartWithLet .noLineBreak '!'
+	int32(IndexAccess),               // MemberExpression_StartWithLet_NoLetOnly : MemberExpression_StartWithLet_NoLetOnly '[' Expression_In ']'
+	int32(PropertyAccess),            // MemberExpression_StartWithLet_NoLetOnly : MemberExpression_StartWithLet '.' IdentifierNameRef
+	int32(PropertyAccess),            // MemberExpression_StartWithLet_NoLetOnly : MemberExpression_StartWithLet '.' ClassPrivateRef
+	int32(TaggedTemplate),            // MemberExpression_StartWithLet_NoLetOnly : MemberExpression_StartWithLet TemplateLiteral
+	int32(TsNonNull),                 // MemberExpression_StartWithLet_NoLetOnly : MemberExpression_StartWithLet .noLineBreak '!'
+	0,                                // MemberExpression_Yield : PrimaryExpression_Yield
+	int32(IndexAccess),               // MemberExpression_Yield : MemberExpression_Yield '[' Expression_In_Yield ']'
+	int32(PropertyAccess),            // MemberExpression_Yield : MemberExpression_Yield '.' IdentifierNameRef
+	int32(PropertyAccess),            // MemberExpression_Yield : MemberExpression_Yield '.' ClassPrivateRef
+	int32(TaggedTemplate),            // MemberExpression_Yield : MemberExpression_Yield TemplateLiteral_Yield
+	int32(TsNonNull),                 // MemberExpression_Yield : MemberExpression_Yield .noLineBreak '!'
+	0,                                // MemberExpression_Yield : SuperProperty_Yield
+	0,                                // MemberExpression_Yield : MetaProperty
+	int32(NewExpr),                   // MemberExpression_Yield : 'new' MemberExpression_Yield Arguments_Yield
+	0,                                // MemberExpression_Yield_Await : PrimaryExpression_Yield_Await
+	int32(IndexAccess),               // MemberExpression_Yield_Await : MemberExpression_Yield_Await '[' Expression_In_Yield_Await ']'
+	int32(PropertyAccess),            // MemberExpression_Yield_Await : MemberExpression_Yield_Await '.' IdentifierNameRef
+	int32(PropertyAccess),            // MemberExpression_Yield_Await : MemberExpression_Yield_Await '.' ClassPrivateRef
+	int32(TaggedTemplate),            // MemberExpression_Yield_Await : MemberExpression_Yield_Await TemplateLiteral_Yield_Await
+	int32(TsNonNull),                 // MemberExpression_Yield_Await : MemberExpression_Yield_Await .noLineBreak '!'
+	0,                                // MemberExpression_Yield_Await : SuperProperty_Yield_Await
+	0,                                // MemberExpression_Yield_Await : MetaProperty
+	int32(NewExpr),                   // MemberExpression_Yield_Await : 'new' MemberExpression_Yield_Await Arguments_Yield_Await
+	0,                                // MemberExpression_Yield_Await_NoAsync_NoLet : PrimaryExpression_Yield_Await_NoAsync_NoLet
+	int32(IndexAccess),               // MemberExpression_Yield_Await_NoAsync_NoLet : MemberExpression_Yield_Await_NoLet '[' Expression_In_Yield_Await ']'
+	int32(PropertyAccess),            // MemberExpression_Yield_Await_NoAsync_NoLet : MemberExpression_Yield_Await_NoLet '.' IdentifierNameRef
+	int32(PropertyAccess),            // MemberExpression_Yield_Await_NoAsync_NoLet : MemberExpression_Yield_Await_NoLet '.' ClassPrivateRef
+	int32(TaggedTemplate),            // MemberExpression_Yield_Await_NoAsync_NoLet : MemberExpression_Yield_Await_NoLet TemplateLiteral_Yield_Await
+	int32(TsNonNull),                 // MemberExpression_Yield_Await_NoAsync_NoLet : MemberExpression_Yield_Await_NoLet .noLineBreak '!'
+	0,                                // MemberExpression_Yield_Await_NoAsync_NoLet : SuperProperty_Yield_Await
+	0,                                // MemberExpression_Yield_Await_NoAsync_NoLet : MetaProperty
+	int32(NewExpr),                   // MemberExpression_Yield_Await_NoAsync_NoLet : 'new' MemberExpression_Yield_Await Arguments_Yield_Await
+	0,                                // MemberExpression_Yield_Await_NoLet : PrimaryExpression_Yield_Await_NoLet
+	int32(IndexAccess),               // MemberExpression_Yield_Await_NoLet : MemberExpression_Yield_Await_NoLet '[' Expression_In_Yield_Await ']'
+	int32(PropertyAccess),            // MemberExpression_Yield_Await_NoLet : MemberExpression_Yield_Await_NoLet '.' IdentifierNameRef
+	int32(PropertyAccess),            // MemberExpression_Yield_Await_NoLet : MemberExpression_Yield_Await_NoLet '.' ClassPrivateRef
+	int32(TaggedTemplate),            // MemberExpression_Yield_Await_NoLet : MemberExpression_Yield_Await_NoLet TemplateLiteral_Yield_Await
+	int32(TsNonNull),                 // MemberExpression_Yield_Await_NoLet : MemberExpression_Yield_Await_NoLet .noLineBreak '!'
+	0,                                // MemberExpression_Yield_Await_NoLet : SuperProperty_Yield_Await
+	0,                                // MemberExpression_Yield_Await_NoLet : MetaProperty
+	int32(NewExpr),                   // MemberExpression_Yield_Await_NoLet : 'new' MemberExpression_Yield_Await Arguments_Yield_Await
+	0,                                // MemberExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : PrimaryExpression_Yield_Await_NoObjLiteral_NoFuncClass
+	int32(IndexAccess),               // MemberExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : MemberExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly '[' Expression_In_Yield_Await ']'
+	int32(PropertyAccess),            // MemberExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : MemberExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass '.' IdentifierNameRef
+	int32(PropertyAccess),            // MemberExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : MemberExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass '.' ClassPrivateRef
+	int32(TaggedTemplate),            // MemberExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : MemberExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass TemplateLiteral_Yield_Await
+	int32(TsNonNull),                 // MemberExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : MemberExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass .noLineBreak '!'
+	0,                                // MemberExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : SuperProperty_Yield_Await
+	0,                                // MemberExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : MetaProperty
+	int32(NewExpr),                   // MemberExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : 'new' MemberExpression_Yield_Await Arguments_Yield_Await
+	0,                                // MemberExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly : PrimaryExpression_Yield_Await_NoLet_NoObjLiteral_NoFuncClass
+	int32(IndexAccess),               // MemberExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly : MemberExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly '[' Expression_In_Yield_Await ']'
+	int32(PropertyAccess),            // MemberExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly : MemberExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass '.' IdentifierNameRef
+	int32(PropertyAccess),            // MemberExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly : MemberExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass '.' ClassPrivateRef
+	int32(TaggedTemplate),            // MemberExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly : MemberExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass TemplateLiteral_Yield_Await
+	int32(TsNonNull),                 // MemberExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly : MemberExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass .noLineBreak '!'
+	0,                                // MemberExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly : SuperProperty_Yield_Await
+	0,                                // MemberExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly : MetaProperty
+	int32(NewExpr),                   // MemberExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly : 'new' MemberExpression_Yield_Await Arguments_Yield_Await
+	-1,                               // MemberExpression_Yield_Await_StartWithLet : 'let'
+	int32(IndexAccess),               // MemberExpression_Yield_Await_StartWithLet : MemberExpression_Yield_Await_StartWithLet_NoLetOnly '[' Expression_In_Yield_Await ']'
+	int32(PropertyAccess),            // MemberExpression_Yield_Await_StartWithLet : MemberExpression_Yield_Await_StartWithLet '.' IdentifierNameRef
+	int32(PropertyAccess),            // MemberExpression_Yield_Await_StartWithLet : MemberExpression_Yield_Await_StartWithLet '.' ClassPrivateRef
+	int32(TaggedTemplate),            // MemberExpression_Yield_Await_StartWithLet : MemberExpression_Yield_Await_StartWithLet TemplateLiteral_Yield_Await
+	int32(TsNonNull),                 // MemberExpression_Yield_Await_StartWithLet : MemberExpression_Yield_Await_StartWithLet .noLineBreak '!'
+	int32(IndexAccess),               // MemberExpression_Yield_Await_StartWithLet_NoLetOnly : MemberExpression_Yield_Await_StartWithLet_NoLetOnly '[' Expression_In_Yield_Await ']'
+	int32(PropertyAccess),            // MemberExpression_Yield_Await_StartWithLet_NoLetOnly : MemberExpression_Yield_Await_StartWithLet '.' IdentifierNameRef
+	int32(PropertyAccess),            // MemberExpression_Yield_Await_StartWithLet_NoLetOnly : MemberExpression_Yield_Await_StartWithLet '.' ClassPrivateRef
+	int32(TaggedTemplate),            // MemberExpression_Yield_Await_StartWithLet_NoLetOnly : MemberExpression_Yield_Await_StartWithLet TemplateLiteral_Yield_Await
+	int32(TsNonNull),                 // MemberExpression_Yield_Await_StartWithLet_NoLetOnly : MemberExpression_Yield_Await_StartWithLet .noLineBreak '!'
+	0,                                // MemberExpression_Yield_NoAsync_NoLet : PrimaryExpression_Yield_NoAsync_NoLet
+	int32(IndexAccess),               // MemberExpression_Yield_NoAsync_NoLet : MemberExpression_Yield_NoLet '[' Expression_In_Yield ']'
+	int32(PropertyAccess),            // MemberExpression_Yield_NoAsync_NoLet : MemberExpression_Yield_NoLet '.' IdentifierNameRef
+	int32(PropertyAccess),            // MemberExpression_Yield_NoAsync_NoLet : MemberExpression_Yield_NoLet '.' ClassPrivateRef
+	int32(TaggedTemplate),            // MemberExpression_Yield_NoAsync_NoLet : MemberExpression_Yield_NoLet TemplateLiteral_Yield
+	int32(TsNonNull),                 // MemberExpression_Yield_NoAsync_NoLet : MemberExpression_Yield_NoLet .noLineBreak '!'
+	0,                                // MemberExpression_Yield_NoAsync_NoLet : SuperProperty_Yield
+	0,                                // MemberExpression_Yield_NoAsync_NoLet : MetaProperty
+	int32(NewExpr),                   // MemberExpression_Yield_NoAsync_NoLet : 'new' MemberExpression_Yield Arguments_Yield
+	0,                                // MemberExpression_Yield_NoLet : PrimaryExpression_Yield_NoLet
+	int32(IndexAccess),               // MemberExpression_Yield_NoLet : MemberExpression_Yield_NoLet '[' Expression_In_Yield ']'
+	int32(PropertyAccess),            // MemberExpression_Yield_NoLet : MemberExpression_Yield_NoLet '.' IdentifierNameRef
+	int32(PropertyAccess),            // MemberExpression_Yield_NoLet : MemberExpression_Yield_NoLet '.' ClassPrivateRef
+	int32(TaggedTemplate),            // MemberExpression_Yield_NoLet : MemberExpression_Yield_NoLet TemplateLiteral_Yield
+	int32(TsNonNull),                 // MemberExpression_Yield_NoLet : MemberExpression_Yield_NoLet .noLineBreak '!'
+	0,                                // MemberExpression_Yield_NoLet : SuperProperty_Yield
+	0,                                // MemberExpression_Yield_NoLet : MetaProperty
+	int32(NewExpr),                   // MemberExpression_Yield_NoLet : 'new' MemberExpression_Yield Arguments_Yield
+	0,                                // MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : PrimaryExpression_Yield_NoObjLiteral_NoFuncClass
+	int32(IndexAccess),               // MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly '[' Expression_In_Yield ']'
+	int32(PropertyAccess),            // MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass '.' IdentifierNameRef
+	int32(PropertyAccess),            // MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass '.' ClassPrivateRef
+	int32(TaggedTemplate),            // MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass TemplateLiteral_Yield
+	int32(TsNonNull),                 // MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass .noLineBreak '!'
+	0,                                // MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : SuperProperty_Yield
+	0,                                // MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : MetaProperty
+	int32(NewExpr),                   // MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : 'new' MemberExpression_Yield Arguments_Yield
+	0,                                // MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly : PrimaryExpression_Yield_NoLet_NoObjLiteral_NoFuncClass
+	int32(IndexAccess),               // MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly : MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly '[' Expression_In_Yield ']'
+	int32(PropertyAccess),            // MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly : MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass '.' IdentifierNameRef
+	int32(PropertyAccess),            // MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly : MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass '.' ClassPrivateRef
+	int32(TaggedTemplate),            // MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly : MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass TemplateLiteral_Yield
+	int32(TsNonNull),                 // MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly : MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass .noLineBreak '!'
+	0,                                // MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly : SuperProperty_Yield
+	0,                                // MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly : MetaProperty
+	int32(NewExpr),                   // MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoLetOnly : 'new' MemberExpression_Yield Arguments_Yield
+	-1,                               // MemberExpression_Yield_StartWithLet : 'let'
+	int32(IndexAccess),               // MemberExpression_Yield_StartWithLet : MemberExpression_Yield_StartWithLet_NoLetOnly '[' Expression_In_Yield ']'
+	int32(PropertyAccess),            // MemberExpression_Yield_StartWithLet : MemberExpression_Yield_StartWithLet '.' IdentifierNameRef
+	int32(PropertyAccess),            // MemberExpression_Yield_StartWithLet : MemberExpression_Yield_StartWithLet '.' ClassPrivateRef
+	int32(TaggedTemplate),            // MemberExpression_Yield_StartWithLet : MemberExpression_Yield_StartWithLet TemplateLiteral_Yield
+	int32(TsNonNull),                 // MemberExpression_Yield_StartWithLet : MemberExpression_Yield_StartWithLet .noLineBreak '!'
+	int32(IndexAccess),               // MemberExpression_Yield_StartWithLet_NoLetOnly : MemberExpression_Yield_StartWithLet_NoLetOnly '[' Expression_In_Yield ']'
+	int32(PropertyAccess),            // MemberExpression_Yield_StartWithLet_NoLetOnly : MemberExpression_Yield_StartWithLet '.' IdentifierNameRef
+	int32(PropertyAccess),            // MemberExpression_Yield_StartWithLet_NoLetOnly : MemberExpression_Yield_StartWithLet '.' ClassPrivateRef
+	int32(TaggedTemplate),            // MemberExpression_Yield_StartWithLet_NoLetOnly : MemberExpression_Yield_StartWithLet TemplateLiteral_Yield
+	int32(TsNonNull),                 // MemberExpression_Yield_StartWithLet_NoLetOnly : MemberExpression_Yield_StartWithLet .noLineBreak '!'
+	-1,                               // SuperExpression : 'super'
+	int32(IndexAccess),               // SuperProperty : SuperExpression '[' Expression_In ']'
+	int32(PropertyAccess),            // SuperProperty : SuperExpression '.' IdentifierNameRef
+	int32(IndexAccess),               // SuperProperty_Await : SuperExpression '[' Expression_In_Await ']'
+	int32(PropertyAccess),            // SuperProperty_Await : SuperExpression '.' IdentifierNameRef
+	int32(IndexAccess),               // SuperProperty_Yield : SuperExpression '[' Expression_In_Yield ']'
+	int32(PropertyAccess),            // SuperProperty_Yield : SuperExpression '.' IdentifierNameRef
+	int32(IndexAccess),               // SuperProperty_Yield_Await : SuperExpression '[' Expression_In_Yield_Await ']'
+	int32(PropertyAccess),            // SuperProperty_Yield_Await : SuperExpression '.' IdentifierNameRef
+	0,                                // MetaProperty : NewTarget
+	int32(NewTarget),                 // NewTarget : 'new' '.' 'target'
+	0,                                // NewExpression : MemberExpression lookahead_notStartOfParametrizedCall
+	int32(NewExpr),                   // NewExpression : 'new' NewExpression
+	0,                                // NewExpression_Await : MemberExpression_Await lookahead_notStartOfParametrizedCall
+	int32(NewExpr),                   // NewExpression_Await : 'new' NewExpression_Await
+	0,                                // NewExpression_Await_NoAsync_NoLet : MemberExpression_Await_NoAsync_NoLet lookahead_notStartOfParametrizedCall
+	int32(NewExpr),                   // NewExpression_Await_NoAsync_NoLet : 'new' NewExpression_Await
+	0,                                // NewExpression_Await_NoLet : MemberExpression_Await_NoLet lookahead_notStartOfParametrizedCall
+	int32(NewExpr),                   // NewExpression_Await_NoLet : 'new' NewExpression_Await
+	0,                                // NewExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass lookahead_notStartOfParametrizedCall
+	int32(NewExpr),                   // NewExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : 'new' NewExpression_Await
+	0,                                // NewExpression_Await_NoObjLiteral : MemberExpression_Await_NoObjLiteral lookahead_notStartOfParametrizedCall
+	int32(NewExpr),                   // NewExpression_Await_NoObjLiteral : 'new' NewExpression_Await
+	0,                                // NewExpression_Await_StartWithLet : MemberExpression_Await_StartWithLet lookahead_notStartOfParametrizedCall
+	0,                                // NewExpression_NoAsync_NoLet : MemberExpression_NoAsync_NoLet lookahead_notStartOfParametrizedCall
+	int32(NewExpr),                   // NewExpression_NoAsync_NoLet : 'new' NewExpression
+	0,                                // NewExpression_NoFuncClass : MemberExpression_NoFuncClass lookahead_notStartOfParametrizedCall
+	int32(NewExpr),                   // NewExpression_NoFuncClass : 'new' NewExpression
+	0,                                // NewExpression_NoLet : MemberExpression_NoLet lookahead_notStartOfParametrizedCall
+	int32(NewExpr),                   // NewExpression_NoLet : 'new' NewExpression
+	0,                                // NewExpression_NoLetSq_NoObjLiteral_NoFuncClass : MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass lookahead_notStartOfParametrizedCall
+	int32(NewExpr),                   // NewExpression_NoLetSq_NoObjLiteral_NoFuncClass : 'new' NewExpression
+	0,                                // NewExpression_NoObjLiteral : MemberExpression_NoObjLiteral lookahead_notStartOfParametrizedCall
+	int32(NewExpr),                   // NewExpression_NoObjLiteral : 'new' NewExpression
+	0,                                // NewExpression_StartWithLet : MemberExpression_StartWithLet lookahead_notStartOfParametrizedCall
+	0,                                // NewExpression_Yield : MemberExpression_Yield lookahead_notStartOfParametrizedCall
+	int32(NewExpr),                   // NewExpression_Yield : 'new' NewExpression_Yield
+	0,                                // NewExpression_Yield_Await : MemberExpression_Yield_Await lookahead_notStartOfParametrizedCall
+	int32(NewExpr),                   // NewExpression_Yield_Await : 'new' NewExpression_Yield_Await
+	0,                                // NewExpression_Yield_Await_NoAsync_NoLet : MemberExpression_Yield_Await_NoAsync_NoLet lookahead_notStartOfParametrizedCall
+	int32(NewExpr),                   // NewExpression_Yield_Await_NoAsync_NoLet : 'new' NewExpression_Yield_Await
+	0,                                // NewExpression_Yield_Await_NoLet : MemberExpression_Yield_Await_NoLet lookahead_notStartOfParametrizedCall
+	int32(NewExpr),                   // NewExpression_Yield_Await_NoLet : 'new' NewExpression_Yield_Await
+	0,                                // NewExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : MemberExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass lookahead_notStartOfParametrizedCall
+	int32(NewExpr),                   // NewExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : 'new' NewExpression_Yield_Await
+	0,                                // NewExpression_Yield_Await_StartWithLet : MemberExpression_Yield_Await_StartWithLet lookahead_notStartOfParametrizedCall
+	0,                                // NewExpression_Yield_NoAsync_NoLet : MemberExpression_Yield_NoAsync_NoLet lookahead_notStartOfParametrizedCall
+	int32(NewExpr),                   // NewExpression_Yield_NoAsync_NoLet : 'new' NewExpression_Yield
+	0,                                // NewExpression_Yield_NoLet : MemberExpression_Yield_NoLet lookahead_notStartOfParametrizedCall
+	int32(NewExpr),                   // NewExpression_Yield_NoLet : 'new' NewExpression_Yield
+	0,                                // NewExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass lookahead_notStartOfParametrizedCall
+	int32(NewExpr),                   // NewExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : 'new' NewExpression_Yield
+	0,                                // NewExpression_Yield_StartWithLet : MemberExpression_Yield_StartWithLet lookahead_notStartOfParametrizedCall
+	0,                                // lookahead_notStartOfParametrizedCall :
+	int32(CallExpr),                  // CallExpression : MemberExpression Arguments
+	int32(CallExpr),                  // CallExpression : SuperCall
+	int32(TsDynamicImport),           // CallExpression : 'import' Arguments
+	int32(CallExpr),                  // CallExpression : CallExpression Arguments
+	int32(IndexAccess),               // CallExpression : CallExpression '[' Expression_In ']'
+	int32(PropertyAccess),            // CallExpression : CallExpression '.' IdentifierNameRef
+	int32(PropertyAccess),            // CallExpression : CallExpression '.' ClassPrivateRef
+	int32(PropertyAccess),            // CallExpression : 'import' '.' IdentifierNameRef
+	int32(PropertyAccess),            // CallExpression : 'import' '.' ClassPrivateRef
+	int32(TsNonNull),                 // CallExpression : CallExpression .noLineBreak '!'
+	int32(TaggedTemplate),            // CallExpression : CallExpression TemplateLiteral
+	int32(CallExpr),                  // CallExpression_Await : MemberExpression_Await Arguments_Await
+	int32(CallExpr),                  // CallExpression_Await : SuperCall_Await
+	int32(TsDynamicImport),           // CallExpression_Await : 'import' Arguments_Await
+	int32(CallExpr),                  // CallExpression_Await : CallExpression_Await Arguments_Await
+	int32(IndexAccess),               // CallExpression_Await : CallExpression_Await '[' Expression_In_Await ']'
+	int32(PropertyAccess),            // CallExpression_Await : CallExpression_Await '.' IdentifierNameRef
+	int32(PropertyAccess),            // CallExpression_Await : CallExpression_Await '.' ClassPrivateRef
+	int32(PropertyAccess),            // CallExpression_Await : 'import' '.' IdentifierNameRef
+	int32(PropertyAccess),            // CallExpression_Await : 'import' '.' ClassPrivateRef
+	int32(TsNonNull),                 // CallExpression_Await : CallExpression_Await .noLineBreak '!'
+	int32(TaggedTemplate),            // CallExpression_Await : CallExpression_Await TemplateLiteral_Await
+	int32(CallExpr),                  // CallExpression_Await_NoLet : MemberExpression_Await_NoLet Arguments_Await
+	int32(CallExpr),                  // CallExpression_Await_NoLet : SuperCall_Await
+	int32(TsDynamicImport),           // CallExpression_Await_NoLet : 'import' Arguments_Await
+	int32(CallExpr),                  // CallExpression_Await_NoLet : CallExpression_Await_NoLet Arguments_Await
+	int32(IndexAccess),               // CallExpression_Await_NoLet : CallExpression_Await_NoLet '[' Expression_In_Await ']'
+	int32(PropertyAccess),            // CallExpression_Await_NoLet : CallExpression_Await_NoLet '.' IdentifierNameRef
+	int32(PropertyAccess),            // CallExpression_Await_NoLet : CallExpression_Await_NoLet '.' ClassPrivateRef
+	int32(PropertyAccess),            // CallExpression_Await_NoLet : 'import' '.' IdentifierNameRef
+	int32(PropertyAccess),            // CallExpression_Await_NoLet : 'import' '.' ClassPrivateRef
+	int32(TsNonNull),                 // CallExpression_Await_NoLet : CallExpression_Await_NoLet .noLineBreak '!'
+	int32(TaggedTemplate),            // CallExpression_Await_NoLet : CallExpression_Await_NoLet TemplateLiteral_Await
+	int32(CallExpr),                  // CallExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass Arguments_Await
+	int32(CallExpr),                  // CallExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : SuperCall_Await
+	int32(TsDynamicImport),           // CallExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : 'import' Arguments_Await
+	int32(CallExpr),                  // CallExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : CallExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass Arguments_Await
+	int32(IndexAccess),               // CallExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : CallExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass '[' Expression_In_Await ']'
+	int32(PropertyAccess),            // CallExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : CallExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass '.' IdentifierNameRef
+	int32(PropertyAccess),            // CallExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : CallExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass '.' ClassPrivateRef
+	int32(PropertyAccess),            // CallExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : 'import' '.' IdentifierNameRef
+	int32(PropertyAccess),            // CallExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : 'import' '.' ClassPrivateRef
+	int32(TsNonNull),                 // CallExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : CallExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass .noLineBreak '!'
+	int32(TaggedTemplate),            // CallExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : CallExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass TemplateLiteral_Await
+	int32(CallExpr),                  // CallExpression_Await_NoObjLiteral : MemberExpression_Await_NoObjLiteral Arguments_Await
+	int32(CallExpr),                  // CallExpression_Await_NoObjLiteral : SuperCall_Await
+	int32(TsDynamicImport),           // CallExpression_Await_NoObjLiteral : 'import' Arguments_Await
+	int32(CallExpr),                  // CallExpression_Await_NoObjLiteral : CallExpression_Await_NoObjLiteral Arguments_Await
+	int32(IndexAccess),               // CallExpression_Await_NoObjLiteral : CallExpression_Await_NoObjLiteral '[' Expression_In_Await ']'
+	int32(PropertyAccess),            // CallExpression_Await_NoObjLiteral : CallExpression_Await_NoObjLiteral '.' IdentifierNameRef
+	int32(PropertyAccess),            // CallExpression_Await_NoObjLiteral : CallExpression_Await_NoObjLiteral '.' ClassPrivateRef
+	int32(PropertyAccess),            // CallExpression_Await_NoObjLiteral : 'import' '.' IdentifierNameRef
+	int32(PropertyAccess),            // CallExpression_Await_NoObjLiteral : 'import' '.' ClassPrivateRef
+	int32(TsNonNull),                 // CallExpression_Await_NoObjLiteral : CallExpression_Await_NoObjLiteral .noLineBreak '!'
+	int32(TaggedTemplate),            // CallExpression_Await_NoObjLiteral : CallExpression_Await_NoObjLiteral TemplateLiteral_Await
+	int32(CallExpr),                  // CallExpression_Await_StartWithLet : MemberExpression_Await_StartWithLet Arguments_Await
+	int32(CallExpr),                  // CallExpression_Await_StartWithLet : CallExpression_Await_StartWithLet Arguments_Await
+	int32(IndexAccess),               // CallExpression_Await_StartWithLet : CallExpression_Await_StartWithLet '[' Expression_In_Await ']'
+	int32(PropertyAccess),            // CallExpression_Await_StartWithLet : CallExpression_Await_StartWithLet '.' IdentifierNameRef
+	int32(PropertyAccess),            // CallExpression_Await_StartWithLet : CallExpression_Await_StartWithLet '.' ClassPrivateRef
+	int32(TsNonNull),                 // CallExpression_Await_StartWithLet : CallExpression_Await_StartWithLet .noLineBreak '!'
+	int32(TaggedTemplate),            // CallExpression_Await_StartWithLet : CallExpression_Await_StartWithLet TemplateLiteral_Await
+	int32(CallExpr),                  // CallExpression_NoFuncClass : MemberExpression_NoFuncClass Arguments
+	int32(CallExpr),                  // CallExpression_NoFuncClass : SuperCall
+	int32(TsDynamicImport),           // CallExpression_NoFuncClass : 'import' Arguments
+	int32(CallExpr),                  // CallExpression_NoFuncClass : CallExpression_NoFuncClass Arguments
+	int32(IndexAccess),               // CallExpression_NoFuncClass : CallExpression_NoFuncClass '[' Expression_In ']'
+	int32(PropertyAccess),            // CallExpression_NoFuncClass : CallExpression_NoFuncClass '.' IdentifierNameRef
+	int32(PropertyAccess),            // CallExpression_NoFuncClass : CallExpression_NoFuncClass '.' ClassPrivateRef
+	int32(PropertyAccess),            // CallExpression_NoFuncClass : 'import' '.' IdentifierNameRef
+	int32(PropertyAccess),            // CallExpression_NoFuncClass : 'import' '.' ClassPrivateRef
+	int32(TsNonNull),                 // CallExpression_NoFuncClass : CallExpression_NoFuncClass .noLineBreak '!'
+	int32(TaggedTemplate),            // CallExpression_NoFuncClass : CallExpression_NoFuncClass TemplateLiteral
+	int32(CallExpr),                  // CallExpression_NoLet : MemberExpression_NoLet Arguments
+	int32(CallExpr),                  // CallExpression_NoLet : SuperCall
+	int32(TsDynamicImport),           // CallExpression_NoLet : 'import' Arguments
+	int32(CallExpr),                  // CallExpression_NoLet : CallExpression_NoLet Arguments
+	int32(IndexAccess),               // CallExpression_NoLet : CallExpression_NoLet '[' Expression_In ']'
+	int32(PropertyAccess),            // CallExpression_NoLet : CallExpression_NoLet '.' IdentifierNameRef
+	int32(PropertyAccess),            // CallExpression_NoLet : CallExpression_NoLet '.' ClassPrivateRef
+	int32(PropertyAccess),            // CallExpression_NoLet : 'import' '.' IdentifierNameRef
+	int32(PropertyAccess),            // CallExpression_NoLet : 'import' '.' ClassPrivateRef
+	int32(TsNonNull),                 // CallExpression_NoLet : CallExpression_NoLet .noLineBreak '!'
+	int32(TaggedTemplate),            // CallExpression_NoLet : CallExpression_NoLet TemplateLiteral
+	int32(CallExpr),                  // CallExpression_NoLetSq_NoObjLiteral_NoFuncClass : MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass Arguments
+	int32(CallExpr),                  // CallExpression_NoLetSq_NoObjLiteral_NoFuncClass : SuperCall
+	int32(TsDynamicImport),           // CallExpression_NoLetSq_NoObjLiteral_NoFuncClass : 'import' Arguments
+	int32(CallExpr),                  // CallExpression_NoLetSq_NoObjLiteral_NoFuncClass : CallExpression_NoLetSq_NoObjLiteral_NoFuncClass Arguments
+	int32(IndexAccess),               // CallExpression_NoLetSq_NoObjLiteral_NoFuncClass : CallExpression_NoLetSq_NoObjLiteral_NoFuncClass '[' Expression_In ']'
+	int32(PropertyAccess),            // CallExpression_NoLetSq_NoObjLiteral_NoFuncClass : CallExpression_NoLetSq_NoObjLiteral_NoFuncClass '.' IdentifierNameRef
+	int32(PropertyAccess),            // CallExpression_NoLetSq_NoObjLiteral_NoFuncClass : CallExpression_NoLetSq_NoObjLiteral_NoFuncClass '.' ClassPrivateRef
+	int32(PropertyAccess),            // CallExpression_NoLetSq_NoObjLiteral_NoFuncClass : 'import' '.' IdentifierNameRef
+	int32(PropertyAccess),            // CallExpression_NoLetSq_NoObjLiteral_NoFuncClass : 'import' '.' ClassPrivateRef
+	int32(TsNonNull),                 // CallExpression_NoLetSq_NoObjLiteral_NoFuncClass : CallExpression_NoLetSq_NoObjLiteral_NoFuncClass .noLineBreak '!'
+	int32(TaggedTemplate),            // CallExpression_NoLetSq_NoObjLiteral_NoFuncClass : CallExpression_NoLetSq_NoObjLiteral_NoFuncClass TemplateLiteral
+	int32(CallExpr),                  // CallExpression_NoObjLiteral : MemberExpression_NoObjLiteral Arguments
+	int32(CallExpr),                  // CallExpression_NoObjLiteral : SuperCall
+	int32(TsDynamicImport),           // CallExpression_NoObjLiteral : 'import' Arguments
+	int32(CallExpr),                  // CallExpression_NoObjLiteral : CallExpression_NoObjLiteral Arguments
+	int32(IndexAccess),               // CallExpression_NoObjLiteral : CallExpression_NoObjLiteral '[' Expression_In ']'
+	int32(PropertyAccess),            // CallExpression_NoObjLiteral : CallExpression_NoObjLiteral '.' IdentifierNameRef
+	int32(PropertyAccess),            // CallExpression_NoObjLiteral : CallExpression_NoObjLiteral '.' ClassPrivateRef
+	int32(PropertyAccess),            // CallExpression_NoObjLiteral : 'import' '.' IdentifierNameRef
+	int32(PropertyAccess),            // CallExpression_NoObjLiteral : 'import' '.' ClassPrivateRef
+	int32(TsNonNull),                 // CallExpression_NoObjLiteral : CallExpression_NoObjLiteral .noLineBreak '!'
+	int32(TaggedTemplate),            // CallExpression_NoObjLiteral : CallExpression_NoObjLiteral TemplateLiteral
+	int32(CallExpr),                  // CallExpression_StartWithLet : MemberExpression_StartWithLet Arguments
+	int32(CallExpr),                  // CallExpression_StartWithLet : CallExpression_StartWithLet Arguments
+	int32(IndexAccess),               // CallExpression_StartWithLet : CallExpression_StartWithLet '[' Expression_In ']'
+	int32(PropertyAccess),            // CallExpression_StartWithLet : CallExpression_StartWithLet '.' IdentifierNameRef
+	int32(PropertyAccess),            // CallExpression_StartWithLet : CallExpression_StartWithLet '.' ClassPrivateRef
+	int32(TsNonNull),                 // CallExpression_StartWithLet : CallExpression_StartWithLet .noLineBreak '!'
+	int32(TaggedTemplate),            // CallExpression_StartWithLet : CallExpression_StartWithLet TemplateLiteral
+	int32(CallExpr),                  // CallExpression_Yield : MemberExpression_Yield Arguments_Yield
+	int32(CallExpr),                  // CallExpression_Yield : SuperCall_Yield
+	int32(TsDynamicImport),           // CallExpression_Yield : 'import' Arguments_Yield
+	int32(CallExpr),                  // CallExpression_Yield : CallExpression_Yield Arguments_Yield
+	int32(IndexAccess),               // CallExpression_Yield : CallExpression_Yield '[' Expression_In_Yield ']'
+	int32(PropertyAccess),            // CallExpression_Yield : CallExpression_Yield '.' IdentifierNameRef
+	int32(PropertyAccess),            // CallExpression_Yield : CallExpression_Yield '.' ClassPrivateRef
+	int32(PropertyAccess),            // CallExpression_Yield : 'import' '.' IdentifierNameRef
+	int32(PropertyAccess),            // CallExpression_Yield : 'import' '.' ClassPrivateRef
+	int32(TsNonNull),                 // CallExpression_Yield : CallExpression_Yield .noLineBreak '!'
+	int32(TaggedTemplate),            // CallExpression_Yield : CallExpression_Yield TemplateLiteral_Yield
+	int32(CallExpr),                  // CallExpression_Yield_Await : MemberExpression_Yield_Await Arguments_Yield_Await
+	int32(CallExpr),                  // CallExpression_Yield_Await : SuperCall_Yield_Await
+	int32(TsDynamicImport),           // CallExpression_Yield_Await : 'import' Arguments_Yield_Await
+	int32(CallExpr),                  // CallExpression_Yield_Await : CallExpression_Yield_Await Arguments_Yield_Await
+	int32(IndexAccess),               // CallExpression_Yield_Await : CallExpression_Yield_Await '[' Expression_In_Yield_Await ']'
+	int32(PropertyAccess),            // CallExpression_Yield_Await : CallExpression_Yield_Await '.' IdentifierNameRef
+	int32(PropertyAccess),            // CallExpression_Yield_Await : CallExpression_Yield_Await '.' ClassPrivateRef
+	int32(PropertyAccess),            // CallExpression_Yield_Await : 'import' '.' IdentifierNameRef
+	int32(PropertyAccess),            // CallExpression_Yield_Await : 'import' '.' ClassPrivateRef
+	int32(TsNonNull),                 // CallExpression_Yield_Await : CallExpression_Yield_Await .noLineBreak '!'
+	int32(TaggedTemplate),            // CallExpression_Yield_Await : CallExpression_Yield_Await TemplateLiteral_Yield_Await
+	int32(CallExpr),                  // CallExpression_Yield_Await_NoLet : MemberExpression_Yield_Await_NoLet Arguments_Yield_Await
+	int32(CallExpr),                  // CallExpression_Yield_Await_NoLet : SuperCall_Yield_Await
+	int32(TsDynamicImport),           // CallExpression_Yield_Await_NoLet : 'import' Arguments_Yield_Await
+	int32(CallExpr),                  // CallExpression_Yield_Await_NoLet : CallExpression_Yield_Await_NoLet Arguments_Yield_Await
+	int32(IndexAccess),               // CallExpression_Yield_Await_NoLet : CallExpression_Yield_Await_NoLet '[' Expression_In_Yield_Await ']'
+	int32(PropertyAccess),            // CallExpression_Yield_Await_NoLet : CallExpression_Yield_Await_NoLet '.' IdentifierNameRef
+	int32(PropertyAccess),            // CallExpression_Yield_Await_NoLet : CallExpression_Yield_Await_NoLet '.' ClassPrivateRef
+	int32(PropertyAccess),            // CallExpression_Yield_Await_NoLet : 'import' '.' IdentifierNameRef
+	int32(PropertyAccess),            // CallExpression_Yield_Await_NoLet : 'import' '.' ClassPrivateRef
+	int32(TsNonNull),                 // CallExpression_Yield_Await_NoLet : CallExpression_Yield_Await_NoLet .noLineBreak '!'
+	int32(TaggedTemplate),            // CallExpression_Yield_Await_NoLet : CallExpression_Yield_Await_NoLet TemplateLiteral_Yield_Await
+	int32(CallExpr),                  // CallExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : MemberExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass Arguments_Yield_Await
+	int32(CallExpr),                  // CallExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : SuperCall_Yield_Await
+	int32(TsDynamicImport),           // CallExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : 'import' Arguments_Yield_Await
+	int32(CallExpr),                  // CallExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : CallExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass Arguments_Yield_Await
+	int32(IndexAccess),               // CallExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : CallExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass '[' Expression_In_Yield_Await ']'
+	int32(PropertyAccess),            // CallExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : CallExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass '.' IdentifierNameRef
+	int32(PropertyAccess),            // CallExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : CallExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass '.' ClassPrivateRef
+	int32(PropertyAccess),            // CallExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : 'import' '.' IdentifierNameRef
+	int32(PropertyAccess),            // CallExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : 'import' '.' ClassPrivateRef
+	int32(TsNonNull),                 // CallExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : CallExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass .noLineBreak '!'
+	int32(TaggedTemplate),            // CallExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : CallExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass TemplateLiteral_Yield_Await
+	int32(CallExpr),                  // CallExpression_Yield_Await_StartWithLet : MemberExpression_Yield_Await_StartWithLet Arguments_Yield_Await
+	int32(CallExpr),                  // CallExpression_Yield_Await_StartWithLet : CallExpression_Yield_Await_StartWithLet Arguments_Yield_Await
+	int32(IndexAccess),               // CallExpression_Yield_Await_StartWithLet : CallExpression_Yield_Await_StartWithLet '[' Expression_In_Yield_Await ']'
+	int32(PropertyAccess),            // CallExpression_Yield_Await_StartWithLet : CallExpression_Yield_Await_StartWithLet '.' IdentifierNameRef
+	int32(PropertyAccess),            // CallExpression_Yield_Await_StartWithLet : CallExpression_Yield_Await_StartWithLet '.' ClassPrivateRef
+	int32(TsNonNull),                 // CallExpression_Yield_Await_StartWithLet : CallExpression_Yield_Await_StartWithLet .noLineBreak '!'
+	int32(TaggedTemplate),            // CallExpression_Yield_Await_StartWithLet : CallExpression_Yield_Await_StartWithLet TemplateLiteral_Yield_Await
+	int32(CallExpr),                  // CallExpression_Yield_NoLet : MemberExpression_Yield_NoLet Arguments_Yield
+	int32(CallExpr),                  // CallExpression_Yield_NoLet : SuperCall_Yield
+	int32(TsDynamicImport),           // CallExpression_Yield_NoLet : 'import' Arguments_Yield
+	int32(CallExpr),                  // CallExpression_Yield_NoLet : CallExpression_Yield_NoLet Arguments_Yield
+	int32(IndexAccess),               // CallExpression_Yield_NoLet : CallExpression_Yield_NoLet '[' Expression_In_Yield ']'
+	int32(PropertyAccess),            // CallExpression_Yield_NoLet : CallExpression_Yield_NoLet '.' IdentifierNameRef
+	int32(PropertyAccess),            // CallExpression_Yield_NoLet : CallExpression_Yield_NoLet '.' ClassPrivateRef
+	int32(PropertyAccess),            // CallExpression_Yield_NoLet : 'import' '.' IdentifierNameRef
+	int32(PropertyAccess),            // CallExpression_Yield_NoLet : 'import' '.' ClassPrivateRef
+	int32(TsNonNull),                 // CallExpression_Yield_NoLet : CallExpression_Yield_NoLet .noLineBreak '!'
+	int32(TaggedTemplate),            // CallExpression_Yield_NoLet : CallExpression_Yield_NoLet TemplateLiteral_Yield
+	int32(CallExpr),                  // CallExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass Arguments_Yield
+	int32(CallExpr),                  // CallExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : SuperCall_Yield
+	int32(TsDynamicImport),           // CallExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : 'import' Arguments_Yield
+	int32(CallExpr),                  // CallExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : CallExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass Arguments_Yield
+	int32(IndexAccess),               // CallExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : CallExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass '[' Expression_In_Yield ']'
+	int32(PropertyAccess),            // CallExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : CallExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass '.' IdentifierNameRef
+	int32(PropertyAccess),            // CallExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : CallExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass '.' ClassPrivateRef
+	int32(PropertyAccess),            // CallExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : 'import' '.' IdentifierNameRef
+	int32(PropertyAccess),            // CallExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : 'import' '.' ClassPrivateRef
+	int32(TsNonNull),                 // CallExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : CallExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass .noLineBreak '!'
+	int32(TaggedTemplate),            // CallExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : CallExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass TemplateLiteral_Yield
+	int32(CallExpr),                  // CallExpression_Yield_StartWithLet : MemberExpression_Yield_StartWithLet Arguments_Yield
+	int32(CallExpr),                  // CallExpression_Yield_StartWithLet : CallExpression_Yield_StartWithLet Arguments_Yield
+	int32(IndexAccess),               // CallExpression_Yield_StartWithLet : CallExpression_Yield_StartWithLet '[' Expression_In_Yield ']'
+	int32(PropertyAccess),            // CallExpression_Yield_StartWithLet : CallExpression_Yield_StartWithLet '.' IdentifierNameRef
+	int32(PropertyAccess),            // CallExpression_Yield_StartWithLet : CallExpression_Yield_StartWithLet '.' ClassPrivateRef
+	int32(TsNonNull),                 // CallExpression_Yield_StartWithLet : CallExpression_Yield_StartWithLet .noLineBreak '!'
+	int32(TaggedTemplate),            // CallExpression_Yield_StartWithLet : CallExpression_Yield_StartWithLet TemplateLiteral_Yield
+	0,                                // SuperCall : SuperExpression Arguments
+	0,                                // SuperCall_Await : SuperExpression Arguments_Await
+	0,                                // SuperCall_Yield : SuperExpression Arguments_Yield
+	0,                                // SuperCall_Yield_Await : SuperExpression Arguments_Yield_Await
+	int32(Arguments),                 // Arguments : lookahead_StartOfParametrizedCall TypeArguments lookahead_StartLParen '(' ArgumentList ',' ')'
+	int32(Arguments),                 // Arguments : lookahead_StartOfParametrizedCall TypeArguments lookahead_StartLParen '(' ArgumentList ')'
+	int32(Arguments),                 // Arguments : lookahead_StartOfParametrizedCall TypeArguments lookahead_StartLParen '(' ')'
+	int32(Arguments),                 // Arguments : lookahead_StartOfParametrizedCall TypeArguments lookahead_notStartLParen
+	int32(Arguments),                 // Arguments : '(' ArgumentList ',' ')'
+	int32(Arguments),                 // Arguments : '(' ArgumentList ')'
+	int32(Arguments),                 // Arguments : '(' ')'
+	int32(Arguments),                 // Arguments_Await : lookahead_StartOfParametrizedCall TypeArguments lookahead_StartLParen '(' ArgumentList_Await ',' ')'
+	int32(Arguments),                 // Arguments_Await : lookahead_StartOfParametrizedCall TypeArguments lookahead_StartLParen '(' ArgumentList_Await ')'
+	int32(Arguments),                 // Arguments_Await : lookahead_StartOfParametrizedCall TypeArguments lookahead_StartLParen '(' ')'
+	int32(Arguments),                 // Arguments_Await : lookahead_StartOfParametrizedCall TypeArguments lookahead_notStartLParen
+	int32(Arguments),                 // Arguments_Await : '(' ArgumentList_Await ',' ')'
+	int32(Arguments),                 // Arguments_Await : '(' ArgumentList_Await ')'
+	int32(Arguments),                 // Arguments_Await : '(' ')'
+	int32(Arguments),                 // Arguments_Yield : lookahead_StartOfParametrizedCall TypeArguments lookahead_StartLParen '(' ArgumentList_Yield ',' ')'
+	int32(Arguments),                 // Arguments_Yield : lookahead_StartOfParametrizedCall TypeArguments lookahead_StartLParen '(' ArgumentList_Yield ')'
+	int32(Arguments),                 // Arguments_Yield : lookahead_StartOfParametrizedCall TypeArguments lookahead_StartLParen '(' ')'
+	int32(Arguments),                 // Arguments_Yield : lookahead_StartOfParametrizedCall TypeArguments lookahead_notStartLParen
+	int32(Arguments),                 // Arguments_Yield : '(' ArgumentList_Yield ',' ')'
+	int32(Arguments),                 // Arguments_Yield : '(' ArgumentList_Yield ')'
+	int32(Arguments),                 // Arguments_Yield : '(' ')'
+	int32(Arguments),                 // Arguments_Yield_Await : lookahead_StartOfParametrizedCall TypeArguments lookahead_StartLParen '(' ArgumentList_Yield_Await ',' ')'
+	int32(Arguments),                 // Arguments_Yield_Await : lookahead_StartOfParametrizedCall TypeArguments lookahead_StartLParen '(' ArgumentList_Yield_Await ')'
+	int32(Arguments),                 // Arguments_Yield_Await : lookahead_StartOfParametrizedCall TypeArguments lookahead_StartLParen '(' ')'
+	int32(Arguments),                 // Arguments_Yield_Await : lookahead_StartOfParametrizedCall TypeArguments lookahead_notStartLParen
+	int32(Arguments),                 // Arguments_Yield_Await : '(' ArgumentList_Yield_Await ',' ')'
+	int32(Arguments),                 // Arguments_Yield_Await : '(' ArgumentList_Yield_Await ')'
+	int32(Arguments),                 // Arguments_Yield_Await : '(' ')'
+	0,                                // lookahead_StartLParen :
+	0,                                // lookahead_StartOfParametrizedCall :
+	0,                                // lookahead_notStartLParen :
+	0,                                // StartLParen : '('
+	0,                                // StartOfParametrizedCall : TypeArguments ','
+	0,                                // StartOfParametrizedCall : TypeArguments ')'
+	0,                                // StartOfParametrizedCall : TypeArguments ';'
+	0,                                // StartOfParametrizedCall : TypeArguments '('
+	0,                                // ArgumentList : AssignmentExpression_In
+	0,                                // ArgumentList : SpreadElement
+	0,                                // ArgumentList : BrokenExpr
+	0,                                // ArgumentList : ArgumentList ',' AssignmentExpression_In
+	0,                                // ArgumentList : ArgumentList ',' SpreadElement
+	0,                                // ArgumentList : ArgumentList ',' BrokenExpr
+	0,                                // ArgumentList_Await : AssignmentExpression_In_Await
+	0,                                // ArgumentList_Await : SpreadElement_Await
+	0,                                // ArgumentList_Await : BrokenExpr
+	0,                                // ArgumentList_Await : ArgumentList_Await ',' AssignmentExpression_In_Await
+	0,                                // ArgumentList_Await : ArgumentList_Await ',' SpreadElement_Await
+	0,                                // ArgumentList_Await : ArgumentList_Await ',' BrokenExpr
+	0,                                // ArgumentList_Yield : AssignmentExpression_In_Yield
+	0,                                // ArgumentList_Yield : SpreadElement_Yield
+	0,                                // ArgumentList_Yield : BrokenExpr
+	0,                                // ArgumentList_Yield : ArgumentList_Yield ',' AssignmentExpression_In_Yield
+	0,                                // ArgumentList_Yield : ArgumentList_Yield ',' SpreadElement_Yield
+	0,                                // ArgumentList_Yield : ArgumentList_Yield ',' BrokenExpr
+	0,                                // ArgumentList_Yield_Await : AssignmentExpression_In_Yield_Await
+	0,                                // ArgumentList_Yield_Await : SpreadElement_Yield_Await
+	0,                                // ArgumentList_Yield_Await : BrokenExpr
+	0,                                // ArgumentList_Yield_Await : ArgumentList_Yield_Await ',' AssignmentExpression_In_Yield_Await
+	0,                                // ArgumentList_Yield_Await : ArgumentList_Yield_Await ',' SpreadElement_Yield_Await
+	0,                                // ArgumentList_Yield_Await : ArgumentList_Yield_Await ',' BrokenExpr
+	int32(SyntaxProblem),             // BrokenExpr : error
+	0,                                // OptionalLHS : MemberExpression
+	0,                                // OptionalLHS : CallExpression
+	0,                                // OptionalLHS : OptionalExpression
+	0,                                // OptionalLHS_Await : MemberExpression_Await
+	0,                                // OptionalLHS_Await : CallExpression_Await
+	0,                                // OptionalLHS_Await : OptionalExpression_Await
+	0,                                // OptionalLHS_Await_NoLet : MemberExpression_Await_NoLet
+	0,                                // OptionalLHS_Await_NoLet : CallExpression_Await_NoLet
+	0,                                // OptionalLHS_Await_NoLet : OptionalExpression_Await_NoLet
+	0,                                // OptionalLHS_Await_NoLetSq_NoObjLiteral_NoFuncClass : MemberExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass
+	0,                                // OptionalLHS_Await_NoLetSq_NoObjLiteral_NoFuncClass : CallExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass
+	0,                                // OptionalLHS_Await_NoLetSq_NoObjLiteral_NoFuncClass : OptionalExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass
+	0,                                // OptionalLHS_Await_NoObjLiteral : MemberExpression_Await_NoObjLiteral
+	0,                                // OptionalLHS_Await_NoObjLiteral : CallExpression_Await_NoObjLiteral
+	0,                                // OptionalLHS_Await_NoObjLiteral : OptionalExpression_Await_NoObjLiteral
+	0,                                // OptionalLHS_Await_StartWithLet : MemberExpression_Await_StartWithLet
+	0,                                // OptionalLHS_Await_StartWithLet : CallExpression_Await_StartWithLet
+	0,                                // OptionalLHS_Await_StartWithLet : OptionalExpression_Await_StartWithLet
+	0,                                // OptionalLHS_NoFuncClass : MemberExpression_NoFuncClass
+	0,                                // OptionalLHS_NoFuncClass : CallExpression_NoFuncClass
+	0,                                // OptionalLHS_NoFuncClass : OptionalExpression_NoFuncClass
+	0,                                // OptionalLHS_NoLet : MemberExpression_NoLet
+	0,                                // OptionalLHS_NoLet : CallExpression_NoLet
+	0,                                // OptionalLHS_NoLet : OptionalExpression_NoLet
+	0,                                // OptionalLHS_NoLetSq_NoObjLiteral_NoFuncClass : MemberExpression_NoLetSq_NoObjLiteral_NoFuncClass
+	0,                                // OptionalLHS_NoLetSq_NoObjLiteral_NoFuncClass : CallExpression_NoLetSq_NoObjLiteral_NoFuncClass
+	0,                                // OptionalLHS_NoLetSq_NoObjLiteral_NoFuncClass : OptionalExpression_NoLetSq_NoObjLiteral_NoFuncClass
+	0,                                // OptionalLHS_NoObjLiteral : MemberExpression_NoObjLiteral
+	0,                                // OptionalLHS_NoObjLiteral : CallExpression_NoObjLiteral
+	0,                                // OptionalLHS_NoObjLiteral : OptionalExpression_NoObjLiteral
+	0,                                // OptionalLHS_StartWithLet : MemberExpression_StartWithLet
+	0,                                // OptionalLHS_StartWithLet : CallExpression_StartWithLet
+	0,                                // OptionalLHS_StartWithLet : OptionalExpression_StartWithLet
+	0,                                // OptionalLHS_Yield : MemberExpression_Yield
+	0,                                // OptionalLHS_Yield : CallExpression_Yield
+	0,                                // OptionalLHS_Yield : OptionalExpression_Yield
+	0,                                // OptionalLHS_Yield_Await : MemberExpression_Yield_Await
+	0,                                // OptionalLHS_Yield_Await : CallExpression_Yield_Await
+	0,                                // OptionalLHS_Yield_Await : OptionalExpression_Yield_Await
+	0,                                // OptionalLHS_Yield_Await_NoLet : MemberExpression_Yield_Await_NoLet
+	0,                                // OptionalLHS_Yield_Await_NoLet : CallExpression_Yield_Await_NoLet
+	0,                                // OptionalLHS_Yield_Await_NoLet : OptionalExpression_Yield_Await_NoLet
+	0,                                // OptionalLHS_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : MemberExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass
+	0,                                // OptionalLHS_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : CallExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass
+	0,                                // OptionalLHS_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : OptionalExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass
+	0,                                // OptionalLHS_Yield_Await_StartWithLet : MemberExpression_Yield_Await_StartWithLet
+	0,                                // OptionalLHS_Yield_Await_StartWithLet : CallExpression_Yield_Await_StartWithLet
+	0,                                // OptionalLHS_Yield_Await_StartWithLet : OptionalExpression_Yield_Await_StartWithLet
+	0,                                // OptionalLHS_Yield_NoLet : MemberExpression_Yield_NoLet
+	0,                                // OptionalLHS_Yield_NoLet : CallExpression_Yield_NoLet
+	0,                                // OptionalLHS_Yield_NoLet : OptionalExpression_Yield_NoLet
+	0,                                // OptionalLHS_Yield_NoLetSq_NoObjLiteral_NoFuncClass : MemberExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass
+	0,                                // OptionalLHS_Yield_NoLetSq_NoObjLiteral_NoFuncClass : CallExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass
+	0,                                // OptionalLHS_Yield_NoLetSq_NoObjLiteral_NoFuncClass : OptionalExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass
+	0,                                // OptionalLHS_Yield_StartWithLet : MemberExpression_Yield_StartWithLet
+	0,                                // OptionalLHS_Yield_StartWithLet : CallExpression_Yield_StartWithLet
+	0,                                // OptionalLHS_Yield_StartWithLet : OptionalExpression_Yield_StartWithLet
+	int32(OptionalIndexAccess),       // OptionalExpression : OptionalLHS '?.' '[' Expression_In ']'
+	int32(OptionalPropertyAccess),    // OptionalExpression : OptionalLHS '?.' IdentifierNameRef
+	int32(OptionalPropertyAccess),    // OptionalExpression : OptionalLHS '?.' ClassPrivateRef
+	int32(OptionalCallExpr),          // OptionalExpression : OptionalLHS '?.' Arguments
+	int32(OptionalTaggedTemplate),    // OptionalExpression : OptionalLHS '?.' TemplateLiteral
+	int32(IndexAccess),               // OptionalExpression : OptionalExpression '[' Expression_In ']'
+	int32(PropertyAccess),            // OptionalExpression : OptionalExpression '.' IdentifierNameRef
+	int32(PropertyAccess),            // OptionalExpression : OptionalExpression '.' ClassPrivateRef
+	int32(CallExpr),                  // OptionalExpression : OptionalExpression Arguments
+	int32(TsNonNull),                 // OptionalExpression : OptionalExpression .noLineBreak '!'
+	int32(TaggedTemplate),            // OptionalExpression : OptionalExpression TemplateLiteral
+	int32(OptionalIndexAccess),       // OptionalExpression_Await : OptionalLHS_Await '?.' '[' Expression_In_Await ']'
+	int32(OptionalPropertyAccess),    // OptionalExpression_Await : OptionalLHS_Await '?.' IdentifierNameRef
+	int32(OptionalPropertyAccess),    // OptionalExpression_Await : OptionalLHS_Await '?.' ClassPrivateRef
+	int32(OptionalCallExpr),          // OptionalExpression_Await : OptionalLHS_Await '?.' Arguments_Await
+	int32(OptionalTaggedTemplate),    // OptionalExpression_Await : OptionalLHS_Await '?.' TemplateLiteral_Await
+	int32(IndexAccess),               // OptionalExpression_Await : OptionalExpression_Await '[' Expression_In_Await ']'
+	int32(PropertyAccess),            // OptionalExpression_Await : OptionalExpression_Await '.' IdentifierNameRef
+	int32(PropertyAccess),            // OptionalExpression_Await : OptionalExpression_Await '.' ClassPrivateRef
+	int32(CallExpr),                  // OptionalExpression_Await : OptionalExpression_Await Arguments_Await
+	int32(TsNonNull),                 // OptionalExpression_Await : OptionalExpression_Await .noLineBreak '!'
+	int32(TaggedTemplate),            // OptionalExpression_Await : OptionalExpression_Await TemplateLiteral_Await
+	int32(OptionalIndexAccess),       // OptionalExpression_Await_NoLet : OptionalLHS_Await_NoLet '?.' '[' Expression_In_Await ']'
+	int32(OptionalPropertyAccess),    // OptionalExpression_Await_NoLet : OptionalLHS_Await_NoLet '?.' IdentifierNameRef
+	int32(OptionalPropertyAccess),    // OptionalExpression_Await_NoLet : OptionalLHS_Await_NoLet '?.' ClassPrivateRef
+	int32(OptionalCallExpr),          // OptionalExpression_Await_NoLet : OptionalLHS_Await_NoLet '?.' Arguments_Await
+	int32(OptionalTaggedTemplate),    // OptionalExpression_Await_NoLet : OptionalLHS_Await_NoLet '?.' TemplateLiteral_Await
+	int32(IndexAccess),               // OptionalExpression_Await_NoLet : OptionalExpression_Await_NoLet '[' Expression_In_Await ']'
+	int32(PropertyAccess),            // OptionalExpression_Await_NoLet : OptionalExpression_Await_NoLet '.' IdentifierNameRef
+	int32(PropertyAccess),            // OptionalExpression_Await_NoLet : OptionalExpression_Await_NoLet '.' ClassPrivateRef
+	int32(CallExpr),                  // OptionalExpression_Await_NoLet : OptionalExpression_Await_NoLet Arguments_Await
+	int32(TsNonNull),                 // OptionalExpression_Await_NoLet : OptionalExpression_Await_NoLet .noLineBreak '!'
+	int32(TaggedTemplate),            // OptionalExpression_Await_NoLet : OptionalExpression_Await_NoLet TemplateLiteral_Await
+	int32(OptionalIndexAccess),       // OptionalExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : OptionalLHS_Await_NoLetSq_NoObjLiteral_NoFuncClass '?.' '[' Expression_In_Await ']'
+	int32(OptionalPropertyAccess),    // OptionalExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : OptionalLHS_Await_NoLetSq_NoObjLiteral_NoFuncClass '?.' IdentifierNameRef
+	int32(OptionalPropertyAccess),    // OptionalExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : OptionalLHS_Await_NoLetSq_NoObjLiteral_NoFuncClass '?.' ClassPrivateRef
+	int32(OptionalCallExpr),          // OptionalExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : OptionalLHS_Await_NoLetSq_NoObjLiteral_NoFuncClass '?.' Arguments_Await
+	int32(OptionalTaggedTemplate),    // OptionalExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : OptionalLHS_Await_NoLetSq_NoObjLiteral_NoFuncClass '?.' TemplateLiteral_Await
+	int32(IndexAccess),               // OptionalExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : OptionalExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass '[' Expression_In_Await ']'
+	int32(PropertyAccess),            // OptionalExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : OptionalExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass '.' IdentifierNameRef
+	int32(PropertyAccess),            // OptionalExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : OptionalExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass '.' ClassPrivateRef
+	int32(CallExpr),                  // OptionalExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : OptionalExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass Arguments_Await
+	int32(TsNonNull),                 // OptionalExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : OptionalExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass .noLineBreak '!'
+	int32(TaggedTemplate),            // OptionalExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : OptionalExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass TemplateLiteral_Await
+	int32(OptionalIndexAccess),       // OptionalExpression_Await_NoObjLiteral : OptionalLHS_Await_NoObjLiteral '?.' '[' Expression_In_Await ']'
+	int32(OptionalPropertyAccess),    // OptionalExpression_Await_NoObjLiteral : OptionalLHS_Await_NoObjLiteral '?.' IdentifierNameRef
+	int32(OptionalPropertyAccess),    // OptionalExpression_Await_NoObjLiteral : OptionalLHS_Await_NoObjLiteral '?.' ClassPrivateRef
+	int32(OptionalCallExpr),          // OptionalExpression_Await_NoObjLiteral : OptionalLHS_Await_NoObjLiteral '?.' Arguments_Await
+	int32(OptionalTaggedTemplate),    // OptionalExpression_Await_NoObjLiteral : OptionalLHS_Await_NoObjLiteral '?.' TemplateLiteral_Await
+	int32(IndexAccess),               // OptionalExpression_Await_NoObjLiteral : OptionalExpression_Await_NoObjLiteral '[' Expression_In_Await ']'
+	int32(PropertyAccess),            // OptionalExpression_Await_NoObjLiteral : OptionalExpression_Await_NoObjLiteral '.' IdentifierNameRef
+	int32(PropertyAccess),            // OptionalExpression_Await_NoObjLiteral : OptionalExpression_Await_NoObjLiteral '.' ClassPrivateRef
+	int32(CallExpr),                  // OptionalExpression_Await_NoObjLiteral : OptionalExpression_Await_NoObjLiteral Arguments_Await
+	int32(TsNonNull),                 // OptionalExpression_Await_NoObjLiteral : OptionalExpression_Await_NoObjLiteral .noLineBreak '!'
+	int32(TaggedTemplate),            // OptionalExpression_Await_NoObjLiteral : OptionalExpression_Await_NoObjLiteral TemplateLiteral_Await
+	int32(OptionalIndexAccess),       // OptionalExpression_Await_StartWithLet : OptionalLHS_Await_StartWithLet '?.' '[' Expression_In_Await ']'
+	int32(OptionalPropertyAccess),    // OptionalExpression_Await_StartWithLet : OptionalLHS_Await_StartWithLet '?.' IdentifierNameRef
+	int32(OptionalPropertyAccess),    // OptionalExpression_Await_StartWithLet : OptionalLHS_Await_StartWithLet '?.' ClassPrivateRef
+	int32(OptionalCallExpr),          // OptionalExpression_Await_StartWithLet : OptionalLHS_Await_StartWithLet '?.' Arguments_Await
+	int32(OptionalTaggedTemplate),    // OptionalExpression_Await_StartWithLet : OptionalLHS_Await_StartWithLet '?.' TemplateLiteral_Await
+	int32(IndexAccess),               // OptionalExpression_Await_StartWithLet : OptionalExpression_Await_StartWithLet '[' Expression_In_Await ']'
+	int32(PropertyAccess),            // OptionalExpression_Await_StartWithLet : OptionalExpression_Await_StartWithLet '.' IdentifierNameRef
+	int32(PropertyAccess),            // OptionalExpression_Await_StartWithLet : OptionalExpression_Await_StartWithLet '.' ClassPrivateRef
+	int32(CallExpr),                  // OptionalExpression_Await_StartWithLet : OptionalExpression_Await_StartWithLet Arguments_Await
+	int32(TsNonNull),                 // OptionalExpression_Await_StartWithLet : OptionalExpression_Await_StartWithLet .noLineBreak '!'
+	int32(TaggedTemplate),            // OptionalExpression_Await_StartWithLet : OptionalExpression_Await_StartWithLet TemplateLiteral_Await
+	int32(OptionalIndexAccess),       // OptionalExpression_NoFuncClass : OptionalLHS_NoFuncClass '?.' '[' Expression_In ']'
+	int32(OptionalPropertyAccess),    // OptionalExpression_NoFuncClass : OptionalLHS_NoFuncClass '?.' IdentifierNameRef
+	int32(OptionalPropertyAccess),    // OptionalExpression_NoFuncClass : OptionalLHS_NoFuncClass '?.' ClassPrivateRef
+	int32(OptionalCallExpr),          // OptionalExpression_NoFuncClass : OptionalLHS_NoFuncClass '?.' Arguments
+	int32(OptionalTaggedTemplate),    // OptionalExpression_NoFuncClass : OptionalLHS_NoFuncClass '?.' TemplateLiteral
+	int32(IndexAccess),               // OptionalExpression_NoFuncClass : OptionalExpression_NoFuncClass '[' Expression_In ']'
+	int32(PropertyAccess),            // OptionalExpression_NoFuncClass : OptionalExpression_NoFuncClass '.' IdentifierNameRef
+	int32(PropertyAccess),            // OptionalExpression_NoFuncClass : OptionalExpression_NoFuncClass '.' ClassPrivateRef
+	int32(CallExpr),                  // OptionalExpression_NoFuncClass : OptionalExpression_NoFuncClass Arguments
+	int32(TsNonNull),                 // OptionalExpression_NoFuncClass : OptionalExpression_NoFuncClass .noLineBreak '!'
+	int32(TaggedTemplate),            // OptionalExpression_NoFuncClass : OptionalExpression_NoFuncClass TemplateLiteral
+	int32(OptionalIndexAccess),       // OptionalExpression_NoLet : OptionalLHS_NoLet '?.' '[' Expression_In ']'
+	int32(OptionalPropertyAccess),    // OptionalExpression_NoLet : OptionalLHS_NoLet '?.' IdentifierNameRef
+	int32(OptionalPropertyAccess),    // OptionalExpression_NoLet : OptionalLHS_NoLet '?.' ClassPrivateRef
+	int32(OptionalCallExpr),          // OptionalExpression_NoLet : OptionalLHS_NoLet '?.' Arguments
+	int32(OptionalTaggedTemplate),    // OptionalExpression_NoLet : OptionalLHS_NoLet '?.' TemplateLiteral
+	int32(IndexAccess),               // OptionalExpression_NoLet : OptionalExpression_NoLet '[' Expression_In ']'
+	int32(PropertyAccess),            // OptionalExpression_NoLet : OptionalExpression_NoLet '.' IdentifierNameRef
+	int32(PropertyAccess),            // OptionalExpression_NoLet : OptionalExpression_NoLet '.' ClassPrivateRef
+	int32(CallExpr),                  // OptionalExpression_NoLet : OptionalExpression_NoLet Arguments
+	int32(TsNonNull),                 // OptionalExpression_NoLet : OptionalExpression_NoLet .noLineBreak '!'
+	int32(TaggedTemplate),            // OptionalExpression_NoLet : OptionalExpression_NoLet TemplateLiteral
+	int32(OptionalIndexAccess),       // OptionalExpression_NoLetSq_NoObjLiteral_NoFuncClass : OptionalLHS_NoLetSq_NoObjLiteral_NoFuncClass '?.' '[' Expression_In ']'
+	int32(OptionalPropertyAccess),    // OptionalExpression_NoLetSq_NoObjLiteral_NoFuncClass : OptionalLHS_NoLetSq_NoObjLiteral_NoFuncClass '?.' IdentifierNameRef
+	int32(OptionalPropertyAccess),    // OptionalExpression_NoLetSq_NoObjLiteral_NoFuncClass : OptionalLHS_NoLetSq_NoObjLiteral_NoFuncClass '?.' ClassPrivateRef
+	int32(OptionalCallExpr),          // OptionalExpression_NoLetSq_NoObjLiteral_NoFuncClass : OptionalLHS_NoLetSq_NoObjLiteral_NoFuncClass '?.' Arguments
+	int32(OptionalTaggedTemplate),    // OptionalExpression_NoLetSq_NoObjLiteral_NoFuncClass : OptionalLHS_NoLetSq_NoObjLiteral_NoFuncClass '?.' TemplateLiteral
+	int32(IndexAccess),               // OptionalExpression_NoLetSq_NoObjLiteral_NoFuncClass : OptionalExpression_NoLetSq_NoObjLiteral_NoFuncClass '[' Expression_In ']'
+	int32(PropertyAccess),            // OptionalExpression_NoLetSq_NoObjLiteral_NoFuncClass : OptionalExpression_NoLetSq_NoObjLiteral_NoFuncClass '.' IdentifierNameRef
+	int32(PropertyAccess),            // OptionalExpression_NoLetSq_NoObjLiteral_NoFuncClass : OptionalExpression_NoLetSq_NoObjLiteral_NoFuncClass '.' ClassPrivateRef
+	int32(CallExpr),                  // OptionalExpression_NoLetSq_NoObjLiteral_NoFuncClass : OptionalExpression_NoLetSq_NoObjLiteral_NoFuncClass Arguments
+	int32(TsNonNull),                 // OptionalExpression_NoLetSq_NoObjLiteral_NoFuncClass : OptionalExpression_NoLetSq_NoObjLiteral_NoFuncClass .noLineBreak '!'
+	int32(TaggedTemplate),            // OptionalExpression_NoLetSq_NoObjLiteral_NoFuncClass : OptionalExpression_NoLetSq_NoObjLiteral_NoFuncClass TemplateLiteral
+	int32(OptionalIndexAccess),       // OptionalExpression_NoObjLiteral : OptionalLHS_NoObjLiteral '?.' '[' Expression_In ']'
+	int32(OptionalPropertyAccess),    // OptionalExpression_NoObjLiteral : OptionalLHS_NoObjLiteral '?.' IdentifierNameRef
+	int32(OptionalPropertyAccess),    // OptionalExpression_NoObjLiteral : OptionalLHS_NoObjLiteral '?.' ClassPrivateRef
+	int32(OptionalCallExpr),          // OptionalExpression_NoObjLiteral : OptionalLHS_NoObjLiteral '?.' Arguments
+	int32(OptionalTaggedTemplate),    // OptionalExpression_NoObjLiteral : OptionalLHS_NoObjLiteral '?.' TemplateLiteral
+	int32(IndexAccess),               // OptionalExpression_NoObjLiteral : OptionalExpression_NoObjLiteral '[' Expression_In ']'
+	int32(PropertyAccess),            // OptionalExpression_NoObjLiteral : OptionalExpression_NoObjLiteral '.' IdentifierNameRef
+	int32(PropertyAccess),            // OptionalExpression_NoObjLiteral : OptionalExpression_NoObjLiteral '.' ClassPrivateRef
+	int32(CallExpr),                  // OptionalExpression_NoObjLiteral : OptionalExpression_NoObjLiteral Arguments
+	int32(TsNonNull),                 // OptionalExpression_NoObjLiteral : OptionalExpression_NoObjLiteral .noLineBreak '!'
+	int32(TaggedTemplate),            // OptionalExpression_NoObjLiteral : OptionalExpression_NoObjLiteral TemplateLiteral
+	int32(OptionalIndexAccess),       // OptionalExpression_StartWithLet : OptionalLHS_StartWithLet '?.' '[' Expression_In ']'
+	int32(OptionalPropertyAccess),    // OptionalExpression_StartWithLet : OptionalLHS_StartWithLet '?.' IdentifierNameRef
+	int32(OptionalPropertyAccess),    // OptionalExpression_StartWithLet : OptionalLHS_StartWithLet '?.' ClassPrivateRef
+	int32(OptionalCallExpr),          // OptionalExpression_StartWithLet : OptionalLHS_StartWithLet '?.' Arguments
+	int32(OptionalTaggedTemplate),    // OptionalExpression_StartWithLet : OptionalLHS_StartWithLet '?.' TemplateLiteral
+	int32(IndexAccess),               // OptionalExpression_StartWithLet : OptionalExpression_StartWithLet '[' Expression_In ']'
+	int32(PropertyAccess),            // OptionalExpression_StartWithLet : OptionalExpression_StartWithLet '.' IdentifierNameRef
+	int32(PropertyAccess),            // OptionalExpression_StartWithLet : OptionalExpression_StartWithLet '.' ClassPrivateRef
+	int32(CallExpr),                  // OptionalExpression_StartWithLet : OptionalExpression_StartWithLet Arguments
+	int32(TsNonNull),                 // OptionalExpression_StartWithLet : OptionalExpression_StartWithLet .noLineBreak '!'
+	int32(TaggedTemplate),            // OptionalExpression_StartWithLet : OptionalExpression_StartWithLet TemplateLiteral
+	int32(OptionalIndexAccess),       // OptionalExpression_Yield : OptionalLHS_Yield '?.' '[' Expression_In_Yield ']'
+	int32(OptionalPropertyAccess),    // OptionalExpression_Yield : OptionalLHS_Yield '?.' IdentifierNameRef
+	int32(OptionalPropertyAccess),    // OptionalExpression_Yield : OptionalLHS_Yield '?.' ClassPrivateRef
+	int32(OptionalCallExpr),          // OptionalExpression_Yield : OptionalLHS_Yield '?.' Arguments_Yield
+	int32(OptionalTaggedTemplate),    // OptionalExpression_Yield : OptionalLHS_Yield '?.' TemplateLiteral_Yield
+	int32(IndexAccess),               // OptionalExpression_Yield : OptionalExpression_Yield '[' Expression_In_Yield ']'
+	int32(PropertyAccess),            // OptionalExpression_Yield : OptionalExpression_Yield '.' IdentifierNameRef
+	int32(PropertyAccess),            // OptionalExpression_Yield : OptionalExpression_Yield '.' ClassPrivateRef
+	int32(CallExpr),                  // OptionalExpression_Yield : OptionalExpression_Yield Arguments_Yield
+	int32(TsNonNull),                 // OptionalExpression_Yield : OptionalExpression_Yield .noLineBreak '!'
+	int32(TaggedTemplate),            // OptionalExpression_Yield : OptionalExpression_Yield TemplateLiteral_Yield
+	int32(OptionalIndexAccess),       // OptionalExpression_Yield_Await : OptionalLHS_Yield_Await '?.' '[' Expression_In_Yield_Await ']'
+	int32(OptionalPropertyAccess),    // OptionalExpression_Yield_Await : OptionalLHS_Yield_Await '?.' IdentifierNameRef
+	int32(OptionalPropertyAccess),    // OptionalExpression_Yield_Await : OptionalLHS_Yield_Await '?.' ClassPrivateRef
+	int32(OptionalCallExpr),          // OptionalExpression_Yield_Await : OptionalLHS_Yield_Await '?.' Arguments_Yield_Await
+	int32(OptionalTaggedTemplate),    // OptionalExpression_Yield_Await : OptionalLHS_Yield_Await '?.' TemplateLiteral_Yield_Await
+	int32(IndexAccess),               // OptionalExpression_Yield_Await : OptionalExpression_Yield_Await '[' Expression_In_Yield_Await ']'
+	int32(PropertyAccess),            // OptionalExpression_Yield_Await : OptionalExpression_Yield_Await '.' IdentifierNameRef
+	int32(PropertyAccess),            // OptionalExpression_Yield_Await : OptionalExpression_Yield_Await '.' ClassPrivateRef
+	int32(CallExpr),                  // OptionalExpression_Yield_Await : OptionalExpression_Yield_Await Arguments_Yield_Await
+	int32(TsNonNull),                 // OptionalExpression_Yield_Await : OptionalExpression_Yield_Await .noLineBreak '!'
+	int32(TaggedTemplate),            // OptionalExpression_Yield_Await : OptionalExpression_Yield_Await TemplateLiteral_Yield_Await
+	int32(OptionalIndexAccess),       // OptionalExpression_Yield_Await_NoLet : OptionalLHS_Yield_Await_NoLet '?.' '[' Expression_In_Yield_Await ']'
+	int32(OptionalPropertyAccess),    // OptionalExpression_Yield_Await_NoLet : OptionalLHS_Yield_Await_NoLet '?.' IdentifierNameRef
+	int32(OptionalPropertyAccess),    // OptionalExpression_Yield_Await_NoLet : OptionalLHS_Yield_Await_NoLet '?.' ClassPrivateRef
+	int32(OptionalCallExpr),          // OptionalExpression_Yield_Await_NoLet : OptionalLHS_Yield_Await_NoLet '?.' Arguments_Yield_Await
+	int32(OptionalTaggedTemplate),    // OptionalExpression_Yield_Await_NoLet : OptionalLHS_Yield_Await_NoLet '?.' TemplateLiteral_Yield_Await
+	int32(IndexAccess),               // OptionalExpression_Yield_Await_NoLet : OptionalExpression_Yield_Await_NoLet '[' Expression_In_Yield_Await ']'
+	int32(PropertyAccess),            // OptionalExpression_Yield_Await_NoLet : OptionalExpression_Yield_Await_NoLet '.' IdentifierNameRef
+	int32(PropertyAccess),            // OptionalExpression_Yield_Await_NoLet : OptionalExpression_Yield_Await_NoLet '.' ClassPrivateRef
+	int32(CallExpr),                  // OptionalExpression_Yield_Await_NoLet : OptionalExpression_Yield_Await_NoLet Arguments_Yield_Await
+	int32(TsNonNull),                 // OptionalExpression_Yield_Await_NoLet : OptionalExpression_Yield_Await_NoLet .noLineBreak '!'
+	int32(TaggedTemplate),            // OptionalExpression_Yield_Await_NoLet : OptionalExpression_Yield_Await_NoLet TemplateLiteral_Yield_Await
+	int32(OptionalIndexAccess),       // OptionalExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : OptionalLHS_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass '?.' '[' Expression_In_Yield_Await ']'
+	int32(OptionalPropertyAccess),    // OptionalExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : OptionalLHS_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass '?.' IdentifierNameRef
+	int32(OptionalPropertyAccess),    // OptionalExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : OptionalLHS_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass '?.' ClassPrivateRef
+	int32(OptionalCallExpr),          // OptionalExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : OptionalLHS_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass '?.' Arguments_Yield_Await
+	int32(OptionalTaggedTemplate),    // OptionalExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : OptionalLHS_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass '?.' TemplateLiteral_Yield_Await
+	int32(IndexAccess),               // OptionalExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : OptionalExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass '[' Expression_In_Yield_Await ']'
+	int32(PropertyAccess),            // OptionalExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : OptionalExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass '.' IdentifierNameRef
+	int32(PropertyAccess),            // OptionalExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : OptionalExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass '.' ClassPrivateRef
+	int32(CallExpr),                  // OptionalExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : OptionalExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass Arguments_Yield_Await
+	int32(TsNonNull),                 // OptionalExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : OptionalExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass .noLineBreak '!'
+	int32(TaggedTemplate),            // OptionalExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : OptionalExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass TemplateLiteral_Yield_Await
+	int32(OptionalIndexAccess),       // OptionalExpression_Yield_Await_StartWithLet : OptionalLHS_Yield_Await_StartWithLet '?.' '[' Expression_In_Yield_Await ']'
+	int32(OptionalPropertyAccess),    // OptionalExpression_Yield_Await_StartWithLet : OptionalLHS_Yield_Await_StartWithLet '?.' IdentifierNameRef
+	int32(OptionalPropertyAccess),    // OptionalExpression_Yield_Await_StartWithLet : OptionalLHS_Yield_Await_StartWithLet '?.' ClassPrivateRef
+	int32(OptionalCallExpr),          // OptionalExpression_Yield_Await_StartWithLet : OptionalLHS_Yield_Await_StartWithLet '?.' Arguments_Yield_Await
+	int32(OptionalTaggedTemplate),    // OptionalExpression_Yield_Await_StartWithLet : OptionalLHS_Yield_Await_StartWithLet '?.' TemplateLiteral_Yield_Await
+	int32(IndexAccess),               // OptionalExpression_Yield_Await_StartWithLet : OptionalExpression_Yield_Await_StartWithLet '[' Expression_In_Yield_Await ']'
+	int32(PropertyAccess),            // OptionalExpression_Yield_Await_StartWithLet : OptionalExpression_Yield_Await_StartWithLet '.' IdentifierNameRef
+	int32(PropertyAccess),            // OptionalExpression_Yield_Await_StartWithLet : OptionalExpression_Yield_Await_StartWithLet '.' ClassPrivateRef
+	int32(CallExpr),                  // OptionalExpression_Yield_Await_StartWithLet : OptionalExpression_Yield_Await_StartWithLet Arguments_Yield_Await
+	int32(TsNonNull),                 // OptionalExpression_Yield_Await_StartWithLet : OptionalExpression_Yield_Await_StartWithLet .noLineBreak '!'
+	int32(TaggedTemplate),            // OptionalExpression_Yield_Await_StartWithLet : OptionalExpression_Yield_Await_StartWithLet TemplateLiteral_Yield_Await
+	int32(OptionalIndexAccess),       // OptionalExpression_Yield_NoLet : OptionalLHS_Yield_NoLet '?.' '[' Expression_In_Yield ']'
+	int32(OptionalPropertyAccess),    // OptionalExpression_Yield_NoLet : OptionalLHS_Yield_NoLet '?.' IdentifierNameRef
+	int32(OptionalPropertyAccess),    // OptionalExpression_Yield_NoLet : OptionalLHS_Yield_NoLet '?.' ClassPrivateRef
+	int32(OptionalCallExpr),          // OptionalExpression_Yield_NoLet : OptionalLHS_Yield_NoLet '?.' Arguments_Yield
+	int32(OptionalTaggedTemplate),    // OptionalExpression_Yield_NoLet : OptionalLHS_Yield_NoLet '?.' TemplateLiteral_Yield
+	int32(IndexAccess),               // OptionalExpression_Yield_NoLet : OptionalExpression_Yield_NoLet '[' Expression_In_Yield ']'
+	int32(PropertyAccess),            // OptionalExpression_Yield_NoLet : OptionalExpression_Yield_NoLet '.' IdentifierNameRef
+	int32(PropertyAccess),            // OptionalExpression_Yield_NoLet : OptionalExpression_Yield_NoLet '.' ClassPrivateRef
+	int32(CallExpr),                  // OptionalExpression_Yield_NoLet : OptionalExpression_Yield_NoLet Arguments_Yield
+	int32(TsNonNull),                 // OptionalExpression_Yield_NoLet : OptionalExpression_Yield_NoLet .noLineBreak '!'
+	int32(TaggedTemplate),            // OptionalExpression_Yield_NoLet : OptionalExpression_Yield_NoLet TemplateLiteral_Yield
+	int32(OptionalIndexAccess),       // OptionalExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : OptionalLHS_Yield_NoLetSq_NoObjLiteral_NoFuncClass '?.' '[' Expression_In_Yield ']'
+	int32(OptionalPropertyAccess),    // OptionalExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : OptionalLHS_Yield_NoLetSq_NoObjLiteral_NoFuncClass '?.' IdentifierNameRef
+	int32(OptionalPropertyAccess),    // OptionalExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : OptionalLHS_Yield_NoLetSq_NoObjLiteral_NoFuncClass '?.' ClassPrivateRef
+	int32(OptionalCallExpr),          // OptionalExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : OptionalLHS_Yield_NoLetSq_NoObjLiteral_NoFuncClass '?.' Arguments_Yield
+	int32(OptionalTaggedTemplate),    // OptionalExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : OptionalLHS_Yield_NoLetSq_NoObjLiteral_NoFuncClass '?.' TemplateLiteral_Yield
+	int32(IndexAccess),               // OptionalExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : OptionalExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass '[' Expression_In_Yield ']'
+	int32(PropertyAccess),            // OptionalExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : OptionalExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass '.' IdentifierNameRef
+	int32(PropertyAccess),            // OptionalExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : OptionalExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass '.' ClassPrivateRef
+	int32(CallExpr),                  // OptionalExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : OptionalExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass Arguments_Yield
+	int32(TsNonNull),                 // OptionalExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : OptionalExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass .noLineBreak '!'
+	int32(TaggedTemplate),            // OptionalExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : OptionalExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass TemplateLiteral_Yield
+	int32(OptionalIndexAccess),       // OptionalExpression_Yield_StartWithLet : OptionalLHS_Yield_StartWithLet '?.' '[' Expression_In_Yield ']'
+	int32(OptionalPropertyAccess),    // OptionalExpression_Yield_StartWithLet : OptionalLHS_Yield_StartWithLet '?.' IdentifierNameRef
+	int32(OptionalPropertyAccess),    // OptionalExpression_Yield_StartWithLet : OptionalLHS_Yield_StartWithLet '?.' ClassPrivateRef
+	int32(OptionalCallExpr),          // OptionalExpression_Yield_StartWithLet : OptionalLHS_Yield_StartWithLet '?.' Arguments_Yield
+	int32(OptionalTaggedTemplate),    // OptionalExpression_Yield_StartWithLet : OptionalLHS_Yield_StartWithLet '?.' TemplateLiteral_Yield
+	int32(IndexAccess),               // OptionalExpression_Yield_StartWithLet : OptionalExpression_Yield_StartWithLet '[' Expression_In_Yield ']'
+	int32(PropertyAccess),            // OptionalExpression_Yield_StartWithLet : OptionalExpression_Yield_StartWithLet '.' IdentifierNameRef
+	int32(PropertyAccess),            // OptionalExpression_Yield_StartWithLet : OptionalExpression_Yield_StartWithLet '.' ClassPrivateRef
+	int32(CallExpr),                  // OptionalExpression_Yield_StartWithLet : OptionalExpression_Yield_StartWithLet Arguments_Yield
+	int32(TsNonNull),                 // OptionalExpression_Yield_StartWithLet : OptionalExpression_Yield_StartWithLet .noLineBreak '!'
+	int32(TaggedTemplate),            // OptionalExpression_Yield_StartWithLet : OptionalExpression_Yield_StartWithLet TemplateLiteral_Yield
+	0,                                // LeftHandSideExpression : NewExpression
+	0,                                // LeftHandSideExpression : CallExpression lookahead_notStartOfParametrizedCall
+	0,                                // LeftHandSideExpression : OptionalExpression lookahead_notStartOfParametrizedCall
+	0,                                // LeftHandSideExpression_Await : NewExpression_Await
+	0,                                // LeftHandSideExpression_Await : CallExpression_Await lookahead_notStartOfParametrizedCall
+	0,                                // LeftHandSideExpression_Await : OptionalExpression_Await lookahead_notStartOfParametrizedCall
+	0,                                // LeftHandSideExpression_Await_NoAsync_NoLet : NewExpression_Await_NoAsync_NoLet
+	0,                                // LeftHandSideExpression_Await_NoAsync_NoLet : CallExpression_Await_NoLet lookahead_notStartOfParametrizedCall
+	0,                                // LeftHandSideExpression_Await_NoAsync_NoLet : OptionalExpression_Await_NoLet lookahead_notStartOfParametrizedCall
+	0,                                // LeftHandSideExpression_Await_NoLet : NewExpression_Await_NoLet
+	0,                                // LeftHandSideExpression_Await_NoLet : CallExpression_Await_NoLet lookahead_notStartOfParametrizedCall
+	0,                                // LeftHandSideExpression_Await_NoLet : OptionalExpression_Await_NoLet lookahead_notStartOfParametrizedCall
+	0,                                // LeftHandSideExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : NewExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass
+	0,                                // LeftHandSideExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : CallExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass lookahead_notStartOfParametrizedCall
+	0,                                // LeftHandSideExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : OptionalExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass lookahead_notStartOfParametrizedCall
+	0,                                // LeftHandSideExpression_Await_NoObjLiteral : NewExpression_Await_NoObjLiteral
+	0,                                // LeftHandSideExpression_Await_NoObjLiteral : CallExpression_Await_NoObjLiteral lookahead_notStartOfParametrizedCall
+	0,                                // LeftHandSideExpression_Await_NoObjLiteral : OptionalExpression_Await_NoObjLiteral lookahead_notStartOfParametrizedCall
+	0,                                // LeftHandSideExpression_Await_StartWithLet : NewExpression_Await_StartWithLet
+	0,                                // LeftHandSideExpression_Await_StartWithLet : CallExpression_Await_StartWithLet lookahead_notStartOfParametrizedCall
+	0,                                // LeftHandSideExpression_Await_StartWithLet : OptionalExpression_Await_StartWithLet lookahead_notStartOfParametrizedCall
+	0,                                // LeftHandSideExpression_NoAsync_NoLet : NewExpression_NoAsync_NoLet
+	0,                                // LeftHandSideExpression_NoAsync_NoLet : CallExpression_NoLet lookahead_notStartOfParametrizedCall
+	0,                                // LeftHandSideExpression_NoAsync_NoLet : OptionalExpression_NoLet lookahead_notStartOfParametrizedCall
+	0,                                // LeftHandSideExpression_NoFuncClass : NewExpression_NoFuncClass
+	0,                                // LeftHandSideExpression_NoFuncClass : CallExpression_NoFuncClass lookahead_notStartOfParametrizedCall
+	0,                                // LeftHandSideExpression_NoFuncClass : OptionalExpression_NoFuncClass lookahead_notStartOfParametrizedCall
+	0,                                // LeftHandSideExpression_NoLet : NewExpression_NoLet
+	0,                                // LeftHandSideExpression_NoLet : CallExpression_NoLet lookahead_notStartOfParametrizedCall
+	0,                                // LeftHandSideExpression_NoLet : OptionalExpression_NoLet lookahead_notStartOfParametrizedCall
+	0,                                // LeftHandSideExpression_NoLetSq_NoObjLiteral_NoFuncClass : NewExpression_NoLetSq_NoObjLiteral_NoFuncClass
+	0,                                // LeftHandSideExpression_NoLetSq_NoObjLiteral_NoFuncClass : CallExpression_NoLetSq_NoObjLiteral_NoFuncClass lookahead_notStartOfParametrizedCall
+	0,                                // LeftHandSideExpression_NoLetSq_NoObjLiteral_NoFuncClass : OptionalExpression_NoLetSq_NoObjLiteral_NoFuncClass lookahead_notStartOfParametrizedCall
+	0,                                // LeftHandSideExpression_NoObjLiteral : NewExpression_NoObjLiteral
+	0,                                // LeftHandSideExpression_NoObjLiteral : CallExpression_NoObjLiteral lookahead_notStartOfParametrizedCall
+	0,                                // LeftHandSideExpression_NoObjLiteral : OptionalExpression_NoObjLiteral lookahead_notStartOfParametrizedCall
+	0,                                // LeftHandSideExpression_StartWithLet : NewExpression_StartWithLet
+	0,                                // LeftHandSideExpression_StartWithLet : CallExpression_StartWithLet lookahead_notStartOfParametrizedCall
+	0,                                // LeftHandSideExpression_StartWithLet : OptionalExpression_StartWithLet lookahead_notStartOfParametrizedCall
+	0,                                // LeftHandSideExpression_Yield : NewExpression_Yield
+	0,                                // LeftHandSideExpression_Yield : CallExpression_Yield lookahead_notStartOfParametrizedCall
+	0,                                // LeftHandSideExpression_Yield : OptionalExpression_Yield lookahead_notStartOfParametrizedCall
+	0,                                // LeftHandSideExpression_Yield_Await : NewExpression_Yield_Await
+	0,                                // LeftHandSideExpression_Yield_Await : CallExpression_Yield_Await lookahead_notStartOfParametrizedCall
+	0,                                // LeftHandSideExpression_Yield_Await : OptionalExpression_Yield_Await lookahead_notStartOfParametrizedCall
+	0,                                // LeftHandSideExpression_Yield_Await_NoAsync_NoLet : NewExpression_Yield_Await_NoAsync_NoLet
+	0,                                // LeftHandSideExpression_Yield_Await_NoAsync_NoLet : CallExpression_Yield_Await_NoLet lookahead_notStartOfParametrizedCall
+	0,                                // LeftHandSideExpression_Yield_Await_NoAsync_NoLet : OptionalExpression_Yield_Await_NoLet lookahead_notStartOfParametrizedCall
+	0,                                // LeftHandSideExpression_Yield_Await_NoLet : NewExpression_Yield_Await_NoLet
+	0,                                // LeftHandSideExpression_Yield_Await_NoLet : CallExpression_Yield_Await_NoLet lookahead_notStartOfParametrizedCall
+	0,                                // LeftHandSideExpression_Yield_Await_NoLet : OptionalExpression_Yield_Await_NoLet lookahead_notStartOfParametrizedCall
+	0,                                // LeftHandSideExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : NewExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass
+	0,                                // LeftHandSideExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : CallExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass lookahead_notStartOfParametrizedCall
+	0,                                // LeftHandSideExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : OptionalExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass lookahead_notStartOfParametrizedCall
+	0,                                // LeftHandSideExpression_Yield_Await_StartWithLet : NewExpression_Yield_Await_StartWithLet
+	0,                                // LeftHandSideExpression_Yield_Await_StartWithLet : CallExpression_Yield_Await_StartWithLet lookahead_notStartOfParametrizedCall
+	0,                                // LeftHandSideExpression_Yield_Await_StartWithLet : OptionalExpression_Yield_Await_StartWithLet lookahead_notStartOfParametrizedCall
+	0,                                // LeftHandSideExpression_Yield_NoAsync_NoLet : NewExpression_Yield_NoAsync_NoLet
+	0,                                // LeftHandSideExpression_Yield_NoAsync_NoLet : CallExpression_Yield_NoLet lookahead_notStartOfParametrizedCall
+	0,                                // LeftHandSideExpression_Yield_NoAsync_NoLet : OptionalExpression_Yield_NoLet lookahead_notStartOfParametrizedCall
+	0,                                // LeftHandSideExpression_Yield_NoLet : NewExpression_Yield_NoLet
+	0,                                // LeftHandSideExpression_Yield_NoLet : CallExpression_Yield_NoLet lookahead_notStartOfParametrizedCall
+	0,                                // LeftHandSideExpression_Yield_NoLet : OptionalExpression_Yield_NoLet lookahead_notStartOfParametrizedCall
+	0,                                // LeftHandSideExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : NewExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass
+	0,                                // LeftHandSideExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : CallExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass lookahead_notStartOfParametrizedCall
+	0,                                // LeftHandSideExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : OptionalExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass lookahead_notStartOfParametrizedCall
+	0,                                // LeftHandSideExpression_Yield_StartWithLet : NewExpression_Yield_StartWithLet
+	0,                                // LeftHandSideExpression_Yield_StartWithLet : CallExpression_Yield_StartWithLet lookahead_notStartOfParametrizedCall
+	0,                                // LeftHandSideExpression_Yield_StartWithLet : OptionalExpression_Yield_StartWithLet lookahead_notStartOfParametrizedCall
+	0,                                // UpdateExpression : LeftHandSideExpression
+	int32(PostInc),                   // UpdateExpression : LeftHandSideExpression .noLineBreak '++'
+	int32(PostDec),                   // UpdateExpression : LeftHandSideExpression .noLineBreak '--'
+	int32(PreInc),                    // UpdateExpression : '++' UnaryExpression
+	int32(PreDec),                    // UpdateExpression : '--' UnaryExpression
+	0,                                // UpdateExpression_Await : LeftHandSideExpression_Await
+	int32(PostInc),                   // UpdateExpression_Await : LeftHandSideExpression_Await .noLineBreak '++'
+	int32(PostDec),                   // UpdateExpression_Await : LeftHandSideExpression_Await .noLineBreak '--'
+	int32(PreInc),                    // UpdateExpression_Await : '++' UnaryExpression_Await
+	int32(PreDec),                    // UpdateExpression_Await : '--' UnaryExpression_Await
+	0,                                // UpdateExpression_Await_NoLet : LeftHandSideExpression_Await_NoLet
+	int32(PostInc),                   // UpdateExpression_Await_NoLet : LeftHandSideExpression_Await_NoLet .noLineBreak '++'
+	int32(PostDec),                   // UpdateExpression_Await_NoLet : LeftHandSideExpression_Await_NoLet .noLineBreak '--'
+	int32(PreInc),                    // UpdateExpression_Await_NoLet : '++' UnaryExpression_Await
+	int32(PreDec),                    // UpdateExpression_Await_NoLet : '--' UnaryExpression_Await
+	0,                                // UpdateExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : LeftHandSideExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass
+	int32(PostInc),                   // UpdateExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : LeftHandSideExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass .noLineBreak '++'
+	int32(PostDec),                   // UpdateExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : LeftHandSideExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass .noLineBreak '--'
+	int32(PreInc),                    // UpdateExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : '++' UnaryExpression_Await
+	int32(PreDec),                    // UpdateExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : '--' UnaryExpression_Await
+	0,                                // UpdateExpression_Await_NoObjLiteral : LeftHandSideExpression_Await_NoObjLiteral
+	int32(PostInc),                   // UpdateExpression_Await_NoObjLiteral : LeftHandSideExpression_Await_NoObjLiteral .noLineBreak '++'
+	int32(PostDec),                   // UpdateExpression_Await_NoObjLiteral : LeftHandSideExpression_Await_NoObjLiteral .noLineBreak '--'
+	int32(PreInc),                    // UpdateExpression_Await_NoObjLiteral : '++' UnaryExpression_Await
+	int32(PreDec),                    // UpdateExpression_Await_NoObjLiteral : '--' UnaryExpression_Await
+	0,                                // UpdateExpression_Await_StartWithLet : LeftHandSideExpression_Await_StartWithLet
+	int32(PostInc),                   // UpdateExpression_Await_StartWithLet : LeftHandSideExpression_Await_StartWithLet .noLineBreak '++'
+	int32(PostDec),                   // UpdateExpression_Await_StartWithLet : LeftHandSideExpression_Await_StartWithLet .noLineBreak '--'
+	0,                                // UpdateExpression_NoFuncClass : LeftHandSideExpression_NoFuncClass
+	int32(PostInc),                   // UpdateExpression_NoFuncClass : LeftHandSideExpression_NoFuncClass .noLineBreak '++'
+	int32(PostDec),                   // UpdateExpression_NoFuncClass : LeftHandSideExpression_NoFuncClass .noLineBreak '--'
+	int32(PreInc),                    // UpdateExpression_NoFuncClass : '++' UnaryExpression
+	int32(PreDec),                    // UpdateExpression_NoFuncClass : '--' UnaryExpression
+	0,                                // UpdateExpression_NoLet : LeftHandSideExpression_NoLet
+	int32(PostInc),                   // UpdateExpression_NoLet : LeftHandSideExpression_NoLet .noLineBreak '++'
+	int32(PostDec),                   // UpdateExpression_NoLet : LeftHandSideExpression_NoLet .noLineBreak '--'
+	int32(PreInc),                    // UpdateExpression_NoLet : '++' UnaryExpression
+	int32(PreDec),                    // UpdateExpression_NoLet : '--' UnaryExpression
+	0,                                // UpdateExpression_NoLetSq_NoObjLiteral_NoFuncClass : LeftHandSideExpression_NoLetSq_NoObjLiteral_NoFuncClass
+	int32(PostInc),                   // UpdateExpression_NoLetSq_NoObjLiteral_NoFuncClass : LeftHandSideExpression_NoLetSq_NoObjLiteral_NoFuncClass .noLineBreak '++'
+	int32(PostDec),                   // UpdateExpression_NoLetSq_NoObjLiteral_NoFuncClass : LeftHandSideExpression_NoLetSq_NoObjLiteral_NoFuncClass .noLineBreak '--'
+	int32(PreInc),                    // UpdateExpression_NoLetSq_NoObjLiteral_NoFuncClass : '++' UnaryExpression
+	int32(PreDec),                    // UpdateExpression_NoLetSq_NoObjLiteral_NoFuncClass : '--' UnaryExpression
+	0,                                // UpdateExpression_NoObjLiteral : LeftHandSideExpression_NoObjLiteral
+	int32(PostInc),                   // UpdateExpression_NoObjLiteral : LeftHandSideExpression_NoObjLiteral .noLineBreak '++'
+	int32(PostDec),                   // UpdateExpression_NoObjLiteral : LeftHandSideExpression_NoObjLiteral .noLineBreak '--'
+	int32(PreInc),                    // UpdateExpression_NoObjLiteral : '++' UnaryExpression
+	int32(PreDec),                    // UpdateExpression_NoObjLiteral : '--' UnaryExpression
+	0,                                // UpdateExpression_StartWithLet : LeftHandSideExpression_StartWithLet
+	int32(PostInc),                   // UpdateExpression_StartWithLet : LeftHandSideExpression_StartWithLet .noLineBreak '++'
+	int32(PostDec),                   // UpdateExpression_StartWithLet : LeftHandSideExpression_StartWithLet .noLineBreak '--'
+	0,                                // UpdateExpression_Yield : LeftHandSideExpression_Yield
+	int32(PostInc),                   // UpdateExpression_Yield : LeftHandSideExpression_Yield .noLineBreak '++'
+	int32(PostDec),                   // UpdateExpression_Yield : LeftHandSideExpression_Yield .noLineBreak '--'
+	int32(PreInc),                    // UpdateExpression_Yield : '++' UnaryExpression_Yield
+	int32(PreDec),                    // UpdateExpression_Yield : '--' UnaryExpression_Yield
+	0,                                // UpdateExpression_Yield_Await : LeftHandSideExpression_Yield_Await
+	int32(PostInc),                   // UpdateExpression_Yield_Await : LeftHandSideExpression_Yield_Await .noLineBreak '++'
+	int32(PostDec),                   // UpdateExpression_Yield_Await : LeftHandSideExpression_Yield_Await .noLineBreak '--'
+	int32(PreInc),                    // UpdateExpression_Yield_Await : '++' UnaryExpression_Yield_Await
+	int32(PreDec),                    // UpdateExpression_Yield_Await : '--' UnaryExpression_Yield_Await
+	0,                                // UpdateExpression_Yield_Await_NoLet : LeftHandSideExpression_Yield_Await_NoLet
+	int32(PostInc),                   // UpdateExpression_Yield_Await_NoLet : LeftHandSideExpression_Yield_Await_NoLet .noLineBreak '++'
+	int32(PostDec),                   // UpdateExpression_Yield_Await_NoLet : LeftHandSideExpression_Yield_Await_NoLet .noLineBreak '--'
+	int32(PreInc),                    // UpdateExpression_Yield_Await_NoLet : '++' UnaryExpression_Yield_Await
+	int32(PreDec),                    // UpdateExpression_Yield_Await_NoLet : '--' UnaryExpression_Yield_Await
+	0,                                // UpdateExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : LeftHandSideExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass
+	int32(PostInc),                   // UpdateExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : LeftHandSideExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass .noLineBreak '++'
+	int32(PostDec),                   // UpdateExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : LeftHandSideExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass .noLineBreak '--'
+	int32(PreInc),                    // UpdateExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : '++' UnaryExpression_Yield_Await
+	int32(PreDec),                    // UpdateExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : '--' UnaryExpression_Yield_Await
+	0,                                // UpdateExpression_Yield_Await_StartWithLet : LeftHandSideExpression_Yield_Await_StartWithLet
+	int32(PostInc),                   // UpdateExpression_Yield_Await_StartWithLet : LeftHandSideExpression_Yield_Await_StartWithLet .noLineBreak '++'
+	int32(PostDec),                   // UpdateExpression_Yield_Await_StartWithLet : LeftHandSideExpression_Yield_Await_StartWithLet .noLineBreak '--'
+	0,                                // UpdateExpression_Yield_NoLet : LeftHandSideExpression_Yield_NoLet
+	int32(PostInc),                   // UpdateExpression_Yield_NoLet : LeftHandSideExpression_Yield_NoLet .noLineBreak '++'
+	int32(PostDec),                   // UpdateExpression_Yield_NoLet : LeftHandSideExpression_Yield_NoLet .noLineBreak '--'
+	int32(PreInc),                    // UpdateExpression_Yield_NoLet : '++' UnaryExpression_Yield
+	int32(PreDec),                    // UpdateExpression_Yield_NoLet : '--' UnaryExpression_Yield
+	0,                                // UpdateExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : LeftHandSideExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass
+	int32(PostInc),                   // UpdateExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : LeftHandSideExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass .noLineBreak '++'
+	int32(PostDec),                   // UpdateExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : LeftHandSideExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass .noLineBreak '--'
+	int32(PreInc),                    // UpdateExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : '++' UnaryExpression_Yield
+	int32(PreDec),                    // UpdateExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : '--' UnaryExpression_Yield
+	0,                                // UpdateExpression_Yield_StartWithLet : LeftHandSideExpression_Yield_StartWithLet
+	int32(PostInc),                   // UpdateExpression_Yield_StartWithLet : LeftHandSideExpression_Yield_StartWithLet .noLineBreak '++'
+	int32(PostDec),                   // UpdateExpression_Yield_StartWithLet : LeftHandSideExpression_Yield_StartWithLet .noLineBreak '--'
+	0,                                // UnaryExpression : UpdateExpression
+	int32(UnaryExpr),                 // UnaryExpression : 'delete' UnaryExpression
+	int32(UnaryExpr),                 // UnaryExpression : 'void' UnaryExpression
+	int32(UnaryExpr),                 // UnaryExpression : 'typeof' UnaryExpression
+	int32(UnaryExpr),                 // UnaryExpression : '+' UnaryExpression
+	int32(UnaryExpr),                 // UnaryExpression : '-' UnaryExpression
+	int32(UnaryExpr),                 // UnaryExpression : '~' UnaryExpression
+	int32(NotExpr),                   // UnaryExpression : '!' UnaryExpression
+	int32(TsCastExpr),                // UnaryExpression : lookahead_notStartOfArrowFunction '<' Type '>' UnaryExpression
+	0,                                // UnaryExpression_Await : UpdateExpression_Await
+	int32(UnaryExpr),                 // UnaryExpression_Await : 'delete' UnaryExpression_Await
+	int32(UnaryExpr),                 // UnaryExpression_Await : 'void' UnaryExpression_Await
+	int32(UnaryExpr),                 // UnaryExpression_Await : 'typeof' UnaryExpression_Await
+	int32(UnaryExpr),                 // UnaryExpression_Await : '+' UnaryExpression_Await
+	int32(UnaryExpr),                 // UnaryExpression_Await : '-' UnaryExpression_Await
+	int32(UnaryExpr),                 // UnaryExpression_Await : '~' UnaryExpression_Await
+	int32(NotExpr),                   // UnaryExpression_Await : '!' UnaryExpression_Await
+	0,                                // UnaryExpression_Await : AwaitExpression
+	int32(TsCastExpr),                // UnaryExpression_Await : lookahead_notStartOfArrowFunction '<' Type '>' UnaryExpression_Await
+	0,                                // UnaryExpression_Await_NoLet : UpdateExpression_Await_NoLet
+	int32(UnaryExpr),                 // UnaryExpression_Await_NoLet : 'delete' UnaryExpression_Await
+	int32(UnaryExpr),                 // UnaryExpression_Await_NoLet : 'void' UnaryExpression_Await
+	int32(UnaryExpr),                 // UnaryExpression_Await_NoLet : 'typeof' UnaryExpression_Await
+	int32(UnaryExpr),                 // UnaryExpression_Await_NoLet : '+' UnaryExpression_Await
+	int32(UnaryExpr),                 // UnaryExpression_Await_NoLet : '-' UnaryExpression_Await
+	int32(UnaryExpr),                 // UnaryExpression_Await_NoLet : '~' UnaryExpression_Await
+	int32(NotExpr),                   // UnaryExpression_Await_NoLet : '!' UnaryExpression_Await
+	0,                                // UnaryExpression_Await_NoLet : AwaitExpression
+	int32(TsCastExpr),                // UnaryExpression_Await_NoLet : lookahead_notStartOfArrowFunction '<' Type '>' UnaryExpression_Await
+	0,                                // UnaryExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : UpdateExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass
+	int32(UnaryExpr),                 // UnaryExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : 'delete' UnaryExpression_Await
+	int32(UnaryExpr),                 // UnaryExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : 'void' UnaryExpression_Await
+	int32(UnaryExpr),                 // UnaryExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : 'typeof' UnaryExpression_Await
+	int32(UnaryExpr),                 // UnaryExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : '+' UnaryExpression_Await
+	int32(UnaryExpr),                 // UnaryExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : '-' UnaryExpression_Await
+	int32(UnaryExpr),                 // UnaryExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : '~' UnaryExpression_Await
+	int32(NotExpr),                   // UnaryExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : '!' UnaryExpression_Await
+	0,                                // UnaryExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : AwaitExpression
+	int32(TsCastExpr),                // UnaryExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass : lookahead_notStartOfArrowFunction '<' Type '>' UnaryExpression_Await
+	0,                                // UnaryExpression_Await_NoObjLiteral : UpdateExpression_Await_NoObjLiteral
+	int32(UnaryExpr),                 // UnaryExpression_Await_NoObjLiteral : 'delete' UnaryExpression_Await
+	int32(UnaryExpr),                 // UnaryExpression_Await_NoObjLiteral : 'void' UnaryExpression_Await
+	int32(UnaryExpr),                 // UnaryExpression_Await_NoObjLiteral : 'typeof' UnaryExpression_Await
+	int32(UnaryExpr),                 // UnaryExpression_Await_NoObjLiteral : '+' UnaryExpression_Await
+	int32(UnaryExpr),                 // UnaryExpression_Await_NoObjLiteral : '-' UnaryExpression_Await
+	int32(UnaryExpr),                 // UnaryExpression_Await_NoObjLiteral : '~' UnaryExpression_Await
+	int32(NotExpr),                   // UnaryExpression_Await_NoObjLiteral : '!' UnaryExpression_Await
+	0,                                // UnaryExpression_Await_NoObjLiteral : AwaitExpression
+	int32(TsCastExpr),                // UnaryExpression_Await_NoObjLiteral : lookahead_notStartOfArrowFunction '<' Type '>' UnaryExpression_Await
+	0,                                // UnaryExpression_Await_StartWithLet : UpdateExpression_Await_StartWithLet
+	0,                                // UnaryExpression_NoFuncClass : UpdateExpression_NoFuncClass
+	int32(UnaryExpr),                 // UnaryExpression_NoFuncClass : 'delete' UnaryExpression
+	int32(UnaryExpr),                 // UnaryExpression_NoFuncClass : 'void' UnaryExpression
+	int32(UnaryExpr),                 // UnaryExpression_NoFuncClass : 'typeof' UnaryExpression
+	int32(UnaryExpr),                 // UnaryExpression_NoFuncClass : '+' UnaryExpression
+	int32(UnaryExpr),                 // UnaryExpression_NoFuncClass : '-' UnaryExpression
+	int32(UnaryExpr),                 // UnaryExpression_NoFuncClass : '~' UnaryExpression
+	int32(NotExpr),                   // UnaryExpression_NoFuncClass : '!' UnaryExpression
+	int32(TsCastExpr),                // UnaryExpression_NoFuncClass : lookahead_notStartOfArrowFunction '<' Type '>' UnaryExpression
+	0,                                // UnaryExpression_NoLet : UpdateExpression_NoLet
+	int32(UnaryExpr),                 // UnaryExpression_NoLet : 'delete' UnaryExpression
+	int32(UnaryExpr),                 // UnaryExpression_NoLet : 'void' UnaryExpression
+	int32(UnaryExpr),                 // UnaryExpression_NoLet : 'typeof' UnaryExpression
+	int32(UnaryExpr),                 // UnaryExpression_NoLet : '+' UnaryExpression
+	int32(UnaryExpr),                 // UnaryExpression_NoLet : '-' UnaryExpression
+	int32(UnaryExpr),                 // UnaryExpression_NoLet : '~' UnaryExpression
+	int32(NotExpr),                   // UnaryExpression_NoLet : '!' UnaryExpression
+	int32(TsCastExpr),                // UnaryExpression_NoLet : lookahead_notStartOfArrowFunction '<' Type '>' UnaryExpression
+	0,                                // UnaryExpression_NoLetSq_NoObjLiteral_NoFuncClass : UpdateExpression_NoLetSq_NoObjLiteral_NoFuncClass
+	int32(UnaryExpr),                 // UnaryExpression_NoLetSq_NoObjLiteral_NoFuncClass : 'delete' UnaryExpression
+	int32(UnaryExpr),                 // UnaryExpression_NoLetSq_NoObjLiteral_NoFuncClass : 'void' UnaryExpression
+	int32(UnaryExpr),                 // UnaryExpression_NoLetSq_NoObjLiteral_NoFuncClass : 'typeof' UnaryExpression
+	int32(UnaryExpr),                 // UnaryExpression_NoLetSq_NoObjLiteral_NoFuncClass : '+' UnaryExpression
+	int32(UnaryExpr),                 // UnaryExpression_NoLetSq_NoObjLiteral_NoFuncClass : '-' UnaryExpression
+	int32(UnaryExpr),                 // UnaryExpression_NoLetSq_NoObjLiteral_NoFuncClass : '~' UnaryExpression
+	int32(NotExpr),                   // UnaryExpression_NoLetSq_NoObjLiteral_NoFuncClass : '!' UnaryExpression
+	int32(TsCastExpr),                // UnaryExpression_NoLetSq_NoObjLiteral_NoFuncClass : lookahead_notStartOfArrowFunction '<' Type '>' UnaryExpression
+	0,                                // UnaryExpression_NoObjLiteral : UpdateExpression_NoObjLiteral
+	int32(UnaryExpr),                 // UnaryExpression_NoObjLiteral : 'delete' UnaryExpression
+	int32(UnaryExpr),                 // UnaryExpression_NoObjLiteral : 'void' UnaryExpression
+	int32(UnaryExpr),                 // UnaryExpression_NoObjLiteral : 'typeof' UnaryExpression
+	int32(UnaryExpr),                 // UnaryExpression_NoObjLiteral : '+' UnaryExpression
+	int32(UnaryExpr),                 // UnaryExpression_NoObjLiteral : '-' UnaryExpression
+	int32(UnaryExpr),                 // UnaryExpression_NoObjLiteral : '~' UnaryExpression
+	int32(NotExpr),                   // UnaryExpression_NoObjLiteral : '!' UnaryExpression
+	int32(TsCastExpr),                // UnaryExpression_NoObjLiteral : lookahead_notStartOfArrowFunction '<' Type '>' UnaryExpression
+	0,                                // UnaryExpression_StartWithLet : UpdateExpression_StartWithLet
+	0,                                // UnaryExpression_Yield : UpdateExpression_Yield
+	int32(UnaryExpr),                 // UnaryExpression_Yield : 'delete' UnaryExpression_Yield
+	int32(UnaryExpr),                 // UnaryExpression_Yield : 'void' UnaryExpression_Yield
+	int32(UnaryExpr),                 // UnaryExpression_Yield : 'typeof' UnaryExpression_Yield
+	int32(UnaryExpr),                 // UnaryExpression_Yield : '+' UnaryExpression_Yield
+	int32(UnaryExpr),                 // UnaryExpression_Yield : '-' UnaryExpression_Yield
+	int32(UnaryExpr),                 // UnaryExpression_Yield : '~' UnaryExpression_Yield
+	int32(NotExpr),                   // UnaryExpression_Yield : '!' UnaryExpression_Yield
+	int32(TsCastExpr),                // UnaryExpression_Yield : lookahead_notStartOfArrowFunction '<' Type '>' UnaryExpression_Yield
+	0,                                // UnaryExpression_Yield_Await : UpdateExpression_Yield_Await
+	int32(UnaryExpr),                 // UnaryExpression_Yield_Await : 'delete' UnaryExpression_Yield_Await
+	int32(UnaryExpr),                 // UnaryExpression_Yield_Await : 'void' UnaryExpression_Yield_Await
+	int32(UnaryExpr),                 // UnaryExpression_Yield_Await : 'typeof' UnaryExpression_Yield_Await
+	int32(UnaryExpr),                 // UnaryExpression_Yield_Await : '+' UnaryExpression_Yield_Await
+	int32(UnaryExpr),                 // UnaryExpression_Yield_Await : '-' UnaryExpression_Yield_Await
+	int32(UnaryExpr),                 // UnaryExpression_Yield_Await : '~' UnaryExpression_Yield_Await
+	int32(NotExpr),                   // UnaryExpression_Yield_Await : '!' UnaryExpression_Yield_Await
+	0,                                // UnaryExpression_Yield_Await : AwaitExpression
+	int32(TsCastExpr),                // UnaryExpression_Yield_Await : lookahead_notStartOfArrowFunction '<' Type '>' UnaryExpression_Yield_Await
+	0,                                // UnaryExpression_Yield_Await_NoLet : UpdateExpression_Yield_Await_NoLet
+	int32(UnaryExpr),                 // UnaryExpression_Yield_Await_NoLet : 'delete' UnaryExpression_Yield_Await
+	int32(UnaryExpr),                 // UnaryExpression_Yield_Await_NoLet : 'void' UnaryExpression_Yield_Await
+	int32(UnaryExpr),                 // UnaryExpression_Yield_Await_NoLet : 'typeof' UnaryExpression_Yield_Await
+	int32(UnaryExpr),                 // UnaryExpression_Yield_Await_NoLet : '+' UnaryExpression_Yield_Await
+	int32(UnaryExpr),                 // UnaryExpression_Yield_Await_NoLet : '-' UnaryExpression_Yield_Await
+	int32(UnaryExpr),                 // UnaryExpression_Yield_Await_NoLet : '~' UnaryExpression_Yield_Await
+	int32(NotExpr),                   // UnaryExpression_Yield_Await_NoLet : '!' UnaryExpression_Yield_Await
+	0,                                // UnaryExpression_Yield_Await_NoLet : AwaitExpression
+	int32(TsCastExpr),                // UnaryExpression_Yield_Await_NoLet : lookahead_notStartOfArrowFunction '<' Type '>' UnaryExpression_Yield_Await
+	0,                                // UnaryExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : UpdateExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass
+	int32(UnaryExpr),                 // UnaryExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : 'delete' UnaryExpression_Yield_Await
+	int32(UnaryExpr),                 // UnaryExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : 'void' UnaryExpression_Yield_Await
+	int32(UnaryExpr),                 // UnaryExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : 'typeof' UnaryExpression_Yield_Await
+	int32(UnaryExpr),                 // UnaryExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : '+' UnaryExpression_Yield_Await
+	int32(UnaryExpr),                 // UnaryExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : '-' UnaryExpression_Yield_Await
+	int32(UnaryExpr),                 // UnaryExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : '~' UnaryExpression_Yield_Await
+	int32(NotExpr),                   // UnaryExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : '!' UnaryExpression_Yield_Await
+	0,                                // UnaryExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : AwaitExpression
+	int32(TsCastExpr),                // UnaryExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass : lookahead_notStartOfArrowFunction '<' Type '>' UnaryExpression_Yield_Await
+	0,                                // UnaryExpression_Yield_Await_StartWithLet : UpdateExpression_Yield_Await_StartWithLet
+	0,                                // UnaryExpression_Yield_NoLet : UpdateExpression_Yield_NoLet
+	int32(UnaryExpr),                 // UnaryExpression_Yield_NoLet : 'delete' UnaryExpression_Yield
+	int32(UnaryExpr),                 // UnaryExpression_Yield_NoLet : 'void' UnaryExpression_Yield
+	int32(UnaryExpr),                 // UnaryExpression_Yield_NoLet : 'typeof' UnaryExpression_Yield
+	int32(UnaryExpr),                 // UnaryExpression_Yield_NoLet : '+' UnaryExpression_Yield
+	int32(UnaryExpr),                 // UnaryExpression_Yield_NoLet : '-' UnaryExpression_Yield
+	int32(UnaryExpr),                 // UnaryExpression_Yield_NoLet : '~' UnaryExpression_Yield
+	int32(NotExpr),                   // UnaryExpression_Yield_NoLet : '!' UnaryExpression_Yield
+	int32(TsCastExpr),                // UnaryExpression_Yield_NoLet : lookahead_notStartOfArrowFunction '<' Type '>' UnaryExpression_Yield
+	0,                                // UnaryExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : UpdateExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass
+	int32(UnaryExpr),                 // UnaryExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : 'delete' UnaryExpression_Yield
+	int32(UnaryExpr),                 // UnaryExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : 'void' UnaryExpression_Yield
+	int32(UnaryExpr),                 // UnaryExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : 'typeof' UnaryExpression_Yield
+	int32(UnaryExpr),                 // UnaryExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : '+' UnaryExpression_Yield
+	int32(UnaryExpr),                 // UnaryExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : '-' UnaryExpression_Yield
+	int32(UnaryExpr),                 // UnaryExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : '~' UnaryExpression_Yield
+	int32(NotExpr),                   // UnaryExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : '!' UnaryExpression_Yield
+	int32(TsCastExpr),                // UnaryExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass : lookahead_notStartOfArrowFunction '<' Type '>' UnaryExpression_Yield
+	0,                                // UnaryExpression_Yield_StartWithLet : UpdateExpression_Yield_StartWithLet
+	0,                                // BinaryExpression : UnaryExpression
+	int32(AdditiveExpr),              // BinaryExpression : BinaryExpression '+' BinaryExpression
+	int32(AdditiveExpr),              // BinaryExpression : BinaryExpression '-' BinaryExpression
+	int32(ShiftExpr),                 // BinaryExpression : BinaryExpression '<<' BinaryExpression
+	int32(ShiftExpr),                 // BinaryExpression : BinaryExpression '>>' BinaryExpression
+	int32(ShiftExpr),                 // BinaryExpression : BinaryExpression '>>>' BinaryExpression
+	int32(MultiplicativeExpr),        // BinaryExpression : BinaryExpression '*' BinaryExpression
+	int32(MultiplicativeExpr),        // BinaryExpression : BinaryExpression '/' BinaryExpression
+	int32(MultiplicativeExpr),        // BinaryExpression : BinaryExpression '%' BinaryExpression
+	int32(ExponentiationExpr),        // BinaryExpression : UpdateExpression '**' BinaryExpression
+	int32(RelationalExpr),            // BinaryExpression : BinaryExpression '<' BinaryExpression
+	int32(RelationalExpr),            // BinaryExpression : BinaryExpression '>' BinaryExpression
+	int32(RelationalExpr),            // BinaryExpression : BinaryExpression '<=' BinaryExpression
+	int32(RelationalExpr),            // BinaryExpression : BinaryExpression '>=' BinaryExpression
+	int32(InstanceOfExpr),            // BinaryExpression : BinaryExpression 'instanceof' BinaryExpression
+	int32(TsAsExpr),                  // BinaryExpression : BinaryExpression .noLineBreak 'as' Type_NoQuest
+	-1,                               // BinaryExpression : BinaryExpression .noLineBreak 'as' 'const'
+	int32(TsSatisfiesExpr),           // BinaryExpression : BinaryExpression 'satisfies' Type_NoQuest
+	int32(EqualityExpr),              // BinaryExpression : BinaryExpression '==' BinaryExpression
+	int32(EqualityExpr),              // BinaryExpression : BinaryExpression '!=' BinaryExpression
+	int32(EqualityExpr),              // BinaryExpression : BinaryExpression '===' BinaryExpression
+	int32(EqualityExpr),              // BinaryExpression : BinaryExpression '!==' BinaryExpression
+	int32(BitwiseAND),                // BinaryExpression : BinaryExpression '&' BinaryExpression
+	int32(BitwiseXOR),                // BinaryExpression : BinaryExpression '^' BinaryExpression
+	int32(BitwiseOR),                 // BinaryExpression : BinaryExpression '|' BinaryExpression
+	int32(LogicalAND),                // BinaryExpression : BinaryExpression '&&' BinaryExpression
+	int32(LogicalOR),                 // BinaryExpression : BinaryExpression '||' BinaryExpression
+	int32(CoalesceExpr),              // BinaryExpression : BinaryExpression '??' BinaryExpression
+	0,                                // BinaryExpression_Await : UnaryExpression_Await
+	int32(AdditiveExpr),              // BinaryExpression_Await : BinaryExpression_Await '+' BinaryExpression_Await
+	int32(AdditiveExpr),              // BinaryExpression_Await : BinaryExpression_Await '-' BinaryExpression_Await
+	int32(ShiftExpr),                 // BinaryExpression_Await : BinaryExpression_Await '<<' BinaryExpression_Await
+	int32(ShiftExpr),                 // BinaryExpression_Await : BinaryExpression_Await '>>' BinaryExpression_Await
+	int32(ShiftExpr),                 // BinaryExpression_Await : BinaryExpression_Await '>>>' BinaryExpression_Await
+	int32(MultiplicativeExpr),        // BinaryExpression_Await : BinaryExpression_Await '*' BinaryExpression_Await
+	int32(MultiplicativeExpr),        // BinaryExpression_Await : BinaryExpression_Await '/' BinaryExpression_Await
+	int32(MultiplicativeExpr),        // BinaryExpression_Await : BinaryExpression_Await '%' BinaryExpression_Await
+	int32(ExponentiationExpr),        // BinaryExpression_Await : UpdateExpression_Await '**' BinaryExpression_Await
+	int32(RelationalExpr),            // BinaryExpression_Await : BinaryExpression_Await '<' BinaryExpression_Await
+	int32(RelationalExpr),            // BinaryExpression_Await : BinaryExpression_Await '>' BinaryExpression_Await
+	int32(RelationalExpr),            // BinaryExpression_Await : BinaryExpression_Await '<=' BinaryExpression_Await
+	int32(RelationalExpr),            // BinaryExpression_Await : BinaryExpression_Await '>=' BinaryExpression_Await
+	int32(InstanceOfExpr),            // BinaryExpression_Await : BinaryExpression_Await 'instanceof' BinaryExpression_Await
+	int32(TsAsExpr),                  // BinaryExpression_Await : BinaryExpression_Await .noLineBreak 'as' Type_NoQuest
+	-1,                               // BinaryExpression_Await : BinaryExpression_Await .noLineBreak 'as' 'const'
+	int32(TsSatisfiesExpr),           // BinaryExpression_Await : BinaryExpression_Await 'satisfies' Type_NoQuest
+	int32(EqualityExpr),              // BinaryExpression_Await : BinaryExpression_Await '==' BinaryExpression_Await
+	int32(EqualityExpr),              // BinaryExpression_Await : BinaryExpression_Await '!=' BinaryExpression_Await
+	int32(EqualityExpr),              // BinaryExpression_Await : BinaryExpression_Await '===' BinaryExpression_Await
+	int32(EqualityExpr),              // BinaryExpression_Await : BinaryExpression_Await '!==' BinaryExpression_Await
+	int32(BitwiseAND),                // BinaryExpression_Await : BinaryExpression_Await '&' BinaryExpression_Await
+	int32(BitwiseXOR),                // BinaryExpression_Await : BinaryExpression_Await '^' BinaryExpression_Await
+	int32(BitwiseOR),                 // BinaryExpression_Await : BinaryExpression_Await '|' BinaryExpression_Await
+	int32(LogicalAND),                // BinaryExpression_Await : BinaryExpression_Await '&&' BinaryExpression_Await
+	int32(LogicalOR),                 // BinaryExpression_Await : BinaryExpression_Await '||' BinaryExpression_Await
+	int32(CoalesceExpr),              // BinaryExpression_Await : BinaryExpression_Await '??' BinaryExpression_Await
+	0,                                // BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet : UnaryExpression_Await_StartWithLet
+	int32(AdditiveExpr),              // BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet '+' BinaryExpression_Await
+	int32(AdditiveExpr),              // BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet '-' BinaryExpression_Await
+	int32(ShiftExpr),                 // BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet '<<' BinaryExpression_Await
+	int32(ShiftExpr),                 // BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet '>>' BinaryExpression_Await
+	int32(ShiftExpr),                 // BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet '>>>' BinaryExpression_Await
+	int32(MultiplicativeExpr),        // BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet '*' BinaryExpression_Await
+	int32(MultiplicativeExpr),        // BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet '/' BinaryExpression_Await
+	int32(MultiplicativeExpr),        // BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet '%' BinaryExpression_Await
+	int32(ExponentiationExpr),        // BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet : UpdateExpression_Await_StartWithLet '**' BinaryExpression_Await
+	int32(RelationalExpr),            // BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet '<' BinaryExpression_Await
+	int32(RelationalExpr),            // BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet '>' BinaryExpression_Await
+	int32(RelationalExpr),            // BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet '<=' BinaryExpression_Await
+	int32(RelationalExpr),            // BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet '>=' BinaryExpression_Await
+	int32(InstanceOfExpr),            // BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet 'instanceof' BinaryExpression_Await
+	int32(EqualityExpr),              // BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet '==' BinaryExpression_Await
+	int32(EqualityExpr),              // BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet '!=' BinaryExpression_Await
+	int32(EqualityExpr),              // BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet '===' BinaryExpression_Await
+	int32(EqualityExpr),              // BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet '!==' BinaryExpression_Await
+	int32(BitwiseAND),                // BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet '&' BinaryExpression_Await
+	int32(BitwiseXOR),                // BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet '^' BinaryExpression_Await
+	int32(BitwiseOR),                 // BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet '|' BinaryExpression_Await
+	int32(LogicalAND),                // BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet '&&' BinaryExpression_Await
+	int32(LogicalOR),                 // BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet '||' BinaryExpression_Await
+	int32(CoalesceExpr),              // BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet '??' BinaryExpression_Await
+	0,                                // BinaryExpression_Await_NoLet : UnaryExpression_Await_NoLet
+	int32(AdditiveExpr),              // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet '+' BinaryExpression_Await
+	int32(AdditiveExpr),              // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet '-' BinaryExpression_Await
+	int32(ShiftExpr),                 // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet '<<' BinaryExpression_Await
+	int32(ShiftExpr),                 // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet '>>' BinaryExpression_Await
+	int32(ShiftExpr),                 // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet '>>>' BinaryExpression_Await
+	int32(MultiplicativeExpr),        // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet '*' BinaryExpression_Await
+	int32(MultiplicativeExpr),        // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet '/' BinaryExpression_Await
+	int32(MultiplicativeExpr),        // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet '%' BinaryExpression_Await
+	int32(ExponentiationExpr),        // BinaryExpression_Await_NoLet : UpdateExpression_Await_NoLet '**' BinaryExpression_Await
+	int32(RelationalExpr),            // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet '<' BinaryExpression_Await
+	int32(RelationalExpr),            // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet '>' BinaryExpression_Await
+	int32(RelationalExpr),            // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet '<=' BinaryExpression_Await
+	int32(RelationalExpr),            // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet '>=' BinaryExpression_Await
+	int32(InstanceOfExpr),            // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet 'instanceof' BinaryExpression_Await
+	int32(TsAsExpr),                  // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet .noLineBreak 'as' Type_NoQuest
+	-1,                               // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet .noLineBreak 'as' 'const'
+	int32(TsSatisfiesExpr),           // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet 'satisfies' Type_NoQuest
+	int32(EqualityExpr),              // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet '==' BinaryExpression_Await
+	int32(EqualityExpr),              // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet '!=' BinaryExpression_Await
+	int32(EqualityExpr),              // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet '===' BinaryExpression_Await
+	int32(EqualityExpr),              // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet '!==' BinaryExpression_Await
+	int32(BitwiseAND),                // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet '&' BinaryExpression_Await
+	int32(BitwiseXOR),                // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet '^' BinaryExpression_Await
+	int32(BitwiseOR),                 // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet '|' BinaryExpression_Await
+	int32(LogicalAND),                // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet '&&' BinaryExpression_Await
+	int32(LogicalOR),                 // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet '||' BinaryExpression_Await
+	int32(CoalesceExpr),              // BinaryExpression_Await_NoLet : BinaryExpression_Await_NoLet '??' BinaryExpression_Await
+	0,                                // BinaryExpression_Await_NoObjLiteral : UnaryExpression_Await_NoObjLiteral
+	int32(AdditiveExpr),              // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral '+' BinaryExpression_Await
+	int32(AdditiveExpr),              // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral '-' BinaryExpression_Await
+	int32(ShiftExpr),                 // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral '<<' BinaryExpression_Await
+	int32(ShiftExpr),                 // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral '>>' BinaryExpression_Await
+	int32(ShiftExpr),                 // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral '>>>' BinaryExpression_Await
+	int32(MultiplicativeExpr),        // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral '*' BinaryExpression_Await
+	int32(MultiplicativeExpr),        // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral '/' BinaryExpression_Await
+	int32(MultiplicativeExpr),        // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral '%' BinaryExpression_Await
+	int32(ExponentiationExpr),        // BinaryExpression_Await_NoObjLiteral : UpdateExpression_Await_NoObjLiteral '**' BinaryExpression_Await
+	int32(RelationalExpr),            // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral '<' BinaryExpression_Await
+	int32(RelationalExpr),            // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral '>' BinaryExpression_Await
+	int32(RelationalExpr),            // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral '<=' BinaryExpression_Await
+	int32(RelationalExpr),            // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral '>=' BinaryExpression_Await
+	int32(InstanceOfExpr),            // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral 'instanceof' BinaryExpression_Await
+	int32(TsAsExpr),                  // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral .noLineBreak 'as' Type_NoQuest
+	-1,                               // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral .noLineBreak 'as' 'const'
+	int32(TsSatisfiesExpr),           // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral 'satisfies' Type_NoQuest
+	int32(EqualityExpr),              // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral '==' BinaryExpression_Await
+	int32(EqualityExpr),              // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral '!=' BinaryExpression_Await
+	int32(EqualityExpr),              // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral '===' BinaryExpression_Await
+	int32(EqualityExpr),              // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral '!==' BinaryExpression_Await
+	int32(BitwiseAND),                // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral '&' BinaryExpression_Await
+	int32(BitwiseXOR),                // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral '^' BinaryExpression_Await
+	int32(BitwiseOR),                 // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral '|' BinaryExpression_Await
+	int32(LogicalAND),                // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral '&&' BinaryExpression_Await
+	int32(LogicalOR),                 // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral '||' BinaryExpression_Await
+	int32(CoalesceExpr),              // BinaryExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral '??' BinaryExpression_Await
+	0,                                // BinaryExpression_In : UnaryExpression
+	int32(AdditiveExpr),              // BinaryExpression_In : BinaryExpression_In '+' BinaryExpression_In
+	int32(AdditiveExpr),              // BinaryExpression_In : BinaryExpression_In '-' BinaryExpression_In
+	int32(ShiftExpr),                 // BinaryExpression_In : BinaryExpression_In '<<' BinaryExpression_In
+	int32(ShiftExpr),                 // BinaryExpression_In : BinaryExpression_In '>>' BinaryExpression_In
+	int32(ShiftExpr),                 // BinaryExpression_In : BinaryExpression_In '>>>' BinaryExpression_In
+	int32(MultiplicativeExpr),        // BinaryExpression_In : BinaryExpression_In '*' BinaryExpression_In
+	int32(MultiplicativeExpr),        // BinaryExpression_In : BinaryExpression_In '/' BinaryExpression_In
+	int32(MultiplicativeExpr),        // BinaryExpression_In : BinaryExpression_In '%' BinaryExpression_In
+	int32(ExponentiationExpr),        // BinaryExpression_In : UpdateExpression '**' BinaryExpression_In
+	int32(RelationalExpr),            // BinaryExpression_In : BinaryExpression_In '<' BinaryExpression_In
+	int32(RelationalExpr),            // BinaryExpression_In : BinaryExpression_In '>' BinaryExpression_In
+	int32(RelationalExpr),            // BinaryExpression_In : BinaryExpression_In '<=' BinaryExpression_In
+	int32(RelationalExpr),            // BinaryExpression_In : BinaryExpression_In '>=' BinaryExpression_In
+	int32(InstanceOfExpr),            // BinaryExpression_In : BinaryExpression_In 'instanceof' BinaryExpression_In
+	int32(InExpr),                    // BinaryExpression_In : BinaryExpression_In 'in' BinaryExpression_In
+	int32(TsAsExpr),                  // BinaryExpression_In : BinaryExpression_In .noLineBreak 'as' Type_NoQuest
+	-1,                               // BinaryExpression_In : BinaryExpression_In .noLineBreak 'as' 'const'
+	int32(TsSatisfiesExpr),           // BinaryExpression_In : BinaryExpression_In 'satisfies' Type_NoQuest
+	int32(EqualityExpr),              // BinaryExpression_In : BinaryExpression_In '==' BinaryExpression_In
+	int32(EqualityExpr),              // BinaryExpression_In : BinaryExpression_In '!=' BinaryExpression_In
+	int32(EqualityExpr),              // BinaryExpression_In : BinaryExpression_In '===' BinaryExpression_In
+	int32(EqualityExpr),              // BinaryExpression_In : BinaryExpression_In '!==' BinaryExpression_In
+	int32(BitwiseAND),                // BinaryExpression_In : BinaryExpression_In '&' BinaryExpression_In
+	int32(BitwiseXOR),                // BinaryExpression_In : BinaryExpression_In '^' BinaryExpression_In
+	int32(BitwiseOR),                 // BinaryExpression_In : BinaryExpression_In '|' BinaryExpression_In
+	int32(LogicalAND),                // BinaryExpression_In : BinaryExpression_In '&&' BinaryExpression_In
+	int32(LogicalOR),                 // BinaryExpression_In : BinaryExpression_In '||' BinaryExpression_In
+	int32(CoalesceExpr),              // BinaryExpression_In : BinaryExpression_In '??' BinaryExpression_In
+	0,                                // BinaryExpression_In_Await : UnaryExpression_Await
+	int32(AdditiveExpr),              // BinaryExpression_In_Await : BinaryExpression_In_Await '+' BinaryExpression_In_Await
+	int32(AdditiveExpr),              // BinaryExpression_In_Await : BinaryExpression_In_Await '-' BinaryExpression_In_Await
+	int32(ShiftExpr),                 // BinaryExpression_In_Await : BinaryExpression_In_Await '<<' BinaryExpression_In_Await
+	int32(ShiftExpr),                 // BinaryExpression_In_Await : BinaryExpression_In_Await '>>' BinaryExpression_In_Await
+	int32(ShiftExpr),                 // BinaryExpression_In_Await : BinaryExpression_In_Await '>>>' BinaryExpression_In_Await
+	int32(MultiplicativeExpr),        // BinaryExpression_In_Await : BinaryExpression_In_Await '*' BinaryExpression_In_Await
+	int32(MultiplicativeExpr),        // BinaryExpression_In_Await : BinaryExpression_In_Await '/' BinaryExpression_In_Await
+	int32(MultiplicativeExpr),        // BinaryExpression_In_Await : BinaryExpression_In_Await '%' BinaryExpression_In_Await
+	int32(ExponentiationExpr),        // BinaryExpression_In_Await : UpdateExpression_Await '**' BinaryExpression_In_Await
+	int32(RelationalExpr),            // BinaryExpression_In_Await : BinaryExpression_In_Await '<' BinaryExpression_In_Await
+	int32(RelationalExpr),            // BinaryExpression_In_Await : BinaryExpression_In_Await '>' BinaryExpression_In_Await
+	int32(RelationalExpr),            // BinaryExpression_In_Await : BinaryExpression_In_Await '<=' BinaryExpression_In_Await
+	int32(RelationalExpr),            // BinaryExpression_In_Await : BinaryExpression_In_Await '>=' BinaryExpression_In_Await
+	int32(InstanceOfExpr),            // BinaryExpression_In_Await : BinaryExpression_In_Await 'instanceof' BinaryExpression_In_Await
+	int32(InExpr),                    // BinaryExpression_In_Await : BinaryExpression_In_Await 'in' BinaryExpression_In_Await
+	int32(TsAsExpr),                  // BinaryExpression_In_Await : BinaryExpression_In_Await .noLineBreak 'as' Type_NoQuest
+	-1,                               // BinaryExpression_In_Await : BinaryExpression_In_Await .noLineBreak 'as' 'const'
+	int32(TsSatisfiesExpr),           // BinaryExpression_In_Await : BinaryExpression_In_Await 'satisfies' Type_NoQuest
+	int32(EqualityExpr),              // BinaryExpression_In_Await : BinaryExpression_In_Await '==' BinaryExpression_In_Await
+	int32(EqualityExpr),              // BinaryExpression_In_Await : BinaryExpression_In_Await '!=' BinaryExpression_In_Await
+	int32(EqualityExpr),              // BinaryExpression_In_Await : BinaryExpression_In_Await '===' BinaryExpression_In_Await
+	int32(EqualityExpr),              // BinaryExpression_In_Await : BinaryExpression_In_Await '!==' BinaryExpression_In_Await
+	int32(BitwiseAND),                // BinaryExpression_In_Await : BinaryExpression_In_Await '&' BinaryExpression_In_Await
+	int32(BitwiseXOR),                // BinaryExpression_In_Await : BinaryExpression_In_Await '^' BinaryExpression_In_Await
+	int32(BitwiseOR),                 // BinaryExpression_In_Await : BinaryExpression_In_Await '|' BinaryExpression_In_Await
+	int32(LogicalAND),                // BinaryExpression_In_Await : BinaryExpression_In_Await '&&' BinaryExpression_In_Await
+	int32(LogicalOR),                 // BinaryExpression_In_Await : BinaryExpression_In_Await '||' BinaryExpression_In_Await
+	int32(CoalesceExpr),              // BinaryExpression_In_Await : BinaryExpression_In_Await '??' BinaryExpression_In_Await
+	0,                                // BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : UnaryExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass
+	int32(AdditiveExpr),              // BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '+' BinaryExpression_In_Await
+	int32(AdditiveExpr),              // BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '-' BinaryExpression_In_Await
+	int32(ShiftExpr),                 // BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '<<' BinaryExpression_In_Await
+	int32(ShiftExpr),                 // BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '>>' BinaryExpression_In_Await
+	int32(ShiftExpr),                 // BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '>>>' BinaryExpression_In_Await
+	int32(MultiplicativeExpr),        // BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '*' BinaryExpression_In_Await
+	int32(MultiplicativeExpr),        // BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '/' BinaryExpression_In_Await
+	int32(MultiplicativeExpr),        // BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '%' BinaryExpression_In_Await
+	int32(ExponentiationExpr),        // BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : UpdateExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass '**' BinaryExpression_In_Await
+	int32(RelationalExpr),            // BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '<' BinaryExpression_In_Await
+	int32(RelationalExpr),            // BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '>' BinaryExpression_In_Await
+	int32(RelationalExpr),            // BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '<=' BinaryExpression_In_Await
+	int32(RelationalExpr),            // BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '>=' BinaryExpression_In_Await
+	int32(InstanceOfExpr),            // BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies 'instanceof' BinaryExpression_In_Await
+	int32(InExpr),                    // BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies 'in' BinaryExpression_In_Await
+	int32(EqualityExpr),              // BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '==' BinaryExpression_In_Await
+	int32(EqualityExpr),              // BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '!=' BinaryExpression_In_Await
+	int32(EqualityExpr),              // BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '===' BinaryExpression_In_Await
+	int32(EqualityExpr),              // BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '!==' BinaryExpression_In_Await
+	int32(BitwiseAND),                // BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '&' BinaryExpression_In_Await
+	int32(BitwiseXOR),                // BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '^' BinaryExpression_In_Await
+	int32(BitwiseOR),                 // BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '|' BinaryExpression_In_Await
+	int32(LogicalAND),                // BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '&&' BinaryExpression_In_Await
+	int32(LogicalOR),                 // BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '||' BinaryExpression_In_Await
+	int32(CoalesceExpr),              // BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '??' BinaryExpression_In_Await
+	0,                                // BinaryExpression_In_Await_NoObjLiteral : UnaryExpression_Await_NoObjLiteral
+	int32(AdditiveExpr),              // BinaryExpression_In_Await_NoObjLiteral : BinaryExpression_In_Await_NoObjLiteral '+' BinaryExpression_In_Await
+	int32(AdditiveExpr),              // BinaryExpression_In_Await_NoObjLiteral : BinaryExpression_In_Await_NoObjLiteral '-' BinaryExpression_In_Await
+	int32(ShiftExpr),                 // BinaryExpression_In_Await_NoObjLiteral : BinaryExpression_In_Await_NoObjLiteral '<<' BinaryExpression_In_Await
+	int32(ShiftExpr),                 // BinaryExpression_In_Await_NoObjLiteral : BinaryExpression_In_Await_NoObjLiteral '>>' BinaryExpression_In_Await
+	int32(ShiftExpr),                 // BinaryExpression_In_Await_NoObjLiteral : BinaryExpression_In_Await_NoObjLiteral '>>>' BinaryExpression_In_Await
+	int32(MultiplicativeExpr),        // BinaryExpression_In_Await_NoObjLiteral : BinaryExpression_In_Await_NoObjLiteral '*' BinaryExpression_In_Await
+	int32(MultiplicativeExpr),        // BinaryExpression_In_Await_NoObjLiteral : BinaryExpression_In_Await_NoObjLiteral '/' BinaryExpression_In_Await
+	int32(MultiplicativeExpr),        // BinaryExpression_In_Await_NoObjLiteral : BinaryExpression_In_Await_NoObjLiteral '%' BinaryExpression_In_Await
+	int32(ExponentiationExpr),        // BinaryExpression_In_Await_NoObjLiteral : UpdateExpression_Await_NoObjLiteral '**' BinaryExpression_In_Await
+	int32(RelationalExpr),            // BinaryExpression_In_Await_NoObjLiteral : BinaryExpression_In_Await_NoObjLiteral '<' BinaryExpression_In_Await
+	int32(RelationalExpr),            // BinaryExpression_In_Await_NoObjLiteral : BinaryExpression_In_Await_NoObjLiteral '>' BinaryExpression_In_Await
+	int32(RelationalExpr),            // BinaryExpression_In_Await_NoObjLiteral : BinaryExpression_In_Await_NoObjLiteral '<=' BinaryExpression_In_Await
+	int32(RelationalExpr),            // BinaryExpression_In_Await_NoObjLiteral : BinaryExpression_In_Await_NoObjLiteral '>=' BinaryExpression_In_Await
+	int32(InstanceOfExpr),            // BinaryExpression_In_Await_NoObjLiteral : BinaryExpression_In_Await_NoObjLiteral 'instanceof' BinaryExpression_In_Await
+	int32(InExpr),                    // BinaryExpression_In_Await_NoObjLiteral : BinaryExpression_In_Await_NoObjLiteral 'in' BinaryExpression_In_Await
+	int32(TsAsExpr),                  // BinaryExpression_In_Await_NoObjLiteral : BinaryExpression_In_Await_NoObjLiteral .noLineBreak 'as' Type_NoQuest
+	-1,                               // BinaryExpression_In_Await_NoObjLiteral : BinaryExpression_In_Await_NoObjLiteral .noLineBreak 'as' 'const'
+	int32(TsSatisfiesExpr),           // BinaryExpression_In_Await_NoObjLiteral : BinaryExpression_In_Await_NoObjLiteral 'satisfies' Type_NoQuest
+	int32(EqualityExpr),              // BinaryExpression_In_Await_NoObjLiteral : BinaryExpression_In_Await_NoObjLiteral '==' BinaryExpression_In_Await
+	int32(EqualityExpr),              // BinaryExpression_In_Await_NoObjLiteral : BinaryExpression_In_Await_NoObjLiteral '!=' BinaryExpression_In_Await
+	int32(EqualityExpr),              // BinaryExpression_In_Await_NoObjLiteral : BinaryExpression_In_Await_NoObjLiteral '===' BinaryExpression_In_Await
+	int32(EqualityExpr),              // BinaryExpression_In_Await_NoObjLiteral : BinaryExpression_In_Await_NoObjLiteral '!==' BinaryExpression_In_Await
+	int32(BitwiseAND),                // BinaryExpression_In_Await_NoObjLiteral : BinaryExpression_In_Await_NoObjLiteral '&' BinaryExpression_In_Await
+	int32(BitwiseXOR),                // BinaryExpression_In_Await_NoObjLiteral : BinaryExpression_In_Await_NoObjLiteral '^' BinaryExpression_In_Await
+	int32(BitwiseOR),                 // BinaryExpression_In_Await_NoObjLiteral : BinaryExpression_In_Await_NoObjLiteral '|' BinaryExpression_In_Await
+	int32(LogicalAND),                // BinaryExpression_In_Await_NoObjLiteral : BinaryExpression_In_Await_NoObjLiteral '&&' BinaryExpression_In_Await
+	int32(LogicalOR),                 // BinaryExpression_In_Await_NoObjLiteral : BinaryExpression_In_Await_NoObjLiteral '||' BinaryExpression_In_Await
+	int32(CoalesceExpr),              // BinaryExpression_In_Await_NoObjLiteral : BinaryExpression_In_Await_NoObjLiteral '??' BinaryExpression_In_Await
+	0,                                // BinaryExpression_In_NoFuncClass : UnaryExpression_NoFuncClass
+	int32(AdditiveExpr),              // BinaryExpression_In_NoFuncClass : BinaryExpression_In_NoFuncClass '+' BinaryExpression_In
+	int32(AdditiveExpr),              // BinaryExpression_In_NoFuncClass : BinaryExpression_In_NoFuncClass '-' BinaryExpression_In
+	int32(ShiftExpr),                 // BinaryExpression_In_NoFuncClass : BinaryExpression_In_NoFuncClass '<<' BinaryExpression_In
+	int32(ShiftExpr),                 // BinaryExpression_In_NoFuncClass : BinaryExpression_In_NoFuncClass '>>' BinaryExpression_In
+	int32(ShiftExpr),                 // BinaryExpression_In_NoFuncClass : BinaryExpression_In_NoFuncClass '>>>' BinaryExpression_In
+	int32(MultiplicativeExpr),        // BinaryExpression_In_NoFuncClass : BinaryExpression_In_NoFuncClass '*' BinaryExpression_In
+	int32(MultiplicativeExpr),        // BinaryExpression_In_NoFuncClass : BinaryExpression_In_NoFuncClass '/' BinaryExpression_In
+	int32(MultiplicativeExpr),        // BinaryExpression_In_NoFuncClass : BinaryExpression_In_NoFuncClass '%' BinaryExpression_In
+	int32(ExponentiationExpr),        // BinaryExpression_In_NoFuncClass : UpdateExpression_NoFuncClass '**' BinaryExpression_In
+	int32(RelationalExpr),            // BinaryExpression_In_NoFuncClass : BinaryExpression_In_NoFuncClass '<' BinaryExpression_In
+	int32(RelationalExpr),            // BinaryExpression_In_NoFuncClass : BinaryExpression_In_NoFuncClass '>' BinaryExpression_In
+	int32(RelationalExpr),            // BinaryExpression_In_NoFuncClass : BinaryExpression_In_NoFuncClass '<=' BinaryExpression_In
+	int32(RelationalExpr),            // BinaryExpression_In_NoFuncClass : BinaryExpression_In_NoFuncClass '>=' BinaryExpression_In
+	int32(InstanceOfExpr),            // BinaryExpression_In_NoFuncClass : BinaryExpression_In_NoFuncClass 'instanceof' BinaryExpression_In
+	int32(InExpr),                    // BinaryExpression_In_NoFuncClass : BinaryExpression_In_NoFuncClass 'in' BinaryExpression_In
+	int32(TsAsExpr),                  // BinaryExpression_In_NoFuncClass : BinaryExpression_In_NoFuncClass .noLineBreak 'as' Type_NoQuest
+	-1,                               // BinaryExpression_In_NoFuncClass : BinaryExpression_In_NoFuncClass .noLineBreak 'as' 'const'
+	int32(TsSatisfiesExpr),           // BinaryExpression_In_NoFuncClass : BinaryExpression_In_NoFuncClass 'satisfies' Type_NoQuest
+	int32(EqualityExpr),              // BinaryExpression_In_NoFuncClass : BinaryExpression_In_NoFuncClass '==' BinaryExpression_In
+	int32(EqualityExpr),              // BinaryExpression_In_NoFuncClass : BinaryExpression_In_NoFuncClass '!=' BinaryExpression_In
+	int32(EqualityExpr),              // BinaryExpression_In_NoFuncClass : BinaryExpression_In_NoFuncClass '===' BinaryExpression_In
+	int32(EqualityExpr),              // BinaryExpression_In_NoFuncClass : BinaryExpression_In_NoFuncClass '!==' BinaryExpression_In
+	int32(BitwiseAND),                // BinaryExpression_In_NoFuncClass : BinaryExpression_In_NoFuncClass '&' BinaryExpression_In
+	int32(BitwiseXOR),                // BinaryExpression_In_NoFuncClass : BinaryExpression_In_NoFuncClass '^' BinaryExpression_In
+	int32(BitwiseOR),                 // BinaryExpression_In_NoFuncClass : BinaryExpression_In_NoFuncClass '|' BinaryExpression_In
+	int32(LogicalAND),                // BinaryExpression_In_NoFuncClass : BinaryExpression_In_NoFuncClass '&&' BinaryExpression_In
+	int32(LogicalOR),                 // BinaryExpression_In_NoFuncClass : BinaryExpression_In_NoFuncClass '||' BinaryExpression_In
+	int32(CoalesceExpr),              // BinaryExpression_In_NoFuncClass : BinaryExpression_In_NoFuncClass '??' BinaryExpression_In
+	0,                                // BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : UnaryExpression_NoLetSq_NoObjLiteral_NoFuncClass
+	int32(AdditiveExpr),              // BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '+' BinaryExpression_In
+	int32(AdditiveExpr),              // BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '-' BinaryExpression_In
+	int32(ShiftExpr),                 // BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '<<' BinaryExpression_In
+	int32(ShiftExpr),                 // BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '>>' BinaryExpression_In
+	int32(ShiftExpr),                 // BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '>>>' BinaryExpression_In
+	int32(MultiplicativeExpr),        // BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '*' BinaryExpression_In
+	int32(MultiplicativeExpr),        // BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '/' BinaryExpression_In
+	int32(MultiplicativeExpr),        // BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '%' BinaryExpression_In
+	int32(ExponentiationExpr),        // BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : UpdateExpression_NoLetSq_NoObjLiteral_NoFuncClass '**' BinaryExpression_In
+	int32(RelationalExpr),            // BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '<' BinaryExpression_In
+	int32(RelationalExpr),            // BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '>' BinaryExpression_In
+	int32(RelationalExpr),            // BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '<=' BinaryExpression_In
+	int32(RelationalExpr),            // BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '>=' BinaryExpression_In
+	int32(InstanceOfExpr),            // BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies 'instanceof' BinaryExpression_In
+	int32(InExpr),                    // BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies 'in' BinaryExpression_In
+	int32(EqualityExpr),              // BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '==' BinaryExpression_In
+	int32(EqualityExpr),              // BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '!=' BinaryExpression_In
+	int32(EqualityExpr),              // BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '===' BinaryExpression_In
+	int32(EqualityExpr),              // BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '!==' BinaryExpression_In
+	int32(BitwiseAND),                // BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '&' BinaryExpression_In
+	int32(BitwiseXOR),                // BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '^' BinaryExpression_In
+	int32(BitwiseOR),                 // BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '|' BinaryExpression_In
+	int32(LogicalAND),                // BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '&&' BinaryExpression_In
+	int32(LogicalOR),                 // BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '||' BinaryExpression_In
+	int32(CoalesceExpr),              // BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '??' BinaryExpression_In
+	0,                                // BinaryExpression_In_NoObjLiteral : UnaryExpression_NoObjLiteral
+	int32(AdditiveExpr),              // BinaryExpression_In_NoObjLiteral : BinaryExpression_In_NoObjLiteral '+' BinaryExpression_In
+	int32(AdditiveExpr),              // BinaryExpression_In_NoObjLiteral : BinaryExpression_In_NoObjLiteral '-' BinaryExpression_In
+	int32(ShiftExpr),                 // BinaryExpression_In_NoObjLiteral : BinaryExpression_In_NoObjLiteral '<<' BinaryExpression_In
+	int32(ShiftExpr),                 // BinaryExpression_In_NoObjLiteral : BinaryExpression_In_NoObjLiteral '>>' BinaryExpression_In
+	int32(ShiftExpr),                 // BinaryExpression_In_NoObjLiteral : BinaryExpression_In_NoObjLiteral '>>>' BinaryExpression_In
+	int32(MultiplicativeExpr),        // BinaryExpression_In_NoObjLiteral : BinaryExpression_In_NoObjLiteral '*' BinaryExpression_In
+	int32(MultiplicativeExpr),        // BinaryExpression_In_NoObjLiteral : BinaryExpression_In_NoObjLiteral '/' BinaryExpression_In
+	int32(MultiplicativeExpr),        // BinaryExpression_In_NoObjLiteral : BinaryExpression_In_NoObjLiteral '%' BinaryExpression_In
+	int32(ExponentiationExpr),        // BinaryExpression_In_NoObjLiteral : UpdateExpression_NoObjLiteral '**' BinaryExpression_In
+	int32(RelationalExpr),            // BinaryExpression_In_NoObjLiteral : BinaryExpression_In_NoObjLiteral '<' BinaryExpression_In
+	int32(RelationalExpr),            // BinaryExpression_In_NoObjLiteral : BinaryExpression_In_NoObjLiteral '>' BinaryExpression_In
+	int32(RelationalExpr),            // BinaryExpression_In_NoObjLiteral : BinaryExpression_In_NoObjLiteral '<=' BinaryExpression_In
+	int32(RelationalExpr),            // BinaryExpression_In_NoObjLiteral : BinaryExpression_In_NoObjLiteral '>=' BinaryExpression_In
+	int32(InstanceOfExpr),            // BinaryExpression_In_NoObjLiteral : BinaryExpression_In_NoObjLiteral 'instanceof' BinaryExpression_In
+	int32(InExpr),                    // BinaryExpression_In_NoObjLiteral : BinaryExpression_In_NoObjLiteral 'in' BinaryExpression_In
+	int32(TsAsExpr),                  // BinaryExpression_In_NoObjLiteral : BinaryExpression_In_NoObjLiteral .noLineBreak 'as' Type_NoQuest
+	-1,                               // BinaryExpression_In_NoObjLiteral : BinaryExpression_In_NoObjLiteral .noLineBreak 'as' 'const'
+	int32(TsSatisfiesExpr),           // BinaryExpression_In_NoObjLiteral : BinaryExpression_In_NoObjLiteral 'satisfies' Type_NoQuest
+	int32(EqualityExpr),              // BinaryExpression_In_NoObjLiteral : BinaryExpression_In_NoObjLiteral '==' BinaryExpression_In
+	int32(EqualityExpr),              // BinaryExpression_In_NoObjLiteral : BinaryExpression_In_NoObjLiteral '!=' BinaryExpression_In
+	int32(EqualityExpr),              // BinaryExpression_In_NoObjLiteral : BinaryExpression_In_NoObjLiteral '===' BinaryExpression_In
+	int32(EqualityExpr),              // BinaryExpression_In_NoObjLiteral : BinaryExpression_In_NoObjLiteral '!==' BinaryExpression_In
+	int32(BitwiseAND),                // BinaryExpression_In_NoObjLiteral : BinaryExpression_In_NoObjLiteral '&' BinaryExpression_In
+	int32(BitwiseXOR),                // BinaryExpression_In_NoObjLiteral : BinaryExpression_In_NoObjLiteral '^' BinaryExpression_In
+	int32(BitwiseOR),                 // BinaryExpression_In_NoObjLiteral : BinaryExpression_In_NoObjLiteral '|' BinaryExpression_In
+	int32(LogicalAND),                // BinaryExpression_In_NoObjLiteral : BinaryExpression_In_NoObjLiteral '&&' BinaryExpression_In
+	int32(LogicalOR),                 // BinaryExpression_In_NoObjLiteral : BinaryExpression_In_NoObjLiteral '||' BinaryExpression_In
+	int32(CoalesceExpr),              // BinaryExpression_In_NoObjLiteral : BinaryExpression_In_NoObjLiteral '??' BinaryExpression_In
+	0,                                // BinaryExpression_In_Yield : UnaryExpression_Yield
+	int32(AdditiveExpr),              // BinaryExpression_In_Yield : BinaryExpression_In_Yield '+' BinaryExpression_In_Yield
+	int32(AdditiveExpr),              // BinaryExpression_In_Yield : BinaryExpression_In_Yield '-' BinaryExpression_In_Yield
+	int32(ShiftExpr),                 // BinaryExpression_In_Yield : BinaryExpression_In_Yield '<<' BinaryExpression_In_Yield
+	int32(ShiftExpr),                 // BinaryExpression_In_Yield : BinaryExpression_In_Yield '>>' BinaryExpression_In_Yield
+	int32(ShiftExpr),                 // BinaryExpression_In_Yield : BinaryExpression_In_Yield '>>>' BinaryExpression_In_Yield
+	int32(MultiplicativeExpr),        // BinaryExpression_In_Yield : BinaryExpression_In_Yield '*' BinaryExpression_In_Yield
+	int32(MultiplicativeExpr),        // BinaryExpression_In_Yield : BinaryExpression_In_Yield '/' BinaryExpression_In_Yield
+	int32(MultiplicativeExpr),        // BinaryExpression_In_Yield : BinaryExpression_In_Yield '%' BinaryExpression_In_Yield
+	int32(ExponentiationExpr),        // BinaryExpression_In_Yield : UpdateExpression_Yield '**' BinaryExpression_In_Yield
+	int32(RelationalExpr),            // BinaryExpression_In_Yield : BinaryExpression_In_Yield '<' BinaryExpression_In_Yield
+	int32(RelationalExpr),            // BinaryExpression_In_Yield : BinaryExpression_In_Yield '>' BinaryExpression_In_Yield
+	int32(RelationalExpr),            // BinaryExpression_In_Yield : BinaryExpression_In_Yield '<=' BinaryExpression_In_Yield
+	int32(RelationalExpr),            // BinaryExpression_In_Yield : BinaryExpression_In_Yield '>=' BinaryExpression_In_Yield
+	int32(InstanceOfExpr),            // BinaryExpression_In_Yield : BinaryExpression_In_Yield 'instanceof' BinaryExpression_In_Yield
+	int32(InExpr),                    // BinaryExpression_In_Yield : BinaryExpression_In_Yield 'in' BinaryExpression_In_Yield
+	int32(TsAsExpr),                  // BinaryExpression_In_Yield : BinaryExpression_In_Yield .noLineBreak 'as' Type_NoQuest
+	-1,                               // BinaryExpression_In_Yield : BinaryExpression_In_Yield .noLineBreak 'as' 'const'
+	int32(TsSatisfiesExpr),           // BinaryExpression_In_Yield : BinaryExpression_In_Yield 'satisfies' Type_NoQuest
+	int32(EqualityExpr),              // BinaryExpression_In_Yield : BinaryExpression_In_Yield '==' BinaryExpression_In_Yield
+	int32(EqualityExpr),              // BinaryExpression_In_Yield : BinaryExpression_In_Yield '!=' BinaryExpression_In_Yield
+	int32(EqualityExpr),              // BinaryExpression_In_Yield : BinaryExpression_In_Yield '===' BinaryExpression_In_Yield
+	int32(EqualityExpr),              // BinaryExpression_In_Yield : BinaryExpression_In_Yield '!==' BinaryExpression_In_Yield
+	int32(BitwiseAND),                // BinaryExpression_In_Yield : BinaryExpression_In_Yield '&' BinaryExpression_In_Yield
+	int32(BitwiseXOR),                // BinaryExpression_In_Yield : BinaryExpression_In_Yield '^' BinaryExpression_In_Yield
+	int32(BitwiseOR),                 // BinaryExpression_In_Yield : BinaryExpression_In_Yield '|' BinaryExpression_In_Yield
+	int32(LogicalAND),                // BinaryExpression_In_Yield : BinaryExpression_In_Yield '&&' BinaryExpression_In_Yield
+	int32(LogicalOR),                 // BinaryExpression_In_Yield : BinaryExpression_In_Yield '||' BinaryExpression_In_Yield
+	int32(CoalesceExpr),              // BinaryExpression_In_Yield : BinaryExpression_In_Yield '??' BinaryExpression_In_Yield
+	0,                                // BinaryExpression_In_Yield_Await : UnaryExpression_Yield_Await
+	int32(AdditiveExpr),              // BinaryExpression_In_Yield_Await : BinaryExpression_In_Yield_Await '+' BinaryExpression_In_Yield_Await
+	int32(AdditiveExpr),              // BinaryExpression_In_Yield_Await : BinaryExpression_In_Yield_Await '-' BinaryExpression_In_Yield_Await
+	int32(ShiftExpr),                 // BinaryExpression_In_Yield_Await : BinaryExpression_In_Yield_Await '<<' BinaryExpression_In_Yield_Await
+	int32(ShiftExpr),                 // BinaryExpression_In_Yield_Await : BinaryExpression_In_Yield_Await '>>' BinaryExpression_In_Yield_Await
+	int32(ShiftExpr),                 // BinaryExpression_In_Yield_Await : BinaryExpression_In_Yield_Await '>>>' BinaryExpression_In_Yield_Await
+	int32(MultiplicativeExpr),        // BinaryExpression_In_Yield_Await : BinaryExpression_In_Yield_Await '*' BinaryExpression_In_Yield_Await
+	int32(MultiplicativeExpr),        // BinaryExpression_In_Yield_Await : BinaryExpression_In_Yield_Await '/' BinaryExpression_In_Yield_Await
+	int32(MultiplicativeExpr),        // BinaryExpression_In_Yield_Await : BinaryExpression_In_Yield_Await '%' BinaryExpression_In_Yield_Await
+	int32(ExponentiationExpr),        // BinaryExpression_In_Yield_Await : UpdateExpression_Yield_Await '**' BinaryExpression_In_Yield_Await
+	int32(RelationalExpr),            // BinaryExpression_In_Yield_Await : BinaryExpression_In_Yield_Await '<' BinaryExpression_In_Yield_Await
+	int32(RelationalExpr),            // BinaryExpression_In_Yield_Await : BinaryExpression_In_Yield_Await '>' BinaryExpression_In_Yield_Await
+	int32(RelationalExpr),            // BinaryExpression_In_Yield_Await : BinaryExpression_In_Yield_Await '<=' BinaryExpression_In_Yield_Await
+	int32(RelationalExpr),            // BinaryExpression_In_Yield_Await : BinaryExpression_In_Yield_Await '>=' BinaryExpression_In_Yield_Await
+	int32(InstanceOfExpr),            // BinaryExpression_In_Yield_Await : BinaryExpression_In_Yield_Await 'instanceof' BinaryExpression_In_Yield_Await
+	int32(InExpr),                    // BinaryExpression_In_Yield_Await : BinaryExpression_In_Yield_Await 'in' BinaryExpression_In_Yield_Await
+	int32(TsAsExpr),                  // BinaryExpression_In_Yield_Await : BinaryExpression_In_Yield_Await .noLineBreak 'as' Type_NoQuest
+	-1,                               // BinaryExpression_In_Yield_Await : BinaryExpression_In_Yield_Await .noLineBreak 'as' 'const'
+	int32(TsSatisfiesExpr),           // BinaryExpression_In_Yield_Await : BinaryExpression_In_Yield_Await 'satisfies' Type_NoQuest
+	int32(EqualityExpr),              // BinaryExpression_In_Yield_Await : BinaryExpression_In_Yield_Await '==' BinaryExpression_In_Yield_Await
+	int32(EqualityExpr),              // BinaryExpression_In_Yield_Await : BinaryExpression_In_Yield_Await '!=' BinaryExpression_In_Yield_Await
+	int32(EqualityExpr),              // BinaryExpression_In_Yield_Await : BinaryExpression_In_Yield_Await '===' BinaryExpression_In_Yield_Await
+	int32(EqualityExpr),              // BinaryExpression_In_Yield_Await : BinaryExpression_In_Yield_Await '!==' BinaryExpression_In_Yield_Await
+	int32(BitwiseAND),                // BinaryExpression_In_Yield_Await : BinaryExpression_In_Yield_Await '&' BinaryExpression_In_Yield_Await
+	int32(BitwiseXOR),                // BinaryExpression_In_Yield_Await : BinaryExpression_In_Yield_Await '^' BinaryExpression_In_Yield_Await
+	int32(BitwiseOR),                 // BinaryExpression_In_Yield_Await : BinaryExpression_In_Yield_Await '|' BinaryExpression_In_Yield_Await
+	int32(LogicalAND),                // BinaryExpression_In_Yield_Await : BinaryExpression_In_Yield_Await '&&' BinaryExpression_In_Yield_Await
+	int32(LogicalOR),                 // BinaryExpression_In_Yield_Await : BinaryExpression_In_Yield_Await '||' BinaryExpression_In_Yield_Await
+	int32(CoalesceExpr),              // BinaryExpression_In_Yield_Await : BinaryExpression_In_Yield_Await '??' BinaryExpression_In_Yield_Await
+	0,                                // BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : UnaryExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass
+	int32(AdditiveExpr),              // BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '+' BinaryExpression_In_Yield_Await
+	int32(AdditiveExpr),              // BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '-' BinaryExpression_In_Yield_Await
+	int32(ShiftExpr),                 // BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '<<' BinaryExpression_In_Yield_Await
+	int32(ShiftExpr),                 // BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '>>' BinaryExpression_In_Yield_Await
+	int32(ShiftExpr),                 // BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '>>>' BinaryExpression_In_Yield_Await
+	int32(MultiplicativeExpr),        // BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '*' BinaryExpression_In_Yield_Await
+	int32(MultiplicativeExpr),        // BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '/' BinaryExpression_In_Yield_Await
+	int32(MultiplicativeExpr),        // BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '%' BinaryExpression_In_Yield_Await
+	int32(ExponentiationExpr),        // BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : UpdateExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass '**' BinaryExpression_In_Yield_Await
+	int32(RelationalExpr),            // BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '<' BinaryExpression_In_Yield_Await
+	int32(RelationalExpr),            // BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '>' BinaryExpression_In_Yield_Await
+	int32(RelationalExpr),            // BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '<=' BinaryExpression_In_Yield_Await
+	int32(RelationalExpr),            // BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '>=' BinaryExpression_In_Yield_Await
+	int32(InstanceOfExpr),            // BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies 'instanceof' BinaryExpression_In_Yield_Await
+	int32(InExpr),                    // BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies 'in' BinaryExpression_In_Yield_Await
+	int32(EqualityExpr),              // BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '==' BinaryExpression_In_Yield_Await
+	int32(EqualityExpr),              // BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '!=' BinaryExpression_In_Yield_Await
+	int32(EqualityExpr),              // BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '===' BinaryExpression_In_Yield_Await
+	int32(EqualityExpr),              // BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '!==' BinaryExpression_In_Yield_Await
+	int32(BitwiseAND),                // BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '&' BinaryExpression_In_Yield_Await
+	int32(BitwiseXOR),                // BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '^' BinaryExpression_In_Yield_Await
+	int32(BitwiseOR),                 // BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '|' BinaryExpression_In_Yield_Await
+	int32(LogicalAND),                // BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '&&' BinaryExpression_In_Yield_Await
+	int32(LogicalOR),                 // BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '||' BinaryExpression_In_Yield_Await
+	int32(CoalesceExpr),              // BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '??' BinaryExpression_In_Yield_Await
+	0,                                // BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : UnaryExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass
+	int32(AdditiveExpr),              // BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '+' BinaryExpression_In_Yield
+	int32(AdditiveExpr),              // BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '-' BinaryExpression_In_Yield
+	int32(ShiftExpr),                 // BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '<<' BinaryExpression_In_Yield
+	int32(ShiftExpr),                 // BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '>>' BinaryExpression_In_Yield
+	int32(ShiftExpr),                 // BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '>>>' BinaryExpression_In_Yield
+	int32(MultiplicativeExpr),        // BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '*' BinaryExpression_In_Yield
+	int32(MultiplicativeExpr),        // BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '/' BinaryExpression_In_Yield
+	int32(MultiplicativeExpr),        // BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '%' BinaryExpression_In_Yield
+	int32(ExponentiationExpr),        // BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : UpdateExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass '**' BinaryExpression_In_Yield
+	int32(RelationalExpr),            // BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '<' BinaryExpression_In_Yield
+	int32(RelationalExpr),            // BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '>' BinaryExpression_In_Yield
+	int32(RelationalExpr),            // BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '<=' BinaryExpression_In_Yield
+	int32(RelationalExpr),            // BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '>=' BinaryExpression_In_Yield
+	int32(InstanceOfExpr),            // BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies 'instanceof' BinaryExpression_In_Yield
+	int32(InExpr),                    // BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies 'in' BinaryExpression_In_Yield
+	int32(EqualityExpr),              // BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '==' BinaryExpression_In_Yield
+	int32(EqualityExpr),              // BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '!=' BinaryExpression_In_Yield
+	int32(EqualityExpr),              // BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '===' BinaryExpression_In_Yield
+	int32(EqualityExpr),              // BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '!==' BinaryExpression_In_Yield
+	int32(BitwiseAND),                // BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '&' BinaryExpression_In_Yield
+	int32(BitwiseXOR),                // BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '^' BinaryExpression_In_Yield
+	int32(BitwiseOR),                 // BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '|' BinaryExpression_In_Yield
+	int32(LogicalAND),                // BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '&&' BinaryExpression_In_Yield
+	int32(LogicalOR),                 // BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '||' BinaryExpression_In_Yield
+	int32(CoalesceExpr),              // BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '??' BinaryExpression_In_Yield
+	0,                                // BinaryExpression_NoAs_NoSatisfies_StartWithLet : UnaryExpression_StartWithLet
+	int32(AdditiveExpr),              // BinaryExpression_NoAs_NoSatisfies_StartWithLet : BinaryExpression_NoAs_NoSatisfies_StartWithLet '+' BinaryExpression
+	int32(AdditiveExpr),              // BinaryExpression_NoAs_NoSatisfies_StartWithLet : BinaryExpression_NoAs_NoSatisfies_StartWithLet '-' BinaryExpression
+	int32(ShiftExpr),                 // BinaryExpression_NoAs_NoSatisfies_StartWithLet : BinaryExpression_NoAs_NoSatisfies_StartWithLet '<<' BinaryExpression
+	int32(ShiftExpr),                 // BinaryExpression_NoAs_NoSatisfies_StartWithLet : BinaryExpression_NoAs_NoSatisfies_StartWithLet '>>' BinaryExpression
+	int32(ShiftExpr),                 // BinaryExpression_NoAs_NoSatisfies_StartWithLet : BinaryExpression_NoAs_NoSatisfies_StartWithLet '>>>' BinaryExpression
+	int32(MultiplicativeExpr),        // BinaryExpression_NoAs_NoSatisfies_StartWithLet : BinaryExpression_NoAs_NoSatisfies_StartWithLet '*' BinaryExpression
+	int32(MultiplicativeExpr),        // BinaryExpression_NoAs_NoSatisfies_StartWithLet : BinaryExpression_NoAs_NoSatisfies_StartWithLet '/' BinaryExpression
+	int32(MultiplicativeExpr),        // BinaryExpression_NoAs_NoSatisfies_StartWithLet : BinaryExpression_NoAs_NoSatisfies_StartWithLet '%' BinaryExpression
+	int32(ExponentiationExpr),        // BinaryExpression_NoAs_NoSatisfies_StartWithLet : UpdateExpression_StartWithLet '**' BinaryExpression
+	int32(RelationalExpr),            // BinaryExpression_NoAs_NoSatisfies_StartWithLet : BinaryExpression_NoAs_NoSatisfies_StartWithLet '<' BinaryExpression
+	int32(RelationalExpr),            // BinaryExpression_NoAs_NoSatisfies_StartWithLet : BinaryExpression_NoAs_NoSatisfies_StartWithLet '>' BinaryExpression
+	int32(RelationalExpr),            // BinaryExpression_NoAs_NoSatisfies_StartWithLet : BinaryExpression_NoAs_NoSatisfies_StartWithLet '<=' BinaryExpression
+	int32(RelationalExpr),            // BinaryExpression_NoAs_NoSatisfies_StartWithLet : BinaryExpression_NoAs_NoSatisfies_StartWithLet '>=' BinaryExpression
+	int32(InstanceOfExpr),            // BinaryExpression_NoAs_NoSatisfies_StartWithLet : BinaryExpression_NoAs_NoSatisfies_StartWithLet 'instanceof' BinaryExpression
+	int32(EqualityExpr),              // BinaryExpression_NoAs_NoSatisfies_StartWithLet : BinaryExpression_NoAs_NoSatisfies_StartWithLet '==' BinaryExpression
+	int32(EqualityExpr),              // BinaryExpression_NoAs_NoSatisfies_StartWithLet : BinaryExpression_NoAs_NoSatisfies_StartWithLet '!=' BinaryExpression
+	int32(EqualityExpr),              // BinaryExpression_NoAs_NoSatisfies_StartWithLet : BinaryExpression_NoAs_NoSatisfies_StartWithLet '===' BinaryExpression
+	int32(EqualityExpr),              // BinaryExpression_NoAs_NoSatisfies_StartWithLet : BinaryExpression_NoAs_NoSatisfies_StartWithLet '!==' BinaryExpression
+	int32(BitwiseAND),                // BinaryExpression_NoAs_NoSatisfies_StartWithLet : BinaryExpression_NoAs_NoSatisfies_StartWithLet '&' BinaryExpression
+	int32(BitwiseXOR),                // BinaryExpression_NoAs_NoSatisfies_StartWithLet : BinaryExpression_NoAs_NoSatisfies_StartWithLet '^' BinaryExpression
+	int32(BitwiseOR),                 // BinaryExpression_NoAs_NoSatisfies_StartWithLet : BinaryExpression_NoAs_NoSatisfies_StartWithLet '|' BinaryExpression
+	int32(LogicalAND),                // BinaryExpression_NoAs_NoSatisfies_StartWithLet : BinaryExpression_NoAs_NoSatisfies_StartWithLet '&&' BinaryExpression
+	int32(LogicalOR),                 // BinaryExpression_NoAs_NoSatisfies_StartWithLet : BinaryExpression_NoAs_NoSatisfies_StartWithLet '||' BinaryExpression
+	int32(CoalesceExpr),              // BinaryExpression_NoAs_NoSatisfies_StartWithLet : BinaryExpression_NoAs_NoSatisfies_StartWithLet '??' BinaryExpression
+	0,                                // BinaryExpression_NoLet : UnaryExpression_NoLet
+	int32(AdditiveExpr),              // BinaryExpression_NoLet : BinaryExpression_NoLet '+' BinaryExpression
+	int32(AdditiveExpr),              // BinaryExpression_NoLet : BinaryExpression_NoLet '-' BinaryExpression
+	int32(ShiftExpr),                 // BinaryExpression_NoLet : BinaryExpression_NoLet '<<' BinaryExpression
+	int32(ShiftExpr),                 // BinaryExpression_NoLet : BinaryExpression_NoLet '>>' BinaryExpression
+	int32(ShiftExpr),                 // BinaryExpression_NoLet : BinaryExpression_NoLet '>>>' BinaryExpression
+	int32(MultiplicativeExpr),        // BinaryExpression_NoLet : BinaryExpression_NoLet '*' BinaryExpression
+	int32(MultiplicativeExpr),        // BinaryExpression_NoLet : BinaryExpression_NoLet '/' BinaryExpression
+	int32(MultiplicativeExpr),        // BinaryExpression_NoLet : BinaryExpression_NoLet '%' BinaryExpression
+	int32(ExponentiationExpr),        // BinaryExpression_NoLet : UpdateExpression_NoLet '**' BinaryExpression
+	int32(RelationalExpr),            // BinaryExpression_NoLet : BinaryExpression_NoLet '<' BinaryExpression
+	int32(RelationalExpr),            // BinaryExpression_NoLet : BinaryExpression_NoLet '>' BinaryExpression
+	int32(RelationalExpr),            // BinaryExpression_NoLet : BinaryExpression_NoLet '<=' BinaryExpression
+	int32(RelationalExpr),            // BinaryExpression_NoLet : BinaryExpression_NoLet '>=' BinaryExpression
+	int32(InstanceOfExpr),            // BinaryExpression_NoLet : BinaryExpression_NoLet 'instanceof' BinaryExpression
+	int32(TsAsExpr),                  // BinaryExpression_NoLet : BinaryExpression_NoLet .noLineBreak 'as' Type_NoQuest
+	-1,                               // BinaryExpression_NoLet : BinaryExpression_NoLet .noLineBreak 'as' 'const'
+	int32(TsSatisfiesExpr),           // BinaryExpression_NoLet : BinaryExpression_NoLet 'satisfies' Type_NoQuest
+	int32(EqualityExpr),              // BinaryExpression_NoLet : BinaryExpression_NoLet '==' BinaryExpression
+	int32(EqualityExpr),              // BinaryExpression_NoLet : BinaryExpression_NoLet '!=' BinaryExpression
+	int32(EqualityExpr),              // BinaryExpression_NoLet : BinaryExpression_NoLet '===' BinaryExpression
+	int32(EqualityExpr),              // BinaryExpression_NoLet : BinaryExpression_NoLet '!==' BinaryExpression
+	int32(BitwiseAND),                // BinaryExpression_NoLet : BinaryExpression_NoLet '&' BinaryExpression
+	int32(BitwiseXOR),                // BinaryExpression_NoLet : BinaryExpression_NoLet '^' BinaryExpression
+	int32(BitwiseOR),                 // BinaryExpression_NoLet : BinaryExpression_NoLet '|' BinaryExpression
+	int32(LogicalAND),                // BinaryExpression_NoLet : BinaryExpression_NoLet '&&' BinaryExpression
+	int32(LogicalOR),                 // BinaryExpression_NoLet : BinaryExpression_NoLet '||' BinaryExpression
+	int32(CoalesceExpr),              // BinaryExpression_NoLet : BinaryExpression_NoLet '??' BinaryExpression
+	0,                                // BinaryExpression_NoObjLiteral : UnaryExpression_NoObjLiteral
+	int32(AdditiveExpr),              // BinaryExpression_NoObjLiteral : BinaryExpression_NoObjLiteral '+' BinaryExpression
+	int32(AdditiveExpr),              // BinaryExpression_NoObjLiteral : BinaryExpression_NoObjLiteral '-' BinaryExpression
+	int32(ShiftExpr),                 // BinaryExpression_NoObjLiteral : BinaryExpression_NoObjLiteral '<<' BinaryExpression
+	int32(ShiftExpr),                 // BinaryExpression_NoObjLiteral : BinaryExpression_NoObjLiteral '>>' BinaryExpression
+	int32(ShiftExpr),                 // BinaryExpression_NoObjLiteral : BinaryExpression_NoObjLiteral '>>>' BinaryExpression
+	int32(MultiplicativeExpr),        // BinaryExpression_NoObjLiteral : BinaryExpression_NoObjLiteral '*' BinaryExpression
+	int32(MultiplicativeExpr),        // BinaryExpression_NoObjLiteral : BinaryExpression_NoObjLiteral '/' BinaryExpression
+	int32(MultiplicativeExpr),        // BinaryExpression_NoObjLiteral : BinaryExpression_NoObjLiteral '%' BinaryExpression
+	int32(ExponentiationExpr),        // BinaryExpression_NoObjLiteral : UpdateExpression_NoObjLiteral '**' BinaryExpression
+	int32(RelationalExpr),            // BinaryExpression_NoObjLiteral : BinaryExpression_NoObjLiteral '<' BinaryExpression
+	int32(RelationalExpr),            // BinaryExpression_NoObjLiteral : BinaryExpression_NoObjLiteral '>' BinaryExpression
+	int32(RelationalExpr),            // BinaryExpression_NoObjLiteral : BinaryExpression_NoObjLiteral '<=' BinaryExpression
+	int32(RelationalExpr),            // BinaryExpression_NoObjLiteral : BinaryExpression_NoObjLiteral '>=' BinaryExpression
+	int32(InstanceOfExpr),            // BinaryExpression_NoObjLiteral : BinaryExpression_NoObjLiteral 'instanceof' BinaryExpression
+	int32(TsAsExpr),                  // BinaryExpression_NoObjLiteral : BinaryExpression_NoObjLiteral .noLineBreak 'as' Type_NoQuest
+	-1,                               // BinaryExpression_NoObjLiteral : BinaryExpression_NoObjLiteral .noLineBreak 'as' 'const'
+	int32(TsSatisfiesExpr),           // BinaryExpression_NoObjLiteral : BinaryExpression_NoObjLiteral 'satisfies' Type_NoQuest
+	int32(EqualityExpr),              // BinaryExpression_NoObjLiteral : BinaryExpression_NoObjLiteral '==' BinaryExpression
+	int32(EqualityExpr),              // BinaryExpression_NoObjLiteral : BinaryExpression_NoObjLiteral '!=' BinaryExpression
+	int32(EqualityExpr),              // BinaryExpression_NoObjLiteral : BinaryExpression_NoObjLiteral '===' BinaryExpression
+	int32(EqualityExpr),              // BinaryExpression_NoObjLiteral : BinaryExpression_NoObjLiteral '!==' BinaryExpression
+	int32(BitwiseAND),                // BinaryExpression_NoObjLiteral : BinaryExpression_NoObjLiteral '&' BinaryExpression
+	int32(BitwiseXOR),                // BinaryExpression_NoObjLiteral : BinaryExpression_NoObjLiteral '^' BinaryExpression
+	int32(BitwiseOR),                 // BinaryExpression_NoObjLiteral : BinaryExpression_NoObjLiteral '|' BinaryExpression
+	int32(LogicalAND),                // BinaryExpression_NoObjLiteral : BinaryExpression_NoObjLiteral '&&' BinaryExpression
+	int32(LogicalOR),                 // BinaryExpression_NoObjLiteral : BinaryExpression_NoObjLiteral '||' BinaryExpression
+	int32(CoalesceExpr),              // BinaryExpression_NoObjLiteral : BinaryExpression_NoObjLiteral '??' BinaryExpression
+	0,                                // BinaryExpression_Yield : UnaryExpression_Yield
+	int32(AdditiveExpr),              // BinaryExpression_Yield : BinaryExpression_Yield '+' BinaryExpression_Yield
+	int32(AdditiveExpr),              // BinaryExpression_Yield : BinaryExpression_Yield '-' BinaryExpression_Yield
+	int32(ShiftExpr),                 // BinaryExpression_Yield : BinaryExpression_Yield '<<' BinaryExpression_Yield
+	int32(ShiftExpr),                 // BinaryExpression_Yield : BinaryExpression_Yield '>>' BinaryExpression_Yield
+	int32(ShiftExpr),                 // BinaryExpression_Yield : BinaryExpression_Yield '>>>' BinaryExpression_Yield
+	int32(MultiplicativeExpr),        // BinaryExpression_Yield : BinaryExpression_Yield '*' BinaryExpression_Yield
+	int32(MultiplicativeExpr),        // BinaryExpression_Yield : BinaryExpression_Yield '/' BinaryExpression_Yield
+	int32(MultiplicativeExpr),        // BinaryExpression_Yield : BinaryExpression_Yield '%' BinaryExpression_Yield
+	int32(ExponentiationExpr),        // BinaryExpression_Yield : UpdateExpression_Yield '**' BinaryExpression_Yield
+	int32(RelationalExpr),            // BinaryExpression_Yield : BinaryExpression_Yield '<' BinaryExpression_Yield
+	int32(RelationalExpr),            // BinaryExpression_Yield : BinaryExpression_Yield '>' BinaryExpression_Yield
+	int32(RelationalExpr),            // BinaryExpression_Yield : BinaryExpression_Yield '<=' BinaryExpression_Yield
+	int32(RelationalExpr),            // BinaryExpression_Yield : BinaryExpression_Yield '>=' BinaryExpression_Yield
+	int32(InstanceOfExpr),            // BinaryExpression_Yield : BinaryExpression_Yield 'instanceof' BinaryExpression_Yield
+	int32(TsAsExpr),                  // BinaryExpression_Yield : BinaryExpression_Yield .noLineBreak 'as' Type_NoQuest
+	-1,                               // BinaryExpression_Yield : BinaryExpression_Yield .noLineBreak 'as' 'const'
+	int32(TsSatisfiesExpr),           // BinaryExpression_Yield : BinaryExpression_Yield 'satisfies' Type_NoQuest
+	int32(EqualityExpr),              // BinaryExpression_Yield : BinaryExpression_Yield '==' BinaryExpression_Yield
+	int32(EqualityExpr),              // BinaryExpression_Yield : BinaryExpression_Yield '!=' BinaryExpression_Yield
+	int32(EqualityExpr),              // BinaryExpression_Yield : BinaryExpression_Yield '===' BinaryExpression_Yield
+	int32(EqualityExpr),              // BinaryExpression_Yield : BinaryExpression_Yield '!==' BinaryExpression_Yield
+	int32(BitwiseAND),                // BinaryExpression_Yield : BinaryExpression_Yield '&' BinaryExpression_Yield
+	int32(BitwiseXOR),                // BinaryExpression_Yield : BinaryExpression_Yield '^' BinaryExpression_Yield
+	int32(BitwiseOR),                 // BinaryExpression_Yield : BinaryExpression_Yield '|' BinaryExpression_Yield
+	int32(LogicalAND),                // BinaryExpression_Yield : BinaryExpression_Yield '&&' BinaryExpression_Yield
+	int32(LogicalOR),                 // BinaryExpression_Yield : BinaryExpression_Yield '||' BinaryExpression_Yield
+	int32(CoalesceExpr),              // BinaryExpression_Yield : BinaryExpression_Yield '??' BinaryExpression_Yield
+	0,                                // BinaryExpression_Yield_Await : UnaryExpression_Yield_Await
+	int32(AdditiveExpr),              // BinaryExpression_Yield_Await : BinaryExpression_Yield_Await '+' BinaryExpression_Yield_Await
+	int32(AdditiveExpr),              // BinaryExpression_Yield_Await : BinaryExpression_Yield_Await '-' BinaryExpression_Yield_Await
+	int32(ShiftExpr),                 // BinaryExpression_Yield_Await : BinaryExpression_Yield_Await '<<' BinaryExpression_Yield_Await
+	int32(ShiftExpr),                 // BinaryExpression_Yield_Await : BinaryExpression_Yield_Await '>>' BinaryExpression_Yield_Await
+	int32(ShiftExpr),                 // BinaryExpression_Yield_Await : BinaryExpression_Yield_Await '>>>' BinaryExpression_Yield_Await
+	int32(MultiplicativeExpr),        // BinaryExpression_Yield_Await : BinaryExpression_Yield_Await '*' BinaryExpression_Yield_Await
+	int32(MultiplicativeExpr),        // BinaryExpression_Yield_Await : BinaryExpression_Yield_Await '/' BinaryExpression_Yield_Await
+	int32(MultiplicativeExpr),        // BinaryExpression_Yield_Await : BinaryExpression_Yield_Await '%' BinaryExpression_Yield_Await
+	int32(ExponentiationExpr),        // BinaryExpression_Yield_Await : UpdateExpression_Yield_Await '**' BinaryExpression_Yield_Await
+	int32(RelationalExpr),            // BinaryExpression_Yield_Await : BinaryExpression_Yield_Await '<' BinaryExpression_Yield_Await
+	int32(RelationalExpr),            // BinaryExpression_Yield_Await : BinaryExpression_Yield_Await '>' BinaryExpression_Yield_Await
+	int32(RelationalExpr),            // BinaryExpression_Yield_Await : BinaryExpression_Yield_Await '<=' BinaryExpression_Yield_Await
+	int32(RelationalExpr),            // BinaryExpression_Yield_Await : BinaryExpression_Yield_Await '>=' BinaryExpression_Yield_Await
+	int32(InstanceOfExpr),            // BinaryExpression_Yield_Await : BinaryExpression_Yield_Await 'instanceof' BinaryExpression_Yield_Await
+	int32(TsAsExpr),                  // BinaryExpression_Yield_Await : BinaryExpression_Yield_Await .noLineBreak 'as' Type_NoQuest
+	-1,                               // BinaryExpression_Yield_Await : BinaryExpression_Yield_Await .noLineBreak 'as' 'const'
+	int32(TsSatisfiesExpr),           // BinaryExpression_Yield_Await : BinaryExpression_Yield_Await 'satisfies' Type_NoQuest
+	int32(EqualityExpr),              // BinaryExpression_Yield_Await : BinaryExpression_Yield_Await '==' BinaryExpression_Yield_Await
+	int32(EqualityExpr),              // BinaryExpression_Yield_Await : BinaryExpression_Yield_Await '!=' BinaryExpression_Yield_Await
+	int32(EqualityExpr),              // BinaryExpression_Yield_Await : BinaryExpression_Yield_Await '===' BinaryExpression_Yield_Await
+	int32(EqualityExpr),              // BinaryExpression_Yield_Await : BinaryExpression_Yield_Await '!==' BinaryExpression_Yield_Await
+	int32(BitwiseAND),                // BinaryExpression_Yield_Await : BinaryExpression_Yield_Await '&' BinaryExpression_Yield_Await
+	int32(BitwiseXOR),                // BinaryExpression_Yield_Await : BinaryExpression_Yield_Await '^' BinaryExpression_Yield_Await
+	int32(BitwiseOR),                 // BinaryExpression_Yield_Await : BinaryExpression_Yield_Await '|' BinaryExpression_Yield_Await
+	int32(LogicalAND),                // BinaryExpression_Yield_Await : BinaryExpression_Yield_Await '&&' BinaryExpression_Yield_Await
+	int32(LogicalOR),                 // BinaryExpression_Yield_Await : BinaryExpression_Yield_Await '||' BinaryExpression_Yield_Await
+	int32(CoalesceExpr),              // BinaryExpression_Yield_Await : BinaryExpression_Yield_Await '??' BinaryExpression_Yield_Await
+	0,                                // BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet : UnaryExpression_Yield_Await_StartWithLet
+	int32(AdditiveExpr),              // BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet '+' BinaryExpression_Yield_Await
+	int32(AdditiveExpr),              // BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet '-' BinaryExpression_Yield_Await
+	int32(ShiftExpr),                 // BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet '<<' BinaryExpression_Yield_Await
+	int32(ShiftExpr),                 // BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet '>>' BinaryExpression_Yield_Await
+	int32(ShiftExpr),                 // BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet '>>>' BinaryExpression_Yield_Await
+	int32(MultiplicativeExpr),        // BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet '*' BinaryExpression_Yield_Await
+	int32(MultiplicativeExpr),        // BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet '/' BinaryExpression_Yield_Await
+	int32(MultiplicativeExpr),        // BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet '%' BinaryExpression_Yield_Await
+	int32(ExponentiationExpr),        // BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet : UpdateExpression_Yield_Await_StartWithLet '**' BinaryExpression_Yield_Await
+	int32(RelationalExpr),            // BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet '<' BinaryExpression_Yield_Await
+	int32(RelationalExpr),            // BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet '>' BinaryExpression_Yield_Await
+	int32(RelationalExpr),            // BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet '<=' BinaryExpression_Yield_Await
+	int32(RelationalExpr),            // BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet '>=' BinaryExpression_Yield_Await
+	int32(InstanceOfExpr),            // BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet 'instanceof' BinaryExpression_Yield_Await
+	int32(EqualityExpr),              // BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet '==' BinaryExpression_Yield_Await
+	int32(EqualityExpr),              // BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet '!=' BinaryExpression_Yield_Await
+	int32(EqualityExpr),              // BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet '===' BinaryExpression_Yield_Await
+	int32(EqualityExpr),              // BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet '!==' BinaryExpression_Yield_Await
+	int32(BitwiseAND),                // BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet '&' BinaryExpression_Yield_Await
+	int32(BitwiseXOR),                // BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet '^' BinaryExpression_Yield_Await
+	int32(BitwiseOR),                 // BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet '|' BinaryExpression_Yield_Await
+	int32(LogicalAND),                // BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet '&&' BinaryExpression_Yield_Await
+	int32(LogicalOR),                 // BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet '||' BinaryExpression_Yield_Await
+	int32(CoalesceExpr),              // BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet '??' BinaryExpression_Yield_Await
+	0,                                // BinaryExpression_Yield_Await_NoLet : UnaryExpression_Yield_Await_NoLet
+	int32(AdditiveExpr),              // BinaryExpression_Yield_Await_NoLet : BinaryExpression_Yield_Await_NoLet '+' BinaryExpression_Yield_Await
+	int32(AdditiveExpr),              // BinaryExpression_Yield_Await_NoLet : BinaryExpression_Yield_Await_NoLet '-' BinaryExpression_Yield_Await
+	int32(ShiftExpr),                 // BinaryExpression_Yield_Await_NoLet : BinaryExpression_Yield_Await_NoLet '<<' BinaryExpression_Yield_Await
+	int32(ShiftExpr),                 // BinaryExpression_Yield_Await_NoLet : BinaryExpression_Yield_Await_NoLet '>>' BinaryExpression_Yield_Await
+	int32(ShiftExpr),                 // BinaryExpression_Yield_Await_NoLet : BinaryExpression_Yield_Await_NoLet '>>>' BinaryExpression_Yield_Await
+	int32(MultiplicativeExpr),        // BinaryExpression_Yield_Await_NoLet : BinaryExpression_Yield_Await_NoLet '*' BinaryExpression_Yield_Await
+	int32(MultiplicativeExpr),        // BinaryExpression_Yield_Await_NoLet : BinaryExpression_Yield_Await_NoLet '/' BinaryExpression_Yield_Await
+	int32(MultiplicativeExpr),        // BinaryExpression_Yield_Await_NoLet : BinaryExpression_Yield_Await_NoLet '%' BinaryExpression_Yield_Await
+	int32(ExponentiationExpr),        // BinaryExpression_Yield_Await_NoLet : UpdateExpression_Yield_Await_NoLet '**' BinaryExpression_Yield_Await
+	int32(RelationalExpr),            // BinaryExpression_Yield_Await_NoLet : BinaryExpression_Yield_Await_NoLet '<' BinaryExpression_Yield_Await
+	int32(RelationalExpr),            // BinaryExpression_Yield_Await_NoLet : BinaryExpression_Yield_Await_NoLet '>' BinaryExpression_Yield_Await
+	int32(RelationalExpr),            // BinaryExpression_Yield_Await_NoLet : BinaryExpression_Yield_Await_NoLet '<=' BinaryExpression_Yield_Await
+	int32(RelationalExpr),            // BinaryExpression_Yield_Await_NoLet : BinaryExpression_Yield_Await_NoLet '>=' BinaryExpression_Yield_Await
+	int32(InstanceOfExpr),            // BinaryExpression_Yield_Await_NoLet : BinaryExpression_Yield_Await_NoLet 'instanceof' BinaryExpression_Yield_Await
+	int32(TsAsExpr),                  // BinaryExpression_Yield_Await_NoLet : BinaryExpression_Yield_Await_NoLet .noLineBreak 'as' Type_NoQuest
+	-1,                               // BinaryExpression_Yield_Await_NoLet : BinaryExpression_Yield_Await_NoLet .noLineBreak 'as' 'const'
+	int32(TsSatisfiesExpr),           // BinaryExpression_Yield_Await_NoLet : BinaryExpression_Yield_Await_NoLet 'satisfies' Type_NoQuest
+	int32(EqualityExpr),              // BinaryExpression_Yield_Await_NoLet : BinaryExpression_Yield_Await_NoLet '==' BinaryExpression_Yield_Await
+	int32(EqualityExpr),              // BinaryExpression_Yield_Await_NoLet : BinaryExpression_Yield_Await_NoLet '!=' BinaryExpression_Yield_Await
+	int32(EqualityExpr),              // BinaryExpression_Yield_Await_NoLet : BinaryExpression_Yield_Await_NoLet '===' BinaryExpression_Yield_Await
+	int32(EqualityExpr),              // BinaryExpression_Yield_Await_NoLet : BinaryExpression_Yield_Await_NoLet '!==' BinaryExpression_Yield_Await
+	int32(BitwiseAND),                // BinaryExpression_Yield_Await_NoLet : BinaryExpression_Yield_Await_NoLet '&' BinaryExpression_Yield_Await
+	int32(BitwiseXOR),                // BinaryExpression_Yield_Await_NoLet : BinaryExpression_Yield_Await_NoLet '^' BinaryExpression_Yield_Await
+	int32(BitwiseOR),                 // BinaryExpression_Yield_Await_NoLet : BinaryExpression_Yield_Await_NoLet '|' BinaryExpression_Yield_Await
+	int32(LogicalAND),                // BinaryExpression_Yield_Await_NoLet : BinaryExpression_Yield_Await_NoLet '&&' BinaryExpression_Yield_Await
+	int32(LogicalOR),                 // BinaryExpression_Yield_Await_NoLet : BinaryExpression_Yield_Await_NoLet '||' BinaryExpression_Yield_Await
+	int32(CoalesceExpr),              // BinaryExpression_Yield_Await_NoLet : BinaryExpression_Yield_Await_NoLet '??' BinaryExpression_Yield_Await
+	0,                                // BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet : UnaryExpression_Yield_StartWithLet
+	int32(AdditiveExpr),              // BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet '+' BinaryExpression_Yield
+	int32(AdditiveExpr),              // BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet '-' BinaryExpression_Yield
+	int32(ShiftExpr),                 // BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet '<<' BinaryExpression_Yield
+	int32(ShiftExpr),                 // BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet '>>' BinaryExpression_Yield
+	int32(ShiftExpr),                 // BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet '>>>' BinaryExpression_Yield
+	int32(MultiplicativeExpr),        // BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet '*' BinaryExpression_Yield
+	int32(MultiplicativeExpr),        // BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet '/' BinaryExpression_Yield
+	int32(MultiplicativeExpr),        // BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet '%' BinaryExpression_Yield
+	int32(ExponentiationExpr),        // BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet : UpdateExpression_Yield_StartWithLet '**' BinaryExpression_Yield
+	int32(RelationalExpr),            // BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet '<' BinaryExpression_Yield
+	int32(RelationalExpr),            // BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet '>' BinaryExpression_Yield
+	int32(RelationalExpr),            // BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet '<=' BinaryExpression_Yield
+	int32(RelationalExpr),            // BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet '>=' BinaryExpression_Yield
+	int32(InstanceOfExpr),            // BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet 'instanceof' BinaryExpression_Yield
+	int32(EqualityExpr),              // BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet '==' BinaryExpression_Yield
+	int32(EqualityExpr),              // BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet '!=' BinaryExpression_Yield
+	int32(EqualityExpr),              // BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet '===' BinaryExpression_Yield
+	int32(EqualityExpr),              // BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet '!==' BinaryExpression_Yield
+	int32(BitwiseAND),                // BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet '&' BinaryExpression_Yield
+	int32(BitwiseXOR),                // BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet '^' BinaryExpression_Yield
+	int32(BitwiseOR),                 // BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet '|' BinaryExpression_Yield
+	int32(LogicalAND),                // BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet '&&' BinaryExpression_Yield
+	int32(LogicalOR),                 // BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet '||' BinaryExpression_Yield
+	int32(CoalesceExpr),              // BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet '??' BinaryExpression_Yield
+	0,                                // BinaryExpression_Yield_NoLet : UnaryExpression_Yield_NoLet
+	int32(AdditiveExpr),              // BinaryExpression_Yield_NoLet : BinaryExpression_Yield_NoLet '+' BinaryExpression_Yield
+	int32(AdditiveExpr),              // BinaryExpression_Yield_NoLet : BinaryExpression_Yield_NoLet '-' BinaryExpression_Yield
+	int32(ShiftExpr),                 // BinaryExpression_Yield_NoLet : BinaryExpression_Yield_NoLet '<<' BinaryExpression_Yield
+	int32(ShiftExpr),                 // BinaryExpression_Yield_NoLet : BinaryExpression_Yield_NoLet '>>' BinaryExpression_Yield
+	int32(ShiftExpr),                 // BinaryExpression_Yield_NoLet : BinaryExpression_Yield_NoLet '>>>' BinaryExpression_Yield
+	int32(MultiplicativeExpr),        // BinaryExpression_Yield_NoLet : BinaryExpression_Yield_NoLet '*' BinaryExpression_Yield
+	int32(MultiplicativeExpr),        // BinaryExpression_Yield_NoLet : BinaryExpression_Yield_NoLet '/' BinaryExpression_Yield
+	int32(MultiplicativeExpr),        // BinaryExpression_Yield_NoLet : BinaryExpression_Yield_NoLet '%' BinaryExpression_Yield
+	int32(ExponentiationExpr),        // BinaryExpression_Yield_NoLet : UpdateExpression_Yield_NoLet '**' BinaryExpression_Yield
+	int32(RelationalExpr),            // BinaryExpression_Yield_NoLet : BinaryExpression_Yield_NoLet '<' BinaryExpression_Yield
+	int32(RelationalExpr),            // BinaryExpression_Yield_NoLet : BinaryExpression_Yield_NoLet '>' BinaryExpression_Yield
+	int32(RelationalExpr),            // BinaryExpression_Yield_NoLet : BinaryExpression_Yield_NoLet '<=' BinaryExpression_Yield
+	int32(RelationalExpr),            // BinaryExpression_Yield_NoLet : BinaryExpression_Yield_NoLet '>=' BinaryExpression_Yield
+	int32(InstanceOfExpr),            // BinaryExpression_Yield_NoLet : BinaryExpression_Yield_NoLet 'instanceof' BinaryExpression_Yield
+	int32(TsAsExpr),                  // BinaryExpression_Yield_NoLet : BinaryExpression_Yield_NoLet .noLineBreak 'as' Type_NoQuest
+	-1,                               // BinaryExpression_Yield_NoLet : BinaryExpression_Yield_NoLet .noLineBreak 'as' 'const'
+	int32(TsSatisfiesExpr),           // BinaryExpression_Yield_NoLet : BinaryExpression_Yield_NoLet 'satisfies' Type_NoQuest
+	int32(EqualityExpr),              // BinaryExpression_Yield_NoLet : BinaryExpression_Yield_NoLet '==' BinaryExpression_Yield
+	int32(EqualityExpr),              // BinaryExpression_Yield_NoLet : BinaryExpression_Yield_NoLet '!=' BinaryExpression_Yield
+	int32(EqualityExpr),              // BinaryExpression_Yield_NoLet : BinaryExpression_Yield_NoLet '===' BinaryExpression_Yield
+	int32(EqualityExpr),              // BinaryExpression_Yield_NoLet : BinaryExpression_Yield_NoLet '!==' BinaryExpression_Yield
+	int32(BitwiseAND),                // BinaryExpression_Yield_NoLet : BinaryExpression_Yield_NoLet '&' BinaryExpression_Yield
+	int32(BitwiseXOR),                // BinaryExpression_Yield_NoLet : BinaryExpression_Yield_NoLet '^' BinaryExpression_Yield
+	int32(BitwiseOR),                 // BinaryExpression_Yield_NoLet : BinaryExpression_Yield_NoLet '|' BinaryExpression_Yield
+	int32(LogicalAND),                // BinaryExpression_Yield_NoLet : BinaryExpression_Yield_NoLet '&&' BinaryExpression_Yield
+	int32(LogicalOR),                 // BinaryExpression_Yield_NoLet : BinaryExpression_Yield_NoLet '||' BinaryExpression_Yield
+	int32(CoalesceExpr),              // BinaryExpression_Yield_NoLet : BinaryExpression_Yield_NoLet '??' BinaryExpression_Yield
+	0,                                // ConditionalExpression : BinaryExpression
+	int32(ConditionalExpr),           // ConditionalExpression : BinaryExpression '?' AssignmentExpression_In ':' AssignmentExpression
+	0,                                // ConditionalExpression_Await : BinaryExpression_Await
+	int32(ConditionalExpr),           // ConditionalExpression_Await : BinaryExpression_Await '?' AssignmentExpression_In_Await ':' AssignmentExpression_Await
+	0,                                // ConditionalExpression_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet
+	int32(ConditionalExpr),           // ConditionalExpression_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Await_NoAs_NoSatisfies_StartWithLet '?' AssignmentExpression_In_Await ':' AssignmentExpression_Await
+	0,                                // ConditionalExpression_Await_NoLet : BinaryExpression_Await_NoLet
+	int32(ConditionalExpr),           // ConditionalExpression_Await_NoLet : BinaryExpression_Await_NoLet '?' AssignmentExpression_In_Await ':' AssignmentExpression_Await
+	0,                                // ConditionalExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral
+	int32(ConditionalExpr),           // ConditionalExpression_Await_NoObjLiteral : BinaryExpression_Await_NoObjLiteral '?' AssignmentExpression_In_Await ':' AssignmentExpression_Await
+	0,                                // ConditionalExpression_In : BinaryExpression_In
+	int32(ConditionalExpr),           // ConditionalExpression_In : BinaryExpression_In '?' AssignmentExpression_In ':' AssignmentExpression_In
+	0,                                // ConditionalExpression_In_Await : BinaryExpression_In_Await
+	int32(ConditionalExpr),           // ConditionalExpression_In_Await : BinaryExpression_In_Await '?' AssignmentExpression_In_Await ':' AssignmentExpression_In_Await
+	0,                                // ConditionalExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies
+	int32(ConditionalExpr),           // ConditionalExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '?' AssignmentExpression_In_Await ':' AssignmentExpression_In_Await
+	0,                                // ConditionalExpression_In_Await_NoObjLiteral : BinaryExpression_In_Await_NoObjLiteral
+	int32(ConditionalExpr),           // ConditionalExpression_In_Await_NoObjLiteral : BinaryExpression_In_Await_NoObjLiteral '?' AssignmentExpression_In_Await ':' AssignmentExpression_In_Await
+	0,                                // ConditionalExpression_In_NoFuncClass : BinaryExpression_In_NoFuncClass
+	int32(ConditionalExpr),           // ConditionalExpression_In_NoFuncClass : BinaryExpression_In_NoFuncClass '?' AssignmentExpression_In ':' AssignmentExpression_In
+	0,                                // ConditionalExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies
+	int32(ConditionalExpr),           // ConditionalExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '?' AssignmentExpression_In ':' AssignmentExpression_In
+	0,                                // ConditionalExpression_In_NoObjLiteral : BinaryExpression_In_NoObjLiteral
+	int32(ConditionalExpr),           // ConditionalExpression_In_NoObjLiteral : BinaryExpression_In_NoObjLiteral '?' AssignmentExpression_In ':' AssignmentExpression_In
+	0,                                // ConditionalExpression_In_Yield : BinaryExpression_In_Yield
+	int32(ConditionalExpr),           // ConditionalExpression_In_Yield : BinaryExpression_In_Yield '?' AssignmentExpression_In_Yield ':' AssignmentExpression_In_Yield
+	0,                                // ConditionalExpression_In_Yield_Await : BinaryExpression_In_Yield_Await
+	int32(ConditionalExpr),           // ConditionalExpression_In_Yield_Await : BinaryExpression_In_Yield_Await '?' AssignmentExpression_In_Yield_Await ':' AssignmentExpression_In_Yield_Await
+	0,                                // ConditionalExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies
+	int32(ConditionalExpr),           // ConditionalExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '?' AssignmentExpression_In_Yield_Await ':' AssignmentExpression_In_Yield_Await
+	0,                                // ConditionalExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies
+	int32(ConditionalExpr),           // ConditionalExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : BinaryExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies '?' AssignmentExpression_In_Yield ':' AssignmentExpression_In_Yield
+	0,                                // ConditionalExpression_NoAs_NoSatisfies_StartWithLet : BinaryExpression_NoAs_NoSatisfies_StartWithLet
+	int32(ConditionalExpr),           // ConditionalExpression_NoAs_NoSatisfies_StartWithLet : BinaryExpression_NoAs_NoSatisfies_StartWithLet '?' AssignmentExpression_In ':' AssignmentExpression
+	0,                                // ConditionalExpression_NoLet : BinaryExpression_NoLet
+	int32(ConditionalExpr),           // ConditionalExpression_NoLet : BinaryExpression_NoLet '?' AssignmentExpression_In ':' AssignmentExpression
+	0,                                // ConditionalExpression_NoObjLiteral : BinaryExpression_NoObjLiteral
+	int32(ConditionalExpr),           // ConditionalExpression_NoObjLiteral : BinaryExpression_NoObjLiteral '?' AssignmentExpression_In ':' AssignmentExpression
+	0,                                // ConditionalExpression_Yield : BinaryExpression_Yield
+	int32(ConditionalExpr),           // ConditionalExpression_Yield : BinaryExpression_Yield '?' AssignmentExpression_In_Yield ':' AssignmentExpression_Yield
+	0,                                // ConditionalExpression_Yield_Await : BinaryExpression_Yield_Await
+	int32(ConditionalExpr),           // ConditionalExpression_Yield_Await : BinaryExpression_Yield_Await '?' AssignmentExpression_In_Yield_Await ':' AssignmentExpression_Yield_Await
+	0,                                // ConditionalExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet
+	int32(ConditionalExpr),           // ConditionalExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet '?' AssignmentExpression_In_Yield_Await ':' AssignmentExpression_Yield_Await
+	0,                                // ConditionalExpression_Yield_Await_NoLet : BinaryExpression_Yield_Await_NoLet
+	int32(ConditionalExpr),           // ConditionalExpression_Yield_Await_NoLet : BinaryExpression_Yield_Await_NoLet '?' AssignmentExpression_In_Yield_Await ':' AssignmentExpression_Yield_Await
+	0,                                // ConditionalExpression_Yield_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet
+	int32(ConditionalExpr),           // ConditionalExpression_Yield_NoAs_NoSatisfies_StartWithLet : BinaryExpression_Yield_NoAs_NoSatisfies_StartWithLet '?' AssignmentExpression_In_Yield ':' AssignmentExpression_Yield
+	0,                                // ConditionalExpression_Yield_NoLet : BinaryExpression_Yield_NoLet
+	int32(ConditionalExpr),           // ConditionalExpression_Yield_NoLet : BinaryExpression_Yield_NoLet '?' AssignmentExpression_In_Yield ':' AssignmentExpression_Yield
+	0,                                // AssignmentExpression : ConditionalExpression
+	0,                                // AssignmentExpression : ArrowFunction
+	0,                                // AssignmentExpression : AsyncArrowFunction
+	int32(AssignmentExpr),            // AssignmentExpression : LeftHandSideExpression '=' AssignmentExpression
+	int32(AssignmentExpr),            // AssignmentExpression : LeftHandSideExpression AssignmentOperator AssignmentExpression
+	0,                                // AssignmentExpression_Await : ConditionalExpression_Await
+	0,                                // AssignmentExpression_Await : ArrowFunction
+	0,                                // AssignmentExpression_Await : AsyncArrowFunction
+	int32(AssignmentExpr),            // AssignmentExpression_Await : LeftHandSideExpression_Await '=' AssignmentExpression_Await
+	int32(AssignmentExpr),            // AssignmentExpression_Await : LeftHandSideExpression_Await AssignmentOperator AssignmentExpression_Await
+	0,                                // AssignmentExpression_Await_NoAs_NoSatisfies_StartWithLet : ConditionalExpression_Await_NoAs_NoSatisfies_StartWithLet
+	int32(AssignmentExpr),            // AssignmentExpression_Await_NoAs_NoSatisfies_StartWithLet : LeftHandSideExpression_Await_StartWithLet '=' AssignmentExpression_Await
+	int32(AssignmentExpr),            // AssignmentExpression_Await_NoAs_NoSatisfies_StartWithLet : LeftHandSideExpression_Await_StartWithLet AssignmentOperator AssignmentExpression_Await
+	0,                                // AssignmentExpression_Await_NoLet : ConditionalExpression_Await_NoLet
+	0,                                // AssignmentExpression_Await_NoLet : ArrowFunction
+	0,                                // AssignmentExpression_Await_NoLet : AsyncArrowFunction
+	int32(AssignmentExpr),            // AssignmentExpression_Await_NoLet : LeftHandSideExpression_Await_NoLet '=' AssignmentExpression_Await
+	int32(AssignmentExpr),            // AssignmentExpression_Await_NoLet : LeftHandSideExpression_Await_NoLet AssignmentOperator AssignmentExpression_Await
+	0,                                // AssignmentExpression_Await_NoObjLiteral : ConditionalExpression_Await_NoObjLiteral
+	0,                                // AssignmentExpression_Await_NoObjLiteral : ArrowFunction
+	0,                                // AssignmentExpression_Await_NoObjLiteral : AsyncArrowFunction
+	int32(AssignmentExpr),            // AssignmentExpression_Await_NoObjLiteral : LeftHandSideExpression_Await_NoObjLiteral '=' AssignmentExpression_Await
+	int32(AssignmentExpr),            // AssignmentExpression_Await_NoObjLiteral : LeftHandSideExpression_Await_NoObjLiteral AssignmentOperator AssignmentExpression_Await
+	0,                                // AssignmentExpression_In : ConditionalExpression_In
+	0,                                // AssignmentExpression_In : ArrowFunction_In
+	0,                                // AssignmentExpression_In : AsyncArrowFunction_In
+	int32(AssignmentExpr),            // AssignmentExpression_In : LeftHandSideExpression '=' AssignmentExpression_In
+	int32(AssignmentExpr),            // AssignmentExpression_In : LeftHandSideExpression AssignmentOperator AssignmentExpression_In
+	0,                                // AssignmentExpression_In_Await : ConditionalExpression_In_Await
+	0,                                // AssignmentExpression_In_Await : ArrowFunction_In
+	0,                                // AssignmentExpression_In_Await : AsyncArrowFunction_In
+	int32(AssignmentExpr),            // AssignmentExpression_In_Await : LeftHandSideExpression_Await '=' AssignmentExpression_In_Await
+	int32(AssignmentExpr),            // AssignmentExpression_In_Await : LeftHandSideExpression_Await AssignmentOperator AssignmentExpression_In_Await
+	0,                                // AssignmentExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : ConditionalExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies
+	0,                                // AssignmentExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : ArrowFunction_In
+	0,                                // AssignmentExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : AsyncArrowFunction_In
+	int32(AssignmentExpr),            // AssignmentExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : LeftHandSideExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass '=' AssignmentExpression_In_Await
+	int32(AssignmentExpr),            // AssignmentExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : LeftHandSideExpression_Await_NoLetSq_NoObjLiteral_NoFuncClass AssignmentOperator AssignmentExpression_In_Await
+	0,                                // AssignmentExpression_In_Await_NoObjLiteral : ConditionalExpression_In_Await_NoObjLiteral
+	0,                                // AssignmentExpression_In_Await_NoObjLiteral : ArrowFunction_In
+	0,                                // AssignmentExpression_In_Await_NoObjLiteral : AsyncArrowFunction_In
+	int32(AssignmentExpr),            // AssignmentExpression_In_Await_NoObjLiteral : LeftHandSideExpression_Await_NoObjLiteral '=' AssignmentExpression_In_Await
+	int32(AssignmentExpr),            // AssignmentExpression_In_Await_NoObjLiteral : LeftHandSideExpression_Await_NoObjLiteral AssignmentOperator AssignmentExpression_In_Await
+	0,                                // AssignmentExpression_In_NoFuncClass : ConditionalExpression_In_NoFuncClass
+	0,                                // AssignmentExpression_In_NoFuncClass : ArrowFunction_In
+	0,                                // AssignmentExpression_In_NoFuncClass : AsyncArrowFunction_In
+	int32(AssignmentExpr),            // AssignmentExpression_In_NoFuncClass : LeftHandSideExpression_NoFuncClass '=' AssignmentExpression_In
+	int32(AssignmentExpr),            // AssignmentExpression_In_NoFuncClass : LeftHandSideExpression_NoFuncClass AssignmentOperator AssignmentExpression_In
+	0,                                // AssignmentExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : ConditionalExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies
+	0,                                // AssignmentExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : ArrowFunction_In
+	0,                                // AssignmentExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : AsyncArrowFunction_In
+	int32(AssignmentExpr),            // AssignmentExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : LeftHandSideExpression_NoLetSq_NoObjLiteral_NoFuncClass '=' AssignmentExpression_In
+	int32(AssignmentExpr),            // AssignmentExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : LeftHandSideExpression_NoLetSq_NoObjLiteral_NoFuncClass AssignmentOperator AssignmentExpression_In
+	0,                                // AssignmentExpression_In_NoObjLiteral : ConditionalExpression_In_NoObjLiteral
+	0,                                // AssignmentExpression_In_NoObjLiteral : ArrowFunction_In
+	0,                                // AssignmentExpression_In_NoObjLiteral : AsyncArrowFunction_In
+	int32(AssignmentExpr),            // AssignmentExpression_In_NoObjLiteral : LeftHandSideExpression_NoObjLiteral '=' AssignmentExpression_In
+	int32(AssignmentExpr),            // AssignmentExpression_In_NoObjLiteral : LeftHandSideExpression_NoObjLiteral AssignmentOperator AssignmentExpression_In
+	0,                                // AssignmentExpression_In_Yield : ConditionalExpression_In_Yield
+	0,                                // AssignmentExpression_In_Yield : YieldExpression_In
+	0,                                // AssignmentExpression_In_Yield : ArrowFunction_In
+	0,                                // AssignmentExpression_In_Yield : AsyncArrowFunction_In
+	int32(AssignmentExpr),            // AssignmentExpression_In_Yield : LeftHandSideExpression_Yield '=' AssignmentExpression_In_Yield
+	int32(AssignmentExpr),            // AssignmentExpression_In_Yield : LeftHandSideExpression_Yield AssignmentOperator AssignmentExpression_In_Yield
+	0,                                // AssignmentExpression_In_Yield_Await : ConditionalExpression_In_Yield_Await
+	0,                                // AssignmentExpression_In_Yield_Await : YieldExpression_In_Await
+	0,                                // AssignmentExpression_In_Yield_Await : ArrowFunction_In
+	0,                                // AssignmentExpression_In_Yield_Await : AsyncArrowFunction_In
+	int32(AssignmentExpr),            // AssignmentExpression_In_Yield_Await : LeftHandSideExpression_Yield_Await '=' AssignmentExpression_In_Yield_Await
+	int32(AssignmentExpr),            // AssignmentExpression_In_Yield_Await : LeftHandSideExpression_Yield_Await AssignmentOperator AssignmentExpression_In_Yield_Await
+	0,                                // AssignmentExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : ConditionalExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies
+	0,                                // AssignmentExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : YieldExpression_In_Await
+	0,                                // AssignmentExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : ArrowFunction_In
+	0,                                // AssignmentExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : AsyncArrowFunction_In
+	int32(AssignmentExpr),            // AssignmentExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : LeftHandSideExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass '=' AssignmentExpression_In_Yield_Await
+	int32(AssignmentExpr),            // AssignmentExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : LeftHandSideExpression_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass AssignmentOperator AssignmentExpression_In_Yield_Await
+	0,                                // AssignmentExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : ConditionalExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies
+	0,                                // AssignmentExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : YieldExpression_In
+	0,                                // AssignmentExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : ArrowFunction_In
+	0,                                // AssignmentExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : AsyncArrowFunction_In
+	int32(AssignmentExpr),            // AssignmentExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : LeftHandSideExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass '=' AssignmentExpression_In_Yield
+	int32(AssignmentExpr),            // AssignmentExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : LeftHandSideExpression_Yield_NoLetSq_NoObjLiteral_NoFuncClass AssignmentOperator AssignmentExpression_In_Yield
+	0,                                // AssignmentExpression_NoAs_NoSatisfies_StartWithLet : ConditionalExpression_NoAs_NoSatisfies_StartWithLet
+	int32(AssignmentExpr),            // AssignmentExpression_NoAs_NoSatisfies_StartWithLet : LeftHandSideExpression_StartWithLet '=' AssignmentExpression
+	int32(AssignmentExpr),            // AssignmentExpression_NoAs_NoSatisfies_StartWithLet : LeftHandSideExpression_StartWithLet AssignmentOperator AssignmentExpression
+	0,                                // AssignmentExpression_NoLet : ConditionalExpression_NoLet
+	0,                                // AssignmentExpression_NoLet : ArrowFunction
+	0,                                // AssignmentExpression_NoLet : AsyncArrowFunction
+	int32(AssignmentExpr),            // AssignmentExpression_NoLet : LeftHandSideExpression_NoLet '=' AssignmentExpression
+	int32(AssignmentExpr),            // AssignmentExpression_NoLet : LeftHandSideExpression_NoLet AssignmentOperator AssignmentExpression
+	0,                                // AssignmentExpression_NoObjLiteral : ConditionalExpression_NoObjLiteral
+	0,                                // AssignmentExpression_NoObjLiteral : ArrowFunction
+	0,                                // AssignmentExpression_NoObjLiteral : AsyncArrowFunction
+	int32(AssignmentExpr),            // AssignmentExpression_NoObjLiteral : LeftHandSideExpression_NoObjLiteral '=' AssignmentExpression
+	int32(AssignmentExpr),            // AssignmentExpression_NoObjLiteral : LeftHandSideExpression_NoObjLiteral AssignmentOperator AssignmentExpression
+	0,                                // AssignmentExpression_Yield : ConditionalExpression_Yield
+	0,                                // AssignmentExpression_Yield : YieldExpression
+	0,                                // AssignmentExpression_Yield : ArrowFunction
+	0,                                // AssignmentExpression_Yield : AsyncArrowFunction
+	int32(AssignmentExpr),            // AssignmentExpression_Yield : LeftHandSideExpression_Yield '=' AssignmentExpression_Yield
+	int32(AssignmentExpr),            // AssignmentExpression_Yield : LeftHandSideExpression_Yield AssignmentOperator AssignmentExpression_Yield
+	0,                                // AssignmentExpression_Yield_Await : ConditionalExpression_Yield_Await
+	0,                                // AssignmentExpression_Yield_Await : YieldExpression_Await
+	0,                                // AssignmentExpression_Yield_Await : ArrowFunction
+	0,                                // AssignmentExpression_Yield_Await : AsyncArrowFunction
+	int32(AssignmentExpr),            // AssignmentExpression_Yield_Await : LeftHandSideExpression_Yield_Await '=' AssignmentExpression_Yield_Await
+	int32(AssignmentExpr),            // AssignmentExpression_Yield_Await : LeftHandSideExpression_Yield_Await AssignmentOperator AssignmentExpression_Yield_Await
+	0,                                // AssignmentExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet : ConditionalExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet
+	int32(AssignmentExpr),            // AssignmentExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet : LeftHandSideExpression_Yield_Await_StartWithLet '=' AssignmentExpression_Yield_Await
+	int32(AssignmentExpr),            // AssignmentExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet : LeftHandSideExpression_Yield_Await_StartWithLet AssignmentOperator AssignmentExpression_Yield_Await
+	0,                                // AssignmentExpression_Yield_Await_NoLet : ConditionalExpression_Yield_Await_NoLet
+	0,                                // AssignmentExpression_Yield_Await_NoLet : YieldExpression_Await
+	0,                                // AssignmentExpression_Yield_Await_NoLet : ArrowFunction
+	0,                                // AssignmentExpression_Yield_Await_NoLet : AsyncArrowFunction
+	int32(AssignmentExpr),            // AssignmentExpression_Yield_Await_NoLet : LeftHandSideExpression_Yield_Await_NoLet '=' AssignmentExpression_Yield_Await
+	int32(AssignmentExpr),            // AssignmentExpression_Yield_Await_NoLet : LeftHandSideExpression_Yield_Await_NoLet AssignmentOperator AssignmentExpression_Yield_Await
+	0,                                // AssignmentExpression_Yield_NoAs_NoSatisfies_StartWithLet : ConditionalExpression_Yield_NoAs_NoSatisfies_StartWithLet
+	int32(AssignmentExpr),            // AssignmentExpression_Yield_NoAs_NoSatisfies_StartWithLet : LeftHandSideExpression_Yield_StartWithLet '=' AssignmentExpression_Yield
+	int32(AssignmentExpr),            // AssignmentExpression_Yield_NoAs_NoSatisfies_StartWithLet : LeftHandSideExpression_Yield_StartWithLet AssignmentOperator AssignmentExpression_Yield
+	0,                                // AssignmentExpression_Yield_NoLet : ConditionalExpression_Yield_NoLet
+	0,                                // AssignmentExpression_Yield_NoLet : YieldExpression
+	0,                                // AssignmentExpression_Yield_NoLet : ArrowFunction
+	0,                                // AssignmentExpression_Yield_NoLet : AsyncArrowFunction
+	int32(AssignmentExpr),            // AssignmentExpression_Yield_NoLet : LeftHandSideExpression_Yield_NoLet '=' AssignmentExpression_Yield
+	int32(AssignmentExpr),            // AssignmentExpression_Yield_NoLet : LeftHandSideExpression_Yield_NoLet AssignmentOperator AssignmentExpression_Yield
+	int32(AssignmentOperator),        // AssignmentOperator : '*='
+	int32(AssignmentOperator),        // AssignmentOperator : '/='
+	int32(AssignmentOperator),        // AssignmentOperator : '%='
+	int32(AssignmentOperator),        // AssignmentOperator : '+='
+	int32(AssignmentOperator),        // AssignmentOperator : '-='
+	int32(AssignmentOperator),        // AssignmentOperator : '<<='
+	int32(AssignmentOperator),        // AssignmentOperator : '>>='
+	int32(AssignmentOperator),        // AssignmentOperator : '>>>='
+	int32(AssignmentOperator),        // AssignmentOperator : '&='
+	int32(AssignmentOperator),        // AssignmentOperator : '^='
+	int32(AssignmentOperator),        // AssignmentOperator : '|='
+	int32(AssignmentOperator),        // AssignmentOperator : '**='
+	int32(AssignmentOperator),        // AssignmentOperator : '??='
+	int32(AssignmentOperator),        // AssignmentOperator : '||='
+	int32(AssignmentOperator),        // AssignmentOperator : '&&='
+	int32(CommaExpr),                 // CommaExpression_Await_NoAs_NoSatisfies_StartWithLet : Expression_Await_NoAs_NoSatisfies_StartWithLet ',' AssignmentExpression_Await
+	int32(CommaExpr),                 // CommaExpression_Await_NoLet : Expression_Await_NoLet ',' AssignmentExpression_Await
+	int32(CommaExpr),                 // CommaExpression_In : Expression_In ',' AssignmentExpression_In
+	int32(CommaExpr),                 // CommaExpression_In_Await : Expression_In_Await ',' AssignmentExpression_In_Await
+	int32(CommaExpr),                 // CommaExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : Expression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies ',' AssignmentExpression_In_Await
+	int32(CommaExpr),                 // CommaExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : Expression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies ',' AssignmentExpression_In
+	int32(CommaExpr),                 // CommaExpression_In_Yield : Expression_In_Yield ',' AssignmentExpression_In_Yield
+	int32(CommaExpr),                 // CommaExpression_In_Yield_Await : Expression_In_Yield_Await ',' AssignmentExpression_In_Yield_Await
+	int32(CommaExpr),                 // CommaExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : Expression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies ',' AssignmentExpression_In_Yield_Await
+	int32(CommaExpr),                 // CommaExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : Expression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies ',' AssignmentExpression_In_Yield
+	int32(CommaExpr),                 // CommaExpression_NoAs_NoSatisfies_StartWithLet : Expression_NoAs_NoSatisfies_StartWithLet ',' AssignmentExpression
+	int32(CommaExpr),                 // CommaExpression_NoLet : Expression_NoLet ',' AssignmentExpression
+	int32(CommaExpr),                 // CommaExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet : Expression_Yield_Await_NoAs_NoSatisfies_StartWithLet ',' AssignmentExpression_Yield_Await
+	int32(CommaExpr),                 // CommaExpression_Yield_Await_NoLet : Expression_Yield_Await_NoLet ',' AssignmentExpression_Yield_Await
+	int32(CommaExpr),                 // CommaExpression_Yield_NoAs_NoSatisfies_StartWithLet : Expression_Yield_NoAs_NoSatisfies_StartWithLet ',' AssignmentExpression_Yield
+	int32(CommaExpr),                 // CommaExpression_Yield_NoLet : Expression_Yield_NoLet ',' AssignmentExpression_Yield
+	0,                                // Expression_Await_NoAs_NoSatisfies_StartWithLet : AssignmentExpression_Await_NoAs_NoSatisfies_StartWithLet
+	0,                                // Expression_Await_NoAs_NoSatisfies_StartWithLet : CommaExpression_Await_NoAs_NoSatisfies_StartWithLet
+	0,                                // Expression_Await_NoLet : AssignmentExpression_Await_NoLet
+	0,                                // Expression_Await_NoLet : CommaExpression_Await_NoLet
+	0,                                // Expression_In : AssignmentExpression_In
+	0,                                // Expression_In : CommaExpression_In
+	0,                                // Expression_In_Await : AssignmentExpression_In_Await
+	0,                                // Expression_In_Await : CommaExpression_In_Await
+	0,                                // Expression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : AssignmentExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies
+	0,                                // Expression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : CommaExpression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies
+	0,                                // Expression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : AssignmentExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies
+	0,                                // Expression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : CommaExpression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies
+	0,                                // Expression_In_Yield : AssignmentExpression_In_Yield
+	0,                                // Expression_In_Yield : CommaExpression_In_Yield
+	0,                                // Expression_In_Yield_Await : AssignmentExpression_In_Yield_Await
+	0,                                // Expression_In_Yield_Await : CommaExpression_In_Yield_Await
+	0,                                // Expression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : AssignmentExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies
+	0,                                // Expression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : CommaExpression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies
+	0,                                // Expression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : AssignmentExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies
+	0,                                // Expression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies : CommaExpression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies
+	0,                                // Expression_NoAs_NoSatisfies_StartWithLet : AssignmentExpression_NoAs_NoSatisfies_StartWithLet
+	0,                                // Expression_NoAs_NoSatisfies_StartWithLet : CommaExpression_NoAs_NoSatisfies_StartWithLet
+	0,                                // Expression_NoLet : AssignmentExpression_NoLet
+	0,                                // Expression_NoLet : CommaExpression_NoLet
+	0,                                // Expression_Yield_Await_NoAs_NoSatisfies_StartWithLet : AssignmentExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet
+	0,                                // Expression_Yield_Await_NoAs_NoSatisfies_StartWithLet : CommaExpression_Yield_Await_NoAs_NoSatisfies_StartWithLet
+	0,                                // Expression_Yield_Await_NoLet : AssignmentExpression_Yield_Await_NoLet
+	0,                                // Expression_Yield_Await_NoLet : CommaExpression_Yield_Await_NoLet
+	0,                                // Expression_Yield_NoAs_NoSatisfies_StartWithLet : AssignmentExpression_Yield_NoAs_NoSatisfies_StartWithLet
+	0,                                // Expression_Yield_NoAs_NoSatisfies_StartWithLet : CommaExpression_Yield_NoAs_NoSatisfies_StartWithLet
+	0,                                // Expression_Yield_NoLet : AssignmentExpression_Yield_NoLet
+	0,                                // Expression_Yield_NoLet : CommaExpression_Yield_NoLet
+	0,                                // Statement : BlockStatement
+	0,                                // Statement : VariableStatement
+	0,                                // Statement : EmptyStatement
+	0,                                // Statement : ExpressionStatement
+	0,                                // Statement : IfStatement
+	0,                                // Statement : BreakableStatement
+	0,                                // Statement : ContinueStatement
+	0,                                // Statement : BreakStatement
+	0,                                // Statement : ReturnStatement
+	0,                                // Statement : WithStatement
+	0,                                // Statement : LabelledStatement
+	0,                                // Statement : ThrowStatement
+	0,                                // Statement : TryStatement
+	0,                                // Statement : DebuggerStatement
+	0,                                // Statement_Await : BlockStatement_Await
+	0,                                // Statement_Await : VariableStatement_Await
+	0,                                // Statement_Await : EmptyStatement
+	0,                                // Statement_Await : ExpressionStatement_Await
+	0,                                // Statement_Await : IfStatement_Await
+	0,                                // Statement_Await : BreakableStatement_Await
+	0,                                // Statement_Await : ContinueStatement
+	0,                                // Statement_Await : BreakStatement
+	0,                                // Statement_Await : ReturnStatement_Await
+	0,                                // Statement_Await : WithStatement_Await
+	0,                                // Statement_Await : LabelledStatement_Await
+	0,                                // Statement_Await : ThrowStatement_Await
+	0,                                // Statement_Await : TryStatement_Await
+	0,                                // Statement_Await : DebuggerStatement
+	0,                                // Statement_Yield : BlockStatement_Yield
+	0,                                // Statement_Yield : VariableStatement_Yield
+	0,                                // Statement_Yield : EmptyStatement
+	0,                                // Statement_Yield : ExpressionStatement_Yield
+	0,                                // Statement_Yield : IfStatement_Yield
+	0,                                // Statement_Yield : BreakableStatement_Yield
+	0,                                // Statement_Yield : ContinueStatement
+	0,                                // Statement_Yield : BreakStatement
+	0,                                // Statement_Yield : ReturnStatement_Yield
+	0,                                // Statement_Yield : WithStatement_Yield
+	0,                                // Statement_Yield : LabelledStatement_Yield
+	0,                                // Statement_Yield : ThrowStatement_Yield
+	0,                                // Statement_Yield : TryStatement_Yield
+	0,                                // Statement_Yield : DebuggerStatement
+	0,                                // Statement_Yield_Await : BlockStatement_Yield_Await
+	0,                                // Statement_Yield_Await : VariableStatement_Yield_Await
+	0,                                // Statement_Yield_Await : EmptyStatement
+	0,                                // Statement_Yield_Await : ExpressionStatement_Yield_Await
+	0,                                // Statement_Yield_Await : IfStatement_Yield_Await
+	0,                                // Statement_Yield_Await : BreakableStatement_Yield_Await
+	0,                                // Statement_Yield_Await : ContinueStatement
+	0,                                // Statement_Yield_Await : BreakStatement
+	0,                                // Statement_Yield_Await : ReturnStatement_Yield_Await
+	0,                                // Statement_Yield_Await : WithStatement_Yield_Await
+	0,                                // Statement_Yield_Await : LabelledStatement_Yield_Await
+	0,                                // Statement_Yield_Await : ThrowStatement_Yield_Await
+	0,                                // Statement_Yield_Await : TryStatement_Yield_Await
+	0,                                // Statement_Yield_Await : DebuggerStatement
+	0,                                // Declaration : HoistableDeclaration
+	0,                                // Declaration : ClassDeclaration
+	0,                                // Declaration : LexicalDeclaration_In
+	0,                                // Declaration : TypeAliasDeclaration
+	0,                                // Declaration : NamespaceDeclaration
+	0,                                // Declaration : InterfaceDeclaration
+	0,                                // Declaration : EnumDeclaration
+	0,                                // Declaration : ImportAliasDeclaration
+	0,                                // Declaration : AmbientDeclaration
+	0,                                // Declaration_Await : HoistableDeclaration
+	0,                                // Declaration_Await : ClassDeclaration_Await
+	0,                                // Declaration_Await : LexicalDeclaration_In_Await
+	0,                                // Declaration_Await : TypeAliasDeclaration
+	0,                                // Declaration_Await : NamespaceDeclaration
+	0,                                // Declaration_Await : InterfaceDeclaration
+	0,                                // Declaration_Await : EnumDeclaration
+	0,                                // Declaration_Await : ImportAliasDeclaration
+	0,                                // Declaration_Await : AmbientDeclaration
+	0,                                // Declaration_Yield : HoistableDeclaration
+	0,                                // Declaration_Yield : ClassDeclaration_Yield
+	0,                                // Declaration_Yield : LexicalDeclaration_In_Yield
+	0,                                // Declaration_Yield : TypeAliasDeclaration
+	0,                                // Declaration_Yield : NamespaceDeclaration
+	0,                                // Declaration_Yield : InterfaceDeclaration
+	0,                                // Declaration_Yield : EnumDeclaration
+	0,                                // Declaration_Yield : ImportAliasDeclaration
+	0,                                // Declaration_Yield : AmbientDeclaration
+	0,                                // Declaration_Yield_Await : HoistableDeclaration
+	0,                                // Declaration_Yield_Await : ClassDeclaration_Yield_Await
+	0,                                // Declaration_Yield_Await : LexicalDeclaration_In_Yield_Await
+	0,                                // Declaration_Yield_Await : TypeAliasDeclaration
+	0,                                // Declaration_Yield_Await : NamespaceDeclaration
+	0,                                // Declaration_Yield_Await : InterfaceDeclaration
+	0,                                // Declaration_Yield_Await : EnumDeclaration
+	0,                                // Declaration_Yield_Await : ImportAliasDeclaration
+	0,                                // Declaration_Yield_Await : AmbientDeclaration
+	0,                                // HoistableDeclaration : FunctionDeclaration
+	0,                                // HoistableDeclaration : GeneratorDeclaration
+	0,                                // HoistableDeclaration : AsyncFunctionDeclaration
+	0,                                // HoistableDeclaration : AsyncGeneratorDeclaration
+	0,                                // BreakableStatement : IterationStatement
+	0,                                // BreakableStatement : SwitchStatement
+	0,                                // BreakableStatement_Await : IterationStatement_Await
+	0,                                // BreakableStatement_Await : SwitchStatement_Await
+	0,                                // BreakableStatement_Yield : IterationStatement_Yield
+	0,                                // BreakableStatement_Yield : SwitchStatement_Yield
+	0,                                // BreakableStatement_Yield_Await : IterationStatement_Yield_Await
+	0,                                // BreakableStatement_Yield_Await : SwitchStatement_Yield_Await
+	0,                                // BlockStatement : Block
+	0,                                // BlockStatement_Await : Block_Await
+	0,                                // BlockStatement_Yield : Block_Yield
+	0,                                // BlockStatement_Yield_Await : Block_Yield_Await
+	int32(Block),                     // Block : '{' .recoveryScope StatementList SyntaxError '}'
+	int32(Block),                     // Block : '{' .recoveryScope StatementList '}'
+	int32(Block),                     // Block : '{' .recoveryScope SyntaxError '}'
+	int32(Block),                     // Block : '{' .recoveryScope '}'
+	int32(Block),                     // Block_Await : '{' .recoveryScope StatementList_Await SyntaxError '}'
+	int32(Block),                     // Block_Await : '{' .recoveryScope StatementList_Await '}'
+	int32(Block),                     // Block_Await : '{' .recoveryScope SyntaxError '}'
+	int32(Block),                     // Block_Await : '{' .recoveryScope '}'
+	int32(Block),                     // Block_Yield : '{' .recoveryScope StatementList_Yield SyntaxError '}'
+	int32(Block),                     // Block_Yield : '{' .recoveryScope StatementList_Yield '}'
+	int32(Block),                     // Block_Yield : '{' .recoveryScope SyntaxError '}'
+	int32(Block),                     // Block_Yield : '{' .recoveryScope '}'
+	int32(Block),                     // Block_Yield_Await : '{' .recoveryScope StatementList_Yield_Await SyntaxError '}'
+	int32(Block),                     // Block_Yield_Await : '{' .recoveryScope StatementList_Yield_Await '}'
+	int32(Block),                     // Block_Yield_Await : '{' .recoveryScope SyntaxError '}'
+	int32(Block),                     // Block_Yield_Await : '{' .recoveryScope '}'
+	0,                                // StatementList : StatementListItem
+	0,                                // StatementList : StatementList StatementListItem
+	0,                                // StatementList_Await : StatementListItem_Await
+	0,                                // StatementList_Await : StatementList_Await StatementListItem_Await
+	0,                                // StatementList_Yield : StatementListItem_Yield
+	0,                                // StatementList_Yield : StatementList_Yield StatementListItem_Yield
+	0,                                // StatementList_Yield_Await : StatementListItem_Yield_Await
+	0,                                // StatementList_Yield_Await : StatementList_Yield_Await StatementListItem_Yield_Await
+	0,                                // StatementListItem : Statement
+	0,                                // StatementListItem : Declaration
+	int32(SyntaxProblem),             // StatementListItem : error ';'
+	0,                                // StatementListItem_Await : Statement_Await
+	0,                                // StatementListItem_Await : Declaration_Await
+	int32(SyntaxProblem),             // StatementListItem_Await : error ';'
+	0,                                // StatementListItem_Yield : Statement_Yield
+	0,                                // StatementListItem_Yield : Declaration_Yield
+	int32(SyntaxProblem),             // StatementListItem_Yield : error ';'
+	0,                                // StatementListItem_Yield_Await : Statement_Yield_Await
+	0,                                // StatementListItem_Yield_Await : Declaration_Yield_Await
+	int32(SyntaxProblem),             // StatementListItem_Yield_Await : error ';'
+	int32(LexicalDecl),               // LexicalDeclaration_In : LetOrConst BindingList_In ';'
+	int32(LexicalDecl),               // LexicalDeclaration_In_Await : LetOrConst BindingList_In_Await ';'
+	int32(LexicalDecl),               // LexicalDeclaration_In_Yield : LetOrConst BindingList_In_Yield ';'
+	int32(LexicalDecl),               // LexicalDeclaration_In_Yield_Await : LetOrConst BindingList_In_Yield_Await ';'
+	int32(Let),                       // LetOrConst : 'let'
+	int32(Const),                     // LetOrConst : 'const'
+	0,                                // BindingList : LexicalBinding
+	0,                                // BindingList : BindingList ',' LexicalBinding
+	0,                                // BindingList_Await : LexicalBinding_Await
+	0,                                // BindingList_Await : BindingList_Await ',' LexicalBinding_Await
+	0,                                // BindingList_In : LexicalBinding_In
+	0,                                // BindingList_In : BindingList_In ',' LexicalBinding_In
+	0,                                // BindingList_In_Await : LexicalBinding_In_Await
+	0,                                // BindingList_In_Await : BindingList_In_Await ',' LexicalBinding_In_Await
+	0,                                // BindingList_In_Yield : LexicalBinding_In_Yield
+	0,                                // BindingList_In_Yield : BindingList_In_Yield ',' LexicalBinding_In_Yield
+	0,                                // BindingList_In_Yield_Await : LexicalBinding_In_Yield_Await
+	0,                                // BindingList_In_Yield_Await : BindingList_In_Yield_Await ',' LexicalBinding_In_Yield_Await
+	0,                                // BindingList_Yield : LexicalBinding_Yield
+	0,                                // BindingList_Yield : BindingList_Yield ',' LexicalBinding_Yield
+	0,                                // BindingList_Yield_Await : LexicalBinding_Yield_Await
+	0,                                // BindingList_Yield_Await : BindingList_Yield_Await ',' LexicalBinding_Yield_Await
+	int32(TsExclToken),               // ExclToken : '!'
+	int32(LexicalBinding),            // LexicalBinding : BindingIdentifier ExclToken TypeAnnotationopt Initializeropt
+	int32(LexicalBinding),            // LexicalBinding : BindingIdentifier TypeAnnotationopt Initializeropt
+	int32(LexicalBinding),            // LexicalBinding : BindingPattern ExclToken TypeAnnotationopt Initializer
+	int32(LexicalBinding),            // LexicalBinding : BindingPattern TypeAnnotationopt Initializer
+	int32(LexicalBinding),            // LexicalBinding_Await : BindingIdentifier ExclToken TypeAnnotationopt Initializeropt_Await
+	int32(LexicalBinding),            // LexicalBinding_Await : BindingIdentifier TypeAnnotationopt Initializeropt_Await
+	int32(LexicalBinding),            // LexicalBinding_Await : BindingPattern_Await ExclToken TypeAnnotationopt Initializer_Await
+	int32(LexicalBinding),            // LexicalBinding_Await : BindingPattern_Await TypeAnnotationopt Initializer_Await
+	int32(LexicalBinding),            // LexicalBinding_In : BindingIdentifier ExclToken TypeAnnotationopt Initializeropt_In
+	int32(LexicalBinding),            // LexicalBinding_In : BindingIdentifier TypeAnnotationopt Initializeropt_In
+	int32(LexicalBinding),            // LexicalBinding_In : BindingPattern ExclToken TypeAnnotationopt Initializer_In
+	int32(LexicalBinding),            // LexicalBinding_In : BindingPattern TypeAnnotationopt Initializer_In
+	int32(LexicalBinding),            // LexicalBinding_In_Await : BindingIdentifier ExclToken TypeAnnotationopt Initializeropt_In_Await
+	int32(LexicalBinding),            // LexicalBinding_In_Await : BindingIdentifier TypeAnnotationopt Initializeropt_In_Await
+	int32(LexicalBinding),            // LexicalBinding_In_Await : BindingPattern_Await ExclToken TypeAnnotationopt Initializer_In_Await
+	int32(LexicalBinding),            // LexicalBinding_In_Await : BindingPattern_Await TypeAnnotationopt Initializer_In_Await
+	int32(LexicalBinding),            // LexicalBinding_In_Yield : BindingIdentifier ExclToken TypeAnnotationopt Initializeropt_In_Yield
+	int32(LexicalBinding),            // LexicalBinding_In_Yield : BindingIdentifier TypeAnnotationopt Initializeropt_In_Yield
+	int32(LexicalBinding),            // LexicalBinding_In_Yield : BindingPattern_Yield ExclToken TypeAnnotationopt Initializer_In_Yield
+	int32(LexicalBinding),            // LexicalBinding_In_Yield : BindingPattern_Yield TypeAnnotationopt Initializer_In_Yield
+	int32(LexicalBinding),            // LexicalBinding_In_Yield_Await : BindingIdentifier ExclToken TypeAnnotationopt Initializeropt_In_Yield_Await
+	int32(LexicalBinding),            // LexicalBinding_In_Yield_Await : BindingIdentifier TypeAnnotationopt Initializeropt_In_Yield_Await
+	int32(LexicalBinding),            // LexicalBinding_In_Yield_Await : BindingPattern_Yield_Await ExclToken TypeAnnotationopt Initializer_In_Yield_Await
+	int32(LexicalBinding),            // LexicalBinding_In_Yield_Await : BindingPattern_Yield_Await TypeAnnotationopt Initializer_In_Yield_Await
+	int32(LexicalBinding),            // LexicalBinding_Yield : BindingIdentifier ExclToken TypeAnnotationopt Initializeropt_Yield
+	int32(LexicalBinding),            // LexicalBinding_Yield : BindingIdentifier TypeAnnotationopt Initializeropt_Yield
+	int32(LexicalBinding),            // LexicalBinding_Yield : BindingPattern_Yield ExclToken TypeAnnotationopt Initializer_Yield
+	int32(LexicalBinding),            // LexicalBinding_Yield : BindingPattern_Yield TypeAnnotationopt Initializer_Yield
+	int32(LexicalBinding),            // LexicalBinding_Yield_Await : BindingIdentifier ExclToken TypeAnnotationopt Initializeropt_Yield_Await
+	int32(LexicalBinding),            // LexicalBinding_Yield_Await : BindingIdentifier TypeAnnotationopt Initializeropt_Yield_Await
+	int32(LexicalBinding),            // LexicalBinding_Yield_Await : BindingPattern_Yield_Await ExclToken TypeAnnotationopt Initializer_Yield_Await
+	int32(LexicalBinding),            // LexicalBinding_Yield_Await : BindingPattern_Yield_Await TypeAnnotationopt Initializer_Yield_Await
+	int32(VarStmt),                   // VariableStatement : 'var' VariableDeclarationList_In ';'
+	int32(VarStmt),                   // VariableStatement_Await : 'var' VariableDeclarationList_In_Await ';'
+	int32(VarStmt),                   // VariableStatement_Yield : 'var' VariableDeclarationList_In_Yield ';'
+	int32(VarStmt),                   // VariableStatement_Yield_Await : 'var' VariableDeclarationList_In_Yield_Await ';'
+	0,                                // VariableDeclarationList : VariableDeclaration
+	0,                                // VariableDeclarationList : VariableDeclarationList ',' VariableDeclaration
+	0,                                // VariableDeclarationList_Await : VariableDeclaration_Await
+	0,                                // VariableDeclarationList_Await : VariableDeclarationList_Await ',' VariableDeclaration_Await
+	0,                                // VariableDeclarationList_In : VariableDeclaration_In
+	0,                                // VariableDeclarationList_In : VariableDeclarationList_In ',' VariableDeclaration_In
+	0,                                // VariableDeclarationList_In_Await : VariableDeclaration_In_Await
+	0,                                // VariableDeclarationList_In_Await : VariableDeclarationList_In_Await ',' VariableDeclaration_In_Await
+	0,                                // VariableDeclarationList_In_Yield : VariableDeclaration_In_Yield
+	0,                                // VariableDeclarationList_In_Yield : VariableDeclarationList_In_Yield ',' VariableDeclaration_In_Yield
+	0,                                // VariableDeclarationList_In_Yield_Await : VariableDeclaration_In_Yield_Await
+	0,                                // VariableDeclarationList_In_Yield_Await : VariableDeclarationList_In_Yield_Await ',' VariableDeclaration_In_Yield_Await
+	0,                                // VariableDeclarationList_Yield : VariableDeclaration_Yield
+	0,                                // VariableDeclarationList_Yield : VariableDeclarationList_Yield ',' VariableDeclaration_Yield
+	0,                                // VariableDeclarationList_Yield_Await : VariableDeclaration_Yield_Await
+	0,                                // VariableDeclarationList_Yield_Await : VariableDeclarationList_Yield_Await ',' VariableDeclaration_Yield_Await
+	int32(VarDecl),                   // VariableDeclaration : BindingIdentifier ExclToken TypeAnnotationopt Initializeropt
+	int32(VarDecl),                   // VariableDeclaration : BindingIdentifier TypeAnnotationopt Initializeropt
+	int32(VarDecl),                   // VariableDeclaration : BindingPattern ExclToken TypeAnnotationopt Initializer
+	int32(VarDecl),                   // VariableDeclaration : BindingPattern TypeAnnotationopt Initializer
+	int32(VarDecl),                   // VariableDeclaration_Await : BindingIdentifier ExclToken TypeAnnotationopt Initializeropt_Await
+	int32(VarDecl),                   // VariableDeclaration_Await : BindingIdentifier TypeAnnotationopt Initializeropt_Await
+	int32(VarDecl),                   // VariableDeclaration_Await : BindingPattern_Await ExclToken TypeAnnotationopt Initializer_Await
+	int32(VarDecl),                   // VariableDeclaration_Await : BindingPattern_Await TypeAnnotationopt Initializer_Await
+	int32(VarDecl),                   // VariableDeclaration_In : BindingIdentifier ExclToken TypeAnnotationopt Initializeropt_In
+	int32(VarDecl),                   // VariableDeclaration_In : BindingIdentifier TypeAnnotationopt Initializeropt_In
+	int32(VarDecl),                   // VariableDeclaration_In : BindingPattern ExclToken TypeAnnotationopt Initializer_In
+	int32(VarDecl),                   // VariableDeclaration_In : BindingPattern TypeAnnotationopt Initializer_In
+	int32(VarDecl),                   // VariableDeclaration_In_Await : BindingIdentifier ExclToken TypeAnnotationopt Initializeropt_In_Await
+	int32(VarDecl),                   // VariableDeclaration_In_Await : BindingIdentifier TypeAnnotationopt Initializeropt_In_Await
+	int32(VarDecl),                   // VariableDeclaration_In_Await : BindingPattern_Await ExclToken TypeAnnotationopt Initializer_In_Await
+	int32(VarDecl),                   // VariableDeclaration_In_Await : BindingPattern_Await TypeAnnotationopt Initializer_In_Await
+	int32(VarDecl),                   // VariableDeclaration_In_Yield : BindingIdentifier ExclToken TypeAnnotationopt Initializeropt_In_Yield
+	int32(VarDecl),                   // VariableDeclaration_In_Yield : BindingIdentifier TypeAnnotationopt Initializeropt_In_Yield
+	int32(VarDecl),                   // VariableDeclaration_In_Yield : BindingPattern_Yield ExclToken TypeAnnotationopt Initializer_In_Yield
+	int32(VarDecl),                   // VariableDeclaration_In_Yield : BindingPattern_Yield TypeAnnotationopt Initializer_In_Yield
+	int32(VarDecl),                   // VariableDeclaration_In_Yield_Await : BindingIdentifier ExclToken TypeAnnotationopt Initializeropt_In_Yield_Await
+	int32(VarDecl),                   // VariableDeclaration_In_Yield_Await : BindingIdentifier TypeAnnotationopt Initializeropt_In_Yield_Await
+	int32(VarDecl),                   // VariableDeclaration_In_Yield_Await : BindingPattern_Yield_Await ExclToken TypeAnnotationopt Initializer_In_Yield_Await
+	int32(VarDecl),                   // VariableDeclaration_In_Yield_Await : BindingPattern_Yield_Await TypeAnnotationopt Initializer_In_Yield_Await
+	int32(VarDecl),                   // VariableDeclaration_Yield : BindingIdentifier ExclToken TypeAnnotationopt Initializeropt_Yield
+	int32(VarDecl),                   // VariableDeclaration_Yield : BindingIdentifier TypeAnnotationopt Initializeropt_Yield
+	int32(VarDecl),                   // VariableDeclaration_Yield : BindingPattern_Yield ExclToken TypeAnnotationopt Initializer_Yield
+	int32(VarDecl),                   // VariableDeclaration_Yield : BindingPattern_Yield TypeAnnotationopt Initializer_Yield
+	int32(VarDecl),                   // VariableDeclaration_Yield_Await : BindingIdentifier ExclToken TypeAnnotationopt Initializeropt_Yield_Await
+	int32(VarDecl),                   // VariableDeclaration_Yield_Await : BindingIdentifier TypeAnnotationopt Initializeropt_Yield_Await
+	int32(VarDecl),                   // VariableDeclaration_Yield_Await : BindingPattern_Yield_Await ExclToken TypeAnnotationopt Initializer_Yield_Await
+	int32(VarDecl),                   // VariableDeclaration_Yield_Await : BindingPattern_Yield_Await TypeAnnotationopt Initializer_Yield_Await
+	0,                                // BindingPattern : ObjectBindingPattern
+	0,                                // BindingPattern : ArrayBindingPattern
+	0,                                // BindingPattern_Await : ObjectBindingPattern_Await
+	0,                                // BindingPattern_Await : ArrayBindingPattern_Await
+	0,                                // BindingPattern_Yield : ObjectBindingPattern_Yield
+	0,                                // BindingPattern_Yield : ArrayBindingPattern_Yield
+	0,                                // BindingPattern_Yield_Await : ObjectBindingPattern_Yield_Await
+	0,                                // BindingPattern_Yield_Await : ArrayBindingPattern_Yield_Await
+	int32(ObjectPattern),             // ObjectBindingPattern : '{' .recoveryScope BindingRestElementopt '}'
+	int32(ObjectPattern),             // ObjectBindingPattern : '{' .recoveryScope PropertyPattern_list_Comma_separated ',' BindingRestElementopt '}'
+	int32(ObjectPattern),             // ObjectBindingPattern : '{' .recoveryScope PropertyPattern_list_Comma_separated '}'
+	int32(ObjectPattern),             // ObjectBindingPattern_Await : '{' .recoveryScope BindingRestElementopt '}'
+	int32(ObjectPattern),             // ObjectBindingPattern_Await : '{' .recoveryScope PropertyPattern_Await_list_Comma_separated ',' BindingRestElementopt '}'
+	int32(ObjectPattern),             // ObjectBindingPattern_Await : '{' .recoveryScope PropertyPattern_Await_list_Comma_separated '}'
+	int32(ObjectPattern),             // ObjectBindingPattern_Yield : '{' .recoveryScope BindingRestElementopt '}'
+	int32(ObjectPattern),             // ObjectBindingPattern_Yield : '{' .recoveryScope PropertyPattern_Yield_list_Comma_separated ',' BindingRestElementopt '}'
+	int32(ObjectPattern),             // ObjectBindingPattern_Yield : '{' .recoveryScope PropertyPattern_Yield_list_Comma_separated '}'
+	int32(ObjectPattern),             // ObjectBindingPattern_Yield_Await : '{' .recoveryScope BindingRestElementopt '}'
+	int32(ObjectPattern),             // ObjectBindingPattern_Yield_Await : '{' .recoveryScope PropertyPattern_Yield_Await_list_Comma_separated ',' BindingRestElementopt '}'
+	int32(ObjectPattern),             // ObjectBindingPattern_Yield_Await : '{' .recoveryScope PropertyPattern_Yield_Await_list_Comma_separated '}'
+	0,                                // PropertyPattern_Await_list_Comma_separated : PropertyPattern_Await_list_Comma_separated ',' PropertyPattern_Await
+	0,                                // PropertyPattern_Await_list_Comma_separated : PropertyPattern_Await
+	0,                                // PropertyPattern_Yield_Await_list_Comma_separated : PropertyPattern_Yield_Await_list_Comma_separated ',' PropertyPattern_Yield_Await
+	0,                                // PropertyPattern_Yield_Await_list_Comma_separated : PropertyPattern_Yield_Await
+	0,                                // PropertyPattern_Yield_list_Comma_separated : PropertyPattern_Yield_list_Comma_separated ',' PropertyPattern_Yield
+	0,                                // PropertyPattern_Yield_list_Comma_separated : PropertyPattern_Yield
+	0,                                // PropertyPattern_list_Comma_separated : PropertyPattern_list_Comma_separated ',' PropertyPattern
+	0,                                // PropertyPattern_list_Comma_separated : PropertyPattern
+	int32(NoElement),                 // ElementElision : ','
+	-1,                               // ElementElision : Elision ','
+	int32(ArrayPattern),              // ArrayBindingPattern : '[' ElementElisionopt BindingRestElementopt ']'
+	int32(ArrayPattern),              // ArrayBindingPattern : '[' ElementPatternList ']'
+	int32(ArrayPattern),              // ArrayBindingPattern : '[' ElementPatternList ',' ElementElisionopt BindingRestElementopt ']'
+	int32(ArrayPattern),              // ArrayBindingPattern_Await : '[' ElementElisionopt BindingRestElementopt ']'
+	int32(ArrayPattern),              // ArrayBindingPattern_Await : '[' ElementPatternList_Await ']'
+	int32(ArrayPattern),              // ArrayBindingPattern_Await : '[' ElementPatternList_Await ',' ElementElisionopt BindingRestElementopt ']'
+	int32(ArrayPattern),              // ArrayBindingPattern_Yield : '[' ElementElisionopt BindingRestElementopt ']'
+	int32(ArrayPattern),              // ArrayBindingPattern_Yield : '[' ElementPatternList_Yield ']'
+	int32(ArrayPattern),              // ArrayBindingPattern_Yield : '[' ElementPatternList_Yield ',' ElementElisionopt BindingRestElementopt ']'
+	int32(ArrayPattern),              // ArrayBindingPattern_Yield_Await : '[' ElementElisionopt BindingRestElementopt ']'
+	int32(ArrayPattern),              // ArrayBindingPattern_Yield_Await : '[' ElementPatternList_Yield_Await ']'
+	int32(ArrayPattern),              // ArrayBindingPattern_Yield_Await : '[' ElementPatternList_Yield_Await ',' ElementElisionopt BindingRestElementopt ']'
+	0,                                // ElementPatternList : BindingElisionElement
+	0,                                // ElementPatternList : ElementPatternList ',' BindingElisionElement
+	0,                                // ElementPatternList_Await : BindingElisionElement_Await
+	0,                                // ElementPatternList_Await : ElementPatternList_Await ',' BindingElisionElement_Await
+	0,                                // ElementPatternList_Yield : BindingElisionElement_Yield
+	0,                                // ElementPatternList_Yield : ElementPatternList_Yield ',' BindingElisionElement_Yield
+	0,                                // ElementPatternList_Yield_Await : BindingElisionElement_Yield_Await
+	0,                                // ElementPatternList_Yield_Await : ElementPatternList_Yield_Await ',' BindingElisionElement_Yield_Await
+	0,                                // BindingElisionElement : Elision ElementPattern
+	0,                                // BindingElisionElement : ElementPattern
+	0,                                // BindingElisionElement_Await : Elision ElementPattern_Await
+	0,                                // BindingElisionElement_Await : ElementPattern_Await
+	0,                                // BindingElisionElement_Yield : Elision ElementPattern_Yield
+	0,                                // BindingElisionElement_Yield : ElementPattern_Yield
+	0,                                // BindingElisionElement_Yield_Await : Elision ElementPattern_Yield_Await
+	0,                                // BindingElisionElement_Yield_Await : ElementPattern_Yield_Await
+	0,                                // PropertyPattern : SingleNameBinding
+	int32(PropertyBinding),           // PropertyPattern : PropertyName ':' ElementPattern
+	0,                                // PropertyPattern : SyntaxError
+	0,                                // PropertyPattern_Await : SingleNameBinding_Await
+	int32(PropertyBinding),           // PropertyPattern_Await : PropertyName_Await ':' ElementPattern_Await
+	0,                                // PropertyPattern_Await : SyntaxError
+	0,                                // PropertyPattern_Yield : SingleNameBinding_Yield
+	int32(PropertyBinding),           // PropertyPattern_Yield : PropertyName_Yield ':' ElementPattern_Yield
+	0,                                // PropertyPattern_Yield : SyntaxError
+	0,                                // PropertyPattern_Yield_Await : SingleNameBinding_Yield_Await
+	int32(PropertyBinding),           // PropertyPattern_Yield_Await : PropertyName_Yield_Await ':' ElementPattern_Yield_Await
+	0,                                // PropertyPattern_Yield_Await : SyntaxError
+	0,                                // ElementPattern : SingleNameBinding
+	int32(ElementBinding),            // ElementPattern : BindingPattern Initializeropt_In
+	0,                                // ElementPattern : SyntaxError
+	0,                                // ElementPattern_Await : SingleNameBinding_Await
+	int32(ElementBinding),            // ElementPattern_Await : BindingPattern_Await Initializeropt_In_Await
+	0,                                // ElementPattern_Await : SyntaxError
+	0,                                // ElementPattern_Yield : SingleNameBinding_Yield
+	int32(ElementBinding),            // ElementPattern_Yield : BindingPattern_Yield Initializeropt_In_Yield
+	0,                                // ElementPattern_Yield : SyntaxError
+	0,                                // ElementPattern_Yield_Await : SingleNameBinding_Yield_Await
+	int32(ElementBinding),            // ElementPattern_Yield_Await : BindingPattern_Yield_Await Initializeropt_In_Yield_Await
+	0,                                // ElementPattern_Yield_Await : SyntaxError
+	-1,                               // SingleNameBinding : IdentifierReference Initializeropt_In
+	-1,                               // SingleNameBinding_Await : IdentifierReference_Await Initializeropt_In_Await
+	-1,                               // SingleNameBinding_Yield : IdentifierReference_Yield Initializeropt_In_Yield
+	-1,                               // SingleNameBinding_Yield_Await : IdentifierReference_Yield_Await Initializeropt_In_Yield_Await
+	int32(BindingRestElement),        // BindingRestElement : '...' BindingIdentifier
+	int32(EmptyStmt),                 // EmptyStatement : ';' .emptyStatement
+	int32(ExprStmt),                  // ExpressionStatement : Expression_In_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies ';'
+	int32(ExprStmt),                  // ExpressionStatement_Await : Expression_In_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies ';'
+	int32(ExprStmt),                  // ExpressionStatement_Yield : Expression_In_Yield_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies ';'
+	int32(ExprStmt),                  // ExpressionStatement_Yield_Await : Expression_In_Yield_Await_NoLetSq_NoObjLiteral_NoFuncClass_NoAs_NoSatisfies ';'
+	int32(IfStmt),                    // IfStatement : 'if' '(' Expression_In ')' Statement 'else' Statement
+	int32(IfStmt),                    // IfStatement : 'if' '(' Expression_In ')' Statement %prec 'else'
+	int32(IfStmt),                    // IfStatement_Await : 'if' '(' Expression_In_Await ')' Statement_Await 'else' Statement_Await
+	int32(IfStmt),                    // IfStatement_Await : 'if' '(' Expression_In_Await ')' Statement_Await %prec 'else'
+	int32(IfStmt),                    // IfStatement_Yield : 'if' '(' Expression_In_Yield ')' Statement_Yield 'else' Statement_Yield
+	int32(IfStmt),                    // IfStatement_Yield : 'if' '(' Expression_In_Yield ')' Statement_Yield %prec 'else'
+	int32(IfStmt),                    // IfStatement_Yield_Await : 'if' '(' Expression_In_Yield_Await ')' Statement_Yield_Await 'else' Statement_Yield_Await
+	int32(IfStmt),                    // IfStatement_Yield_Await : 'if' '(' Expression_In_Yield_Await ')' Statement_Yield_Await %prec 'else'
+	int32(DoWhileStmt),               // IterationStatement : 'do' Statement 'while' '(' Expression_In ')' ';' .doWhile
+	int32(WhileStmt),                 // IterationStatement : 'while' '(' Expression_In ')' Statement
+	int32(ForStmt),                   // IterationStatement : 'for' '(' Expression_NoLet ';' .forSC ForCondition ';' .forSC ForFinalExpression ')' Statement
+	int32(ForStmt),                   // IterationStatement : 'for' '(' ';' .forSC ForCondition ';' .forSC ForFinalExpression ')' Statement
+	int32(ForStmt),                   // IterationStatement : 'for' '(' Expression_NoAs_NoSatisfies_StartWithLet ';' .forSC ForCondition ';' .forSC ForFinalExpression ')' Statement
+	-1,                               // IterationStatement : 'for' '(' 'var' VariableDeclarationList ';' .forSC ForCondition ';' .forSC ForFinalExpression ')' Statement
+	int32(ForStmtWithVar),            // IterationStatement : 'for' '(' LetOrConst BindingList ';' .forSC ForCondition ';' .forSC ForFinalExpression ')' Statement
+	int32(ForInStmt),                 // IterationStatement : 'for' '(' LeftHandSideExpression_NoLet 'in' Expression_In ')' Statement
+	int32(ForInStmt),                 // IterationStatement : 'for' '(' LeftHandSideExpression_StartWithLet 'in' Expression_In ')' Statement
+	-1,                               // IterationStatement : 'for' '(' 'var' ForBinding 'in' Expression_In ')' Statement
+	int32(ForInStmtWithVar),          // IterationStatement : 'for' '(' ForDeclaration 'in' Expression_In ')' Statement
+	int32(ForOfStmt),                 // IterationStatement : 'for' '(' LeftHandSideExpression_NoAsync_NoLet 'of' AssignmentExpression_In ')' Statement
+	-1,                               // IterationStatement : 'for' '(' 'async' lookahead_notStartOfArrowFunction 'of' AssignmentExpression_In ')' Statement
+	-1,                               // IterationStatement : 'for' '(' 'var' ForBinding 'of' AssignmentExpression_In ')' Statement
+	int32(ForOfStmtWithVar),          // IterationStatement : 'for' '(' ForDeclaration 'of' AssignmentExpression_In ')' Statement
+	int32(DoWhileStmt),               // IterationStatement_Await : 'do' Statement_Await 'while' '(' Expression_In_Await ')' ';' .doWhile
+	int32(WhileStmt),                 // IterationStatement_Await : 'while' '(' Expression_In_Await ')' Statement_Await
+	int32(ForStmt),                   // IterationStatement_Await : 'for' '(' Expression_Await_NoLet ';' .forSC ForCondition_Await ';' .forSC ForFinalExpression_Await ')' Statement_Await
+	int32(ForStmt),                   // IterationStatement_Await : 'for' '(' ';' .forSC ForCondition_Await ';' .forSC ForFinalExpression_Await ')' Statement_Await
+	int32(ForStmt),                   // IterationStatement_Await : 'for' '(' Expression_Await_NoAs_NoSatisfies_StartWithLet ';' .forSC ForCondition_Await ';' .forSC ForFinalExpression_Await ')' Statement_Await
+	-1,                               // IterationStatement_Await : 'for' '(' 'var' VariableDeclarationList_Await ';' .forSC ForCondition_Await ';' .forSC ForFinalExpression_Await ')' Statement_Await
+	int32(ForStmtWithVar),            // IterationStatement_Await : 'for' '(' LetOrConst BindingList_Await ';' .forSC ForCondition_Await ';' .forSC ForFinalExpression_Await ')' Statement_Await
+	int32(ForInStmt),                 // IterationStatement_Await : 'for' '(' LeftHandSideExpression_Await_NoLet 'in' Expression_In_Await ')' Statement_Await
+	int32(ForInStmt),                 // IterationStatement_Await : 'for' '(' LeftHandSideExpression_Await_StartWithLet 'in' Expression_In_Await ')' Statement_Await
+	-1,                               // IterationStatement_Await : 'for' '(' 'var' ForBinding_Await 'in' Expression_In_Await ')' Statement_Await
+	int32(ForInStmtWithVar),          // IterationStatement_Await : 'for' '(' ForDeclaration_Await 'in' Expression_In_Await ')' Statement_Await
+	-1,                               // IterationStatement_Await : 'for' 'await' '(' LeftHandSideExpression_Await_NoAsync_NoLet 'of' AssignmentExpression_In_Await ')' Statement_Await
+	int32(ForOfStmt),                 // IterationStatement_Await : 'for' '(' LeftHandSideExpression_Await_NoAsync_NoLet 'of' AssignmentExpression_In_Await ')' Statement_Await
+	-1,                               // IterationStatement_Await : 'for' 'await' '(' 'async' lookahead_notStartOfArrowFunction 'of' AssignmentExpression_In_Await ')' Statement_Await
+	-1,                               // IterationStatement_Await : 'for' '(' 'async' lookahead_notStartOfArrowFunction 'of' AssignmentExpression_In_Await ')' Statement_Await
+	-1,                               // IterationStatement_Await : 'for' 'await' '(' 'var' ForBinding_Await 'of' AssignmentExpression_In_Await ')' Statement_Await
+	-1,                               // IterationStatement_Await : 'for' '(' 'var' ForBinding_Await 'of' AssignmentExpression_In_Await ')' Statement_Await
+	-1,                               // IterationStatement_Await : 'for' 'await' '(' ForDeclaration_Await 'of' AssignmentExpression_In_Await ')' Statement_Await
+	int32(ForOfStmtWithVar),          // IterationStatement_Await : 'for' '(' ForDeclaration_Await 'of' AssignmentExpression_In_Await ')' Statement_Await
+	int32(DoWhileStmt),               // IterationStatement_Yield : 'do' Statement_Yield 'while' '(' Expression_In_Yield ')' ';' .doWhile
+	int32(WhileStmt),                 // IterationStatement_Yield : 'while' '(' Expression_In_Yield ')' Statement_Yield
+	int32(ForStmt),                   // IterationStatement_Yield : 'for' '(' Expression_Yield_NoLet ';' .forSC ForCondition_Yield ';' .forSC ForFinalExpression_Yield ')' Statement_Yield
+	int32(ForStmt),                   // IterationStatement_Yield : 'for' '(' ';' .forSC ForCondition_Yield ';' .forSC ForFinalExpression_Yield ')' Statement_Yield
+	int32(ForStmt),                   // IterationStatement_Yield : 'for' '(' Expression_Yield_NoAs_NoSatisfies_StartWithLet ';' .forSC ForCondition_Yield ';' .forSC ForFinalExpression_Yield ')' Statement_Yield
+	-1,                               // IterationStatement_Yield : 'for' '(' 'var' VariableDeclarationList_Yield ';' .forSC ForCondition_Yield ';' .forSC ForFinalExpression_Yield ')' Statement_Yield
+	int32(ForStmtWithVar),            // IterationStatement_Yield : 'for' '(' LetOrConst BindingList_Yield ';' .forSC ForCondition_Yield ';' .forSC ForFinalExpression_Yield ')' Statement_Yield
+	int32(ForInStmt),                 // IterationStatement_Yield : 'for' '(' LeftHandSideExpression_Yield_NoLet 'in' Expression_In_Yield ')' Statement_Yield
+	int32(ForInStmt),                 // IterationStatement_Yield : 'for' '(' LeftHandSideExpression_Yield_StartWithLet 'in' Expression_In_Yield ')' Statement_Yield
+	-1,                               // IterationStatement_Yield : 'for' '(' 'var' ForBinding_Yield 'in' Expression_In_Yield ')' Statement_Yield
+	int32(ForInStmtWithVar),          // IterationStatement_Yield : 'for' '(' ForDeclaration_Yield 'in' Expression_In_Yield ')' Statement_Yield
+	int32(ForOfStmt),                 // IterationStatement_Yield : 'for' '(' LeftHandSideExpression_Yield_NoAsync_NoLet 'of' AssignmentExpression_In_Yield ')' Statement_Yield
+	-1,                               // IterationStatement_Yield : 'for' '(' 'async' lookahead_notStartOfArrowFunction 'of' AssignmentExpression_In_Yield ')' Statement_Yield
+	-1,                               // IterationStatement_Yield : 'for' '(' 'var' ForBinding_Yield 'of' AssignmentExpression_In_Yield ')' Statement_Yield
+	int32(ForOfStmtWithVar),          // IterationStatement_Yield : 'for' '(' ForDeclaration_Yield 'of' AssignmentExpression_In_Yield ')' Statement_Yield
+	int32(DoWhileStmt),               // IterationStatement_Yield_Await : 'do' Statement_Yield_Await 'while' '(' Expression_In_Yield_Await ')' ';' .doWhile
+	int32(WhileStmt),                 // IterationStatement_Yield_Await : 'while' '(' Expression_In_Yield_Await ')' Statement_Yield_Await
+	int32(ForStmt),                   // IterationStatement_Yield_Await : 'for' '(' Expression_Yield_Await_NoLet ';' .forSC ForCondition_Yield_Await ';' .forSC ForFinalExpression_Yield_Await ')' Statement_Yield_Await
+	int32(ForStmt),                   // IterationStatement_Yield_Await : 'for' '(' ';' .forSC ForCondition_Yield_Await ';' .forSC ForFinalExpression_Yield_Await ')' Statement_Yield_Await
+	int32(ForStmt),                   // IterationStatement_Yield_Await : 'for' '(' Expression_Yield_Await_NoAs_NoSatisfies_StartWithLet ';' .forSC ForCondition_Yield_Await ';' .forSC ForFinalExpression_Yield_Await ')' Statement_Yield_Await
+	-1,                               // IterationStatement_Yield_Await : 'for' '(' 'var' VariableDeclarationList_Yield_Await ';' .forSC ForCondition_Yield_Await ';' .forSC ForFinalExpression_Yield_Await ')' Statement_Yield_Await
+	int32(ForStmtWithVar),            // IterationStatement_Yield_Await : 'for' '(' LetOrConst BindingList_Yield_Await ';' .forSC ForCondition_Yield_Await ';' .forSC ForFinalExpression_Yield_Await ')' Statement_Yield_Await
+	int32(ForInStmt),                 // IterationStatement_Yield_Await : 'for' '(' LeftHandSideExpression_Yield_Await_NoLet 'in' Expression_In_Yield_Await ')' Statement_Yield_Await
+	int32(ForInStmt),                 // IterationStatement_Yield_Await : 'for' '(' LeftHandSideExpression_Yield_Await_StartWithLet 'in' Expression_In_Yield_Await ')' Statement_Yield_Await
+	-1,                               // IterationStatement_Yield_Await : 'for' '(' 'var' ForBinding_Yield_Await 'in' Expression_In_Yield_Await ')' Statement_Yield_Await
+	int32(ForInStmtWithVar),          // IterationStatement_Yield_Await : 'for' '(' ForDeclaration_Yield_Await 'in' Expression_In_Yield_Await ')' Statement_Yield_Await
+	-1,                               // IterationStatement_Yield_Await : 'for' 'await' '(' LeftHandSideExpression_Yield_Await_NoAsync_NoLet 'of' AssignmentExpression_In_Yield_Await ')' Statement_Yield_Await
+	int32(ForOfStmt),                 // IterationStatement_Yield_Await : 'for' '(' LeftHandSideExpression_Yield_Await_NoAsync_NoLet 'of' AssignmentExpression_In_Yield_Await ')' Statement_Yield_Await
+	-1,                               // IterationStatement_Yield_Await : 'for' 'await' '(' 'async' lookahead_notStartOfArrowFunction 'of' AssignmentExpression_In_Yield_Await ')' Statement_Yield_Await
+	-1,                               // IterationStatement_Yield_Await : 'for' '(' 'async' lookahead_notStartOfArrowFunction 'of' AssignmentExpression_In_Yield_Await ')' Statement_Yield_Await
+	-1,                               // IterationStatement_Yield_Await : 'for' 'await' '(' 'var' ForBinding_Yield_Await 'of' AssignmentExpression_In_Yield_Await ')' Statement_Yield_Await
+	-1,                               // IterationStatement_Yield_Await : 'for' '(' 'var' ForBinding_Yield_Await 'of' AssignmentExpression_In_Yield_Await ')' Statement_Yield_Await
+	-1,                               // IterationStatement_Yield_Await : 'for' 'await' '(' ForDeclaration_Yield_Await 'of' AssignmentExpression_In_Yield_Await ')' Statement_Yield_Await
+	int32(ForOfStmtWithVar),          // IterationStatement_Yield_Await : 'for' '(' ForDeclaration_Yield_Await 'of' AssignmentExpression_In_Yield_Await ')' Statement_Yield_Await
+	0,                                // ForDeclaration : LetOrConst ForBinding
+	0,                                // ForDeclaration_Await : LetOrConst ForBinding_Await
+	0,                                // ForDeclaration_Yield : LetOrConst ForBinding_Yield
+	0,                                // ForDeclaration_Yield_Await : LetOrConst ForBinding_Yield_Await
+	int32(ForBinding),                // ForBinding : BindingIdentifier
+	int32(ForBinding),                // ForBinding : BindingPattern
+	int32(ForBinding),                // ForBinding_Await : BindingIdentifier
+	int32(ForBinding),                // ForBinding_Await : BindingPattern_Await
+	int32(ForBinding),                // ForBinding_Yield : BindingIdentifier
+	int32(ForBinding),                // ForBinding_Yield : BindingPattern_Yield
+	int32(ForBinding),                // ForBinding_Yield_Await : BindingIdentifier
+	int32(ForBinding),                // ForBinding_Yield_Await : BindingPattern_Yield_Await
+	int32(ForCondition),              // ForCondition : Expressionopt_In
+	int32(ForCondition),              // ForCondition_Await : Expressionopt_In_Await
+	int32(ForCondition),              // ForCondition_Yield : Expressionopt_In_Yield
+	int32(ForCondition),              // ForCondition_Yield_Await : Expressionopt_In_Yield_Await
+	int32(ForFinalExpr),              // ForFinalExpression : Expressionopt_In
+	int32(ForFinalExpr),              // ForFinalExpression_Await : Expressionopt_In_Await
+	int32(ForFinalExpr),              // ForFinalExpression_Yield : Expressionopt_In_Yield
+	int32(ForFinalExpr),              // ForFinalExpression_Yield_Await : Expressionopt_In_Yield_Await
+	int32(ContinueStmt),              // ContinueStatement : 'continue' ';'
+	int32(ContinueStmt),              // ContinueStatement : 'continue' .noLineBreak LabelIdentifier ';'
+	int32(BreakStmt),                 // BreakStatement : 'break' ';'
+	int32(BreakStmt),                 // BreakStatement : 'break' .noLineBreak LabelIdentifier ';'
+	int32(ReturnStmt),                // ReturnStatement : 'return' ';'
+	int32(ReturnStmt),                // ReturnStatement : 'return' .noLineBreak Expression_In ';'
+	int32(ReturnStmt),                // ReturnStatement_Await : 'return' ';'
+	int32(ReturnStmt),                // ReturnStatement_Await : 'return' .noLineBreak Expression_In_Await ';'
+	int32(ReturnStmt),                // ReturnStatement_Yield : 'return' ';'
+	int32(ReturnStmt),                // ReturnStatement_Yield : 'return' .noLineBreak Expression_In_Yield ';'
+	int32(ReturnStmt),                // ReturnStatement_Yield_Await : 'return' ';'
+	int32(ReturnStmt),                // ReturnStatement_Yield_Await : 'return' .noLineBreak Expression_In_Yield_Await ';'
+	int32(WithStmt),                  // WithStatement : 'with' '(' Expression_In ')' Statement
+	int32(WithStmt),                  // WithStatement_Await : 'with' '(' Expression_In_Await ')' Statement_Await
+	int32(WithStmt),                  // WithStatement_Yield : 'with' '(' Expression_In_Yield ')' Statement_Yield
+	int32(WithStmt),                  // WithStatement_Yield_Await : 'with' '(' Expression_In_Yield_Await ')' Statement_Yield_Await
+	int32(SwitchStmt),                // SwitchStatement : 'switch' '(' Expression_In ')' CaseBlock
+	int32(SwitchStmt),                // SwitchStatement_Await : 'switch' '(' Expression_In_Await ')' CaseBlock_Await
+	int32(SwitchStmt),                // SwitchStatement_Yield : 'switch' '(' Expression_In_Yield ')' CaseBlock_Yield
+	int32(SwitchStmt),                // SwitchStatement_Yield_Await : 'switch' '(' Expression_In_Yield_Await ')' CaseBlock_Yield_Await
+	int32(Block),                     // CaseBlock : '{' .recoveryScope CaseClausesopt '}'
+	int32(Block),                     // CaseBlock_Await : '{' .recoveryScope CaseClausesopt_Await '}'
+	int32(Block),                     // CaseBlock_Yield : '{' .recoveryScope CaseClausesopt_Yield '}'
+	int32(Block),                     // CaseBlock_Yield_Await : '{' .recoveryScope CaseClausesopt_Yield_Await '}'
+	0,                                // CaseClauses : CaseClause
+	0,                                // CaseClauses : CaseClauses CaseClause
+	0,                                // CaseClauses_Await : CaseClause_Await
+	0,                                // CaseClauses_Await : CaseClauses_Await CaseClause_Await
+	0,                                // CaseClauses_Yield : CaseClause_Yield
+	0,                                // CaseClauses_Yield : CaseClauses_Yield CaseClause_Yield
+	0,                                // CaseClauses_Yield_Await : CaseClause_Yield_Await
+	0,                                // CaseClauses_Yield_Await : CaseClauses_Yield_Await CaseClause_Yield_Await
+	-1,                               // CaseClause : 'case' Expression_In ':' StatementList
+	-1,                               // CaseClause : 'case' Expression_In ':'
+	int32(Default),                   // CaseClause : 'default' ':' StatementList
+	int32(Default),                   // CaseClause : 'default' ':'
+	-1,                               // CaseClause_Await : 'case' Expression_In_Await ':' StatementList_Await
+	-1,                               // CaseClause_Await : 'case' Expression_In_Await ':'
+	int32(Default),                   // CaseClause_Await : 'default' ':' StatementList_Await
+	int32(Default),                   // CaseClause_Await : 'default' ':'
+	-1,                               // CaseClause_Yield : 'case' Expression_In_Yield ':' StatementList_Yield
+	-1,                               // CaseClause_Yield : 'case' Expression_In_Yield ':'
+	int32(Default),                   // CaseClause_Yield : 'default' ':' StatementList_Yield
+	int32(Default),                   // CaseClause_Yield : 'default' ':'
+	-1,                               // CaseClause_Yield_Await : 'case' Expression_In_Yield_Await ':' StatementList_Yield_Await
+	-1,                               // CaseClause_Yield_Await : 'case' Expression_In_Yield_Await ':'
+	int32(Default),                   // CaseClause_Yield_Await : 'default' ':' StatementList_Yield_Await
+	int32(Default),                   // CaseClause_Yield_Await : 'default' ':'
+	int32(LabelledStmt),              // LabelledStatement : LabelIdentifier ':' LabelledItem
+	int32(LabelledStmt),              // LabelledStatement_Await : LabelIdentifier ':' LabelledItem_Await
+	int32(LabelledStmt),              // LabelledStatement_Yield : LabelIdentifier ':' LabelledItem_Yield
+	int32(LabelledStmt),              // LabelledStatement_Yield_Await : LabelIdentifier ':' LabelledItem_Yield_Await
+	0,                                // LabelledItem : Statement
+	0,                                // LabelledItem : FunctionDeclaration
+	0,                                // LabelledItem_Await : Statement_Await
+	0,                                // LabelledItem_Await : FunctionDeclaration
+	0,                                // LabelledItem_Yield : Statement_Yield
+	0,                                // LabelledItem_Yield : FunctionDeclaration
+	0,                                // LabelledItem_Yield_Await : Statement_Yield_Await
+	0,                                // LabelledItem_Yield_Await : FunctionDeclaration
+	int32(ThrowStmt),                 // ThrowStatement : 'throw' .noLineBreak Expression_In ';'
+	int32(ThrowStmt),                 // ThrowStatement_Await : 'throw' .noLineBreak Expression_In_Await ';'
+	int32(ThrowStmt),                 // ThrowStatement_Yield : 'throw' .noLineBreak Expression_In_Yield ';'
+	int32(ThrowStmt),                 // ThrowStatement_Yield_Await : 'throw' .noLineBreak Expression_In_Yield_Await ';'
+	int32(TryStmt),                   // TryStatement : 'try' Block Catch
+	int32(TryStmt),                   // TryStatement : 'try' Block Catch Finally
+	int32(TryStmt),                   // TryStatement : 'try' Block Finally
+	int32(TryStmt),                   // TryStatement_Await : 'try' Block_Await Catch_Await
+	int32(TryStmt),                   // TryStatement_Await : 'try' Block_Await Catch_Await Finally_Await
+	int32(TryStmt),                   // TryStatement_Await : 'try' Block_Await Finally_Await
+	int32(TryStmt),                   // TryStatement_Yield : 'try' Block_Yield Catch_Yield
+	int32(TryStmt),                   // TryStatement_Yield : 'try' Block_Yield Catch_Yield Finally_Yield
+	int32(TryStmt),                   // TryStatement_Yield : 'try' Block_Yield Finally_Yield
+	int32(TryStmt),                   // TryStatement_Yield_Await : 'try' Block_Yield_Await Catch_Yield_Await
+	int32(TryStmt),                   // TryStatement_Yield_Await : 'try' Block_Yield_Await Catch_Yield_Await Finally_Yield_Await
+	int32(TryStmt),                   // TryStatement_Yield_Await : 'try' Block_Yield_Await Finally_Yield_Await
+	int32(Catch),                     // Catch : 'catch' '(' CatchParameter ')' Block
+	int32(Catch),                     // Catch : 'catch' Block
+	int32(Catch),                     // Catch_Await : 'catch' '(' CatchParameter_Await ')' Block_Await
+	int32(Catch),                     // Catch_Await : 'catch' Block_Await
+	int32(Catch),                     // Catch_Yield : 'catch' '(' CatchParameter_Yield ')' Block_Yield
+	int32(Catch),                     // Catch_Yield : 'catch' Block_Yield
+	int32(Catch),                     // Catch_Yield_Await : 'catch' '(' CatchParameter_Yield_Await ')' Block_Yield_Await
+	int32(Catch),                     // Catch_Yield_Await : 'catch' Block_Yield_Await
+	int32(Finally),                   // Finally : 'finally' Block
+	int32(Finally),                   // Finally_Await : 'finally' Block_Await
+	int32(Finally),                   // Finally_Yield : 'finally' Block_Yield
+	int32(Finally),                   // Finally_Yield_Await : 'finally' Block_Yield_Await
+	0,                                // CatchParameter : BindingIdentifier TypeAnnotation
+	0,                                // CatchParameter : BindingIdentifier
+	0,                                // CatchParameter : BindingPattern TypeAnnotation
+	0,                                // CatchParameter : BindingPattern
+	0,                                // CatchParameter_Await : BindingIdentifier TypeAnnotation
+	0,                                // CatchParameter_Await : BindingIdentifier
+	0,                                // CatchParameter_Await : BindingPattern_Await TypeAnnotation
+	0,                                // CatchParameter_Await : BindingPattern_Await
+	0,                                // CatchParameter_Yield : BindingIdentifier TypeAnnotation
+	0,                                // CatchParameter_Yield : BindingIdentifier
+	0,                                // CatchParameter_Yield : BindingPattern_Yield TypeAnnotation
+	0,                                // CatchParameter_Yield : BindingPattern_Yield
+	0,                                // CatchParameter_Yield_Await : BindingIdentifier TypeAnnotation
+	0,                                // CatchParameter_Yield_Await : BindingIdentifier
+	0,                                // CatchParameter_Yield_Await : BindingPattern_Yield_Await TypeAnnotation
+	0,                                // CatchParameter_Yield_Await : BindingPattern_Yield_Await
+	int32(DebuggerStmt),              // DebuggerStatement : 'debugger' ';'
+	int32(Func),                      // FunctionDeclaration : 'function' BindingIdentifier FormalParameters FunctionBody
+	int32(Func),                      // FunctionDeclaration : 'function' FormalParameters FunctionBody
+	int32(FuncExpr),                  // FunctionExpression : 'function' BindingIdentifier FormalParameters FunctionBody
+	int32(FuncExpr),                  // FunctionExpression : 'function' FormalParameters FunctionBody
+	0,                                // UniqueFormalParameters : FormalParameters
+	0,                                // UniqueFormalParameters_Await : FormalParameters_Await
+	0,                                // UniqueFormalParameters_Yield : FormalParameters_Yield
+	0,                                // UniqueFormalParameters_Yield_Await : FormalParameters_Yield_Await
+	int32(Body),                      // FunctionBody : '{' .recoveryScope StatementList SyntaxError '}'
+	int32(Body),                      // FunctionBody : '{' .recoveryScope StatementList '}'
+	int32(Body),                      // FunctionBody : '{' .recoveryScope SyntaxError '}'
+	int32(Body),                      // FunctionBody : '{' .recoveryScope '}'
+	0,                                // FunctionBody : ';'
+	int32(Body),                      // FunctionBody_Await : '{' .recoveryScope StatementList_Await SyntaxError '}'
+	int32(Body),                      // FunctionBody_Await : '{' .recoveryScope StatementList_Await '}'
+	int32(Body),                      // FunctionBody_Await : '{' .recoveryScope SyntaxError '}'
+	int32(Body),                      // FunctionBody_Await : '{' .recoveryScope '}'
+	0,                                // FunctionBody_Await : ';'
+	int32(Body),                      // FunctionBody_Yield : '{' .recoveryScope StatementList_Yield SyntaxError '}'
+	int32(Body),                      // FunctionBody_Yield : '{' .recoveryScope StatementList_Yield '}'
+	int32(Body),                      // FunctionBody_Yield : '{' .recoveryScope SyntaxError '}'
+	int32(Body),                      // FunctionBody_Yield : '{' .recoveryScope '}'
+	0,                                // FunctionBody_Yield : ';'
+	int32(Body),                      // FunctionBody_Yield_Await : '{' .recoveryScope StatementList_Yield_Await SyntaxError '}'
+	int32(Body),                      // FunctionBody_Yield_Await : '{' .recoveryScope StatementList_Yield_Await '}'
+	int32(Body),                      // FunctionBody_Yield_Await : '{' .recoveryScope SyntaxError '}'
+	int32(Body),                      // FunctionBody_Yield_Await : '{' .recoveryScope '}'
+	0,                                // FunctionBody_Yield_Await : ';'
+	-1,                               // ArrowFunction : BindingIdentifier .noLineBreak '=>' ConciseBody
+	-1,                               // ArrowFunction : lookahead_StartOfArrowFunction FormalParameters .noLineBreak '=>' ConciseBody
+	-1,                               // ArrowFunction_In : BindingIdentifier .noLineBreak '=>' ConciseBody_In
+	-1,                               // ArrowFunction_In : lookahead_StartOfArrowFunction FormalParameters .noLineBreak '=>' ConciseBody_In
+	0,                                // lookahead_StartOfArrowFunction :
+	0,                                // ArrowParameters : BindingIdentifier
+	0,                                // ArrowParameters : FormalParameters
+	int32(ConciseBody),               // ConciseBody : AssignmentExpression_NoObjLiteral
+	0,                                // ConciseBody : FunctionBody
+	0,                                // ConciseBody : SyntaxError
+	int32(ConciseBody),               // ConciseBody_In : AssignmentExpression_In_NoObjLiteral
+	0,                                // ConciseBody_In : FunctionBody
+	0,                                // ConciseBody_In : SyntaxError
+	0,                                // StartOfArrowFunction : BindingIdentifier '=>'
+	0,                                // StartOfArrowFunction : TypeParameters ParameterList TypeAnnotation '=>'
+	0,                                // StartOfArrowFunction : TypeParameters ParameterList '=>'
+	0,                                // StartOfArrowFunction : ParameterList TypeAnnotation '=>'
+	0,                                // StartOfArrowFunction : ParameterList '=>'
+	-1,                               // AsyncArrowFunction : 'async' .afterAsync .noLineBreak lookahead_StartOfArrowFunction ArrowParameters .noLineBreak '=>' AsyncConciseBody
+	-1,                               // AsyncArrowFunction_In : 'async' .afterAsync .noLineBreak lookahead_StartOfArrowFunction ArrowParameters .noLineBreak '=>' AsyncConciseBody_In
+	int32(ConciseBody),               // AsyncConciseBody : AssignmentExpression_Await_NoObjLiteral
+	0,                                // AsyncConciseBody : AsyncFunctionBody
+	int32(ConciseBody),               // AsyncConciseBody_In : AssignmentExpression_In_Await_NoObjLiteral
+	0,                                // AsyncConciseBody_In : AsyncFunctionBody
+	int32(Method),                    // MethodDefinition : PropertyName '?' UniqueFormalParameters FunctionBody
+	int32(Method),                    // MethodDefinition : PropertyName '!' UniqueFormalParameters FunctionBody
+	int32(Method),                    // MethodDefinition : PropertyName UniqueFormalParameters FunctionBody
+	0,                                // MethodDefinition : GeneratorMethod
+	0,                                // MethodDefinition : AsyncMethod
+	0,                                // MethodDefinition : AsyncGeneratorMethod
+	int32(Getter),                    // MethodDefinition : 'get' PropertyName '(' ')' TypeAnnotationopt FunctionBody
+	int32(Setter),                    // MethodDefinition : 'set' PropertyName '(' PropertySetParameterList ')' FunctionBody
+	int32(Method),                    // MethodDefinition_Await : PropertyName_Await '?' UniqueFormalParameters FunctionBody
+	int32(Method),                    // MethodDefinition_Await : PropertyName_Await '!' UniqueFormalParameters FunctionBody
+	int32(Method),                    // MethodDefinition_Await : PropertyName_Await UniqueFormalParameters FunctionBody
+	0,                                // MethodDefinition_Await : GeneratorMethod_Await
+	0,                                // MethodDefinition_Await : AsyncMethod_Await
+	0,                                // MethodDefinition_Await : AsyncGeneratorMethod_Await
+	int32(Getter),                    // MethodDefinition_Await : 'get' PropertyName_Await '(' ')' TypeAnnotationopt FunctionBody
+	int32(Setter),                    // MethodDefinition_Await : 'set' PropertyName_Await '(' PropertySetParameterList ')' FunctionBody
+	int32(Method),                    // MethodDefinition_Yield : PropertyName_Yield '?' UniqueFormalParameters FunctionBody
+	int32(Method),                    // MethodDefinition_Yield : PropertyName_Yield '!' UniqueFormalParameters FunctionBody
+	int32(Method),                    // MethodDefinition_Yield : PropertyName_Yield UniqueFormalParameters FunctionBody
+	0,                                // MethodDefinition_Yield : GeneratorMethod_Yield
+	0,                                // MethodDefinition_Yield : AsyncMethod_Yield
+	0,                                // MethodDefinition_Yield : AsyncGeneratorMethod_Yield
+	int32(Getter),                    // MethodDefinition_Yield : 'get' PropertyName_Yield '(' ')' TypeAnnotationopt FunctionBody
+	int32(Setter),                    // MethodDefinition_Yield : 'set' PropertyName_Yield '(' PropertySetParameterList ')' FunctionBody
+	int32(Method),                    // MethodDefinition_Yield_Await : PropertyName_Yield_Await '?' UniqueFormalParameters FunctionBody
+	int32(Method),                    // MethodDefinition_Yield_Await : PropertyName_Yield_Await '!' UniqueFormalParameters FunctionBody
+	int32(Method),                    // MethodDefinition_Yield_Await : PropertyName_Yield_Await UniqueFormalParameters FunctionBody
+	0,                                // MethodDefinition_Yield_Await : GeneratorMethod_Yield_Await
+	0,                                // MethodDefinition_Yield_Await : AsyncMethod_Yield_Await
+	0,                                // MethodDefinition_Yield_Await : AsyncGeneratorMethod_Yield_Await
+	int32(Getter),                    // MethodDefinition_Yield_Await : 'get' PropertyName_Yield_Await '(' ')' TypeAnnotationopt FunctionBody
+	int32(Setter),                    // MethodDefinition_Yield_Await : 'set' PropertyName_Yield_Await '(' PropertySetParameterList ')' FunctionBody
+	0,                                // PropertySetParameterList : Parameter
+	int32(GeneratorMethod),           // GeneratorMethod : '*' PropertyName '?' UniqueFormalParameters_Yield GeneratorBody
+	int32(GeneratorMethod),           // GeneratorMethod : '*' PropertyName '!' UniqueFormalParameters_Yield GeneratorBody
+	int32(GeneratorMethod),           // GeneratorMethod : '*' PropertyName UniqueFormalParameters_Yield GeneratorBody
+	int32(GeneratorMethod),           // GeneratorMethod_Await : '*' PropertyName_Await '?' UniqueFormalParameters_Yield GeneratorBody
+	int32(GeneratorMethod),           // GeneratorMethod_Await : '*' PropertyName_Await '!' UniqueFormalParameters_Yield GeneratorBody
+	int32(GeneratorMethod),           // GeneratorMethod_Await : '*' PropertyName_Await UniqueFormalParameters_Yield GeneratorBody
+	int32(GeneratorMethod),           // GeneratorMethod_Yield : '*' PropertyName_Yield '?' UniqueFormalParameters_Yield GeneratorBody
+	int32(GeneratorMethod),           // GeneratorMethod_Yield : '*' PropertyName_Yield '!' UniqueFormalParameters_Yield GeneratorBody
+	int32(GeneratorMethod),           // GeneratorMethod_Yield : '*' PropertyName_Yield UniqueFormalParameters_Yield GeneratorBody
+	int32(GeneratorMethod),           // GeneratorMethod_Yield_Await : '*' PropertyName_Yield_Await '?' UniqueFormalParameters_Yield GeneratorBody
+	int32(GeneratorMethod),           // GeneratorMethod_Yield_Await : '*' PropertyName_Yield_Await '!' UniqueFormalParameters_Yield GeneratorBody
+	int32(GeneratorMethod),           // GeneratorMethod_Yield_Await : '*' PropertyName_Yield_Await UniqueFormalParameters_Yield GeneratorBody
+	int32(Generator),                 // GeneratorDeclaration : 'function' '*' BindingIdentifier FormalParameters_Yield GeneratorBody
+	int32(Generator),                 // GeneratorDeclaration : 'function' '*' FormalParameters_Yield GeneratorBody
+	int32(GeneratorExpr),             // GeneratorExpression : 'function' '*' BindingIdentifier FormalParameters_Yield GeneratorBody
+	int32(GeneratorExpr),             // GeneratorExpression : 'function' '*' FormalParameters_Yield GeneratorBody
+	0,                                // GeneratorBody : FunctionBody_Yield
+	int32(Yield),                     // YieldExpression : 'yield'
+	int32(Yield),                     // YieldExpression : 'yield' .afterYield .noLineBreak AssignmentExpression_Yield
+	int32(Yield),                     // YieldExpression : 'yield' .afterYield .noLineBreak '*' AssignmentExpression_Yield
+	int32(Yield),                     // YieldExpression_Await : 'yield'
+	int32(Yield),                     // YieldExpression_Await : 'yield' .afterYield .noLineBreak AssignmentExpression_Yield_Await
+	int32(Yield),                     // YieldExpression_Await : 'yield' .afterYield .noLineBreak '*' AssignmentExpression_Yield_Await
+	int32(Yield),                     // YieldExpression_In : 'yield'
+	int32(Yield),                     // YieldExpression_In : 'yield' .afterYield .noLineBreak AssignmentExpression_In_Yield
+	int32(Yield),                     // YieldExpression_In : 'yield' .afterYield .noLineBreak '*' AssignmentExpression_In_Yield
+	int32(Yield),                     // YieldExpression_In_Await : 'yield'
+	int32(Yield),                     // YieldExpression_In_Await : 'yield' .afterYield .noLineBreak AssignmentExpression_In_Yield_Await
+	int32(Yield),                     // YieldExpression_In_Await : 'yield' .afterYield .noLineBreak '*' AssignmentExpression_In_Yield_Await
+	int32(AsyncMethod),               // AsyncMethod : 'async' .afterAsync .noLineBreak PropertyName '?' UniqueFormalParameters_Await AsyncFunctionBody
+	int32(AsyncMethod),               // AsyncMethod : 'async' .afterAsync .noLineBreak PropertyName '!' UniqueFormalParameters_Await AsyncFunctionBody
+	int32(AsyncMethod),               // AsyncMethod : 'async' .afterAsync .noLineBreak PropertyName UniqueFormalParameters_Await AsyncFunctionBody
+	int32(AsyncMethod),               // AsyncMethod_Await : 'async' .afterAsync .noLineBreak PropertyName_Await '?' UniqueFormalParameters_Await AsyncFunctionBody
+	int32(AsyncMethod),               // AsyncMethod_Await : 'async' .afterAsync .noLineBreak PropertyName_Await '!' UniqueFormalParameters_Await AsyncFunctionBody
+	int32(AsyncMethod),               // AsyncMethod_Await : 'async' .afterAsync .noLineBreak PropertyName_Await UniqueFormalParameters_Await AsyncFunctionBody
+	int32(AsyncMethod),               // AsyncMethod_Yield : 'async' .afterAsync .noLineBreak PropertyName_Yield '?' UniqueFormalParameters_Await AsyncFunctionBody
+	int32(AsyncMethod),               // AsyncMethod_Yield : 'async' .afterAsync .noLineBreak PropertyName_Yield '!' UniqueFormalParameters_Await AsyncFunctionBody
+	int32(AsyncMethod),               // AsyncMethod_Yield : 'async' .afterAsync .noLineBreak PropertyName_Yield UniqueFormalParameters_Await AsyncFunctionBody
+	int32(AsyncMethod),               // AsyncMethod_Yield_Await : 'async' .afterAsync .noLineBreak PropertyName_Yield_Await '?' UniqueFormalParameters_Await AsyncFunctionBody
+	int32(AsyncMethod),               // AsyncMethod_Yield_Await : 'async' .afterAsync .noLineBreak PropertyName_Yield_Await '!' UniqueFormalParameters_Await AsyncFunctionBody
+	int32(AsyncMethod),               // AsyncMethod_Yield_Await : 'async' .afterAsync .noLineBreak PropertyName_Yield_Await UniqueFormalParameters_Await AsyncFunctionBody
+	int32(AsyncFunc),                 // AsyncFunctionDeclaration : 'async' .afterAsync .noLineBreak 'function' BindingIdentifier FormalParameters_Await AsyncFunctionBody
+	int32(AsyncFunc),                 // AsyncFunctionDeclaration : 'async' .afterAsync .noLineBreak 'function' FormalParameters_Await AsyncFunctionBody
+	int32(AsyncFuncExpr),             // AsyncFunctionExpression : 'async' .afterAsync .noLineBreak 'function' BindingIdentifier FormalParameters_Await AsyncFunctionBody
+	int32(AsyncFuncExpr),             // AsyncFunctionExpression : 'async' .afterAsync .noLineBreak 'function' FormalParameters_Await AsyncFunctionBody
+	0,                                // AsyncFunctionBody : FunctionBody_Await
+	int32(AsyncGeneratorMethod),      // AsyncGeneratorMethod : 'async' .afterAsync .noLineBreak '*' PropertyName '?' UniqueFormalParameters_Yield_Await AsyncGeneratorBody
+	int32(AsyncGeneratorMethod),      // AsyncGeneratorMethod : 'async' .afterAsync .noLineBreak '*' PropertyName '!' UniqueFormalParameters_Yield_Await AsyncGeneratorBody
+	int32(AsyncGeneratorMethod),      // AsyncGeneratorMethod : 'async' .afterAsync .noLineBreak '*' PropertyName UniqueFormalParameters_Yield_Await AsyncGeneratorBody
+	int32(AsyncGeneratorMethod),      // AsyncGeneratorMethod_Await : 'async' .afterAsync .noLineBreak '*' PropertyName_Await '?' UniqueFormalParameters_Yield_Await AsyncGeneratorBody
+	int32(AsyncGeneratorMethod),      // AsyncGeneratorMethod_Await : 'async' .afterAsync .noLineBreak '*' PropertyName_Await '!' UniqueFormalParameters_Yield_Await AsyncGeneratorBody
+	int32(AsyncGeneratorMethod),      // AsyncGeneratorMethod_Await : 'async' .afterAsync .noLineBreak '*' PropertyName_Await UniqueFormalParameters_Yield_Await AsyncGeneratorBody
+	int32(AsyncGeneratorMethod),      // AsyncGeneratorMethod_Yield : 'async' .afterAsync .noLineBreak '*' PropertyName_Yield '?' UniqueFormalParameters_Yield_Await AsyncGeneratorBody
+	int32(AsyncGeneratorMethod),      // AsyncGeneratorMethod_Yield : 'async' .afterAsync .noLineBreak '*' PropertyName_Yield '!' UniqueFormalParameters_Yield_Await AsyncGeneratorBody
+	int32(AsyncGeneratorMethod),      // AsyncGeneratorMethod_Yield : 'async' .afterAsync .noLineBreak '*' PropertyName_Yield UniqueFormalParameters_Yield_Await AsyncGeneratorBody
+	int32(AsyncGeneratorMethod),      // AsyncGeneratorMethod_Yield_Await : 'async' .afterAsync .noLineBreak '*' PropertyName_Yield_Await '?' UniqueFormalParameters_Yield_Await AsyncGeneratorBody
+	int32(AsyncGeneratorMethod),      // AsyncGeneratorMethod_Yield_Await : 'async' .afterAsync .noLineBreak '*' PropertyName_Yield_Await '!' UniqueFormalParameters_Yield_Await AsyncGeneratorBody
+	int32(AsyncGeneratorMethod),      // AsyncGeneratorMethod_Yield_Await : 'async' .afterAsync .noLineBreak '*' PropertyName_Yield_Await UniqueFormalParameters_Yield_Await AsyncGeneratorBody
+	int32(AsyncGeneratorDeclaration), // AsyncGeneratorDeclaration : 'async' .afterAsync .noLineBreak 'function' '*' BindingIdentifier FormalParameters_Yield_Await AsyncGeneratorBody
+	int32(AsyncGeneratorDeclaration), // AsyncGeneratorDeclaration : 'async' .afterAsync .noLineBreak 'function' '*' FormalParameters_Yield_Await AsyncGeneratorBody
+	int32(AsyncGeneratorExpression),  // AsyncGeneratorExpression : 'async' .afterAsync .noLineBreak 'function' '*' BindingIdentifier FormalParameters_Yield_Await AsyncGeneratorBody
+	int32(AsyncGeneratorExpression),  // AsyncGeneratorExpression : 'async' .afterAsync .noLineBreak 'function' '*' FormalParameters_Yield_Await AsyncGeneratorBody
+	0,                                // AsyncGeneratorBody : FunctionBody_Yield_Await
+	int32(AwaitExpr),                 // AwaitExpression : 'await' UnaryExpression_Await
+	int32(Class),                     // ClassDeclaration : Modifiers 'class' BindingIdentifier_WithoutImplements TypeParametersopt ClassTail
+	int32(Class),                     // ClassDeclaration : Modifiers 'class' TypeParametersopt ClassTail
+	int32(Class),                     // ClassDeclaration : 'class' BindingIdentifier_WithoutImplements TypeParametersopt ClassTail
+	int32(Class),                     // ClassDeclaration : 'class' TypeParametersopt ClassTail
+	int32(Class),                     // ClassDeclaration_Await : Modifiers 'class' BindingIdentifier_WithoutImplements TypeParametersopt ClassTail_Await
+	int32(Class),                     // ClassDeclaration_Await : Modifiers 'class' TypeParametersopt ClassTail_Await
+	int32(Class),                     // ClassDeclaration_Await : 'class' BindingIdentifier_WithoutImplements TypeParametersopt ClassTail_Await
+	int32(Class),                     // ClassDeclaration_Await : 'class' TypeParametersopt ClassTail_Await
+	int32(Class),                     // ClassDeclaration_Yield : Modifiers 'class' BindingIdentifier_WithoutImplements TypeParametersopt ClassTail_Yield
+	int32(Class),                     // ClassDeclaration_Yield : Modifiers 'class' TypeParametersopt ClassTail_Yield
+	int32(Class),                     // ClassDeclaration_Yield : 'class' BindingIdentifier_WithoutImplements TypeParametersopt ClassTail_Yield
+	int32(Class),                     // ClassDeclaration_Yield : 'class' TypeParametersopt ClassTail_Yield
+	int32(Class),                     // ClassDeclaration_Yield_Await : Modifiers 'class' BindingIdentifier_WithoutImplements TypeParametersopt ClassTail_Yield_Await
+	int32(Class),                     // ClassDeclaration_Yield_Await : Modifiers 'class' TypeParametersopt ClassTail_Yield_Await
+	int32(Class),                     // ClassDeclaration_Yield_Await : 'class' BindingIdentifier_WithoutImplements TypeParametersopt ClassTail_Yield_Await
+	int32(Class),                     // ClassDeclaration_Yield_Await : 'class' TypeParametersopt ClassTail_Yield_Await
+	int32(ClassExpr),                 // ClassExpression : Modifiers 'class' BindingIdentifier_WithoutImplements TypeParameters ClassTail
+	int32(ClassExpr),                 // ClassExpression : Modifiers 'class' BindingIdentifier_WithoutImplements ClassTail
+	int32(ClassExpr),                 // ClassExpression : Modifiers 'class' TypeParameters ClassTail
+	int32(ClassExpr),                 // ClassExpression : Modifiers 'class' ClassTail
+	int32(ClassExpr),                 // ClassExpression : 'class' BindingIdentifier_WithoutImplements TypeParameters ClassTail
+	int32(ClassExpr),                 // ClassExpression : 'class' BindingIdentifier_WithoutImplements ClassTail
+	int32(ClassExpr),                 // ClassExpression : 'class' TypeParameters ClassTail
+	int32(ClassExpr),                 // ClassExpression : 'class' ClassTail
+	int32(ClassExpr),                 // ClassExpression_Await : Modifiers 'class' BindingIdentifier_WithoutImplements TypeParameters ClassTail_Await
+	int32(ClassExpr),                 // ClassExpression_Await : Modifiers 'class' BindingIdentifier_WithoutImplements ClassTail_Await
+	int32(ClassExpr),                 // ClassExpression_Await : Modifiers 'class' TypeParameters ClassTail_Await
+	int32(ClassExpr),                 // ClassExpression_Await : Modifiers 'class' ClassTail_Await
+	int32(ClassExpr),                 // ClassExpression_Await : 'class' BindingIdentifier_WithoutImplements TypeParameters ClassTail_Await
+	int32(ClassExpr),                 // ClassExpression_Await : 'class' BindingIdentifier_WithoutImplements ClassTail_Await
+	int32(ClassExpr),                 // ClassExpression_Await : 'class' TypeParameters ClassTail_Await
+	int32(ClassExpr),                 // ClassExpression_Await : 'class' ClassTail_Await
+	int32(ClassExpr),                 // ClassExpression_Yield : Modifiers 'class' BindingIdentifier_WithoutImplements TypeParameters ClassTail_Yield
+	int32(ClassExpr),                 // ClassExpression_Yield : Modifiers 'class' BindingIdentifier_WithoutImplements ClassTail_Yield
+	int32(ClassExpr),                 // ClassExpression_Yield : Modifiers 'class' TypeParameters ClassTail_Yield
+	int32(ClassExpr),                 // ClassExpression_Yield : Modifiers 'class' ClassTail_Yield
+	int32(ClassExpr),                 // ClassExpression_Yield : 'class' BindingIdentifier_WithoutImplements TypeParameters ClassTail_Yield
+	int32(ClassExpr),                 // ClassExpression_Yield : 'class' BindingIdentifier_WithoutImplements ClassTail_Yield
+	int32(ClassExpr),                 // ClassExpression_Yield : 'class' TypeParameters ClassTail_Yield
+	int32(ClassExpr),                 // ClassExpression_Yield : 'class' ClassTail_Yield
+	int32(ClassExpr),                 // ClassExpression_Yield_Await : Modifiers 'class' BindingIdentifier_WithoutImplements TypeParameters ClassTail_Yield_Await
+	int32(ClassExpr),                 // ClassExpression_Yield_Await : Modifiers 'class' BindingIdentifier_WithoutImplements ClassTail_Yield_Await
+	int32(ClassExpr),                 // ClassExpression_Yield_Await : Modifiers 'class' TypeParameters ClassTail_Yield_Await
+	int32(ClassExpr),                 // ClassExpression_Yield_Await : Modifiers 'class' ClassTail_Yield_Await
+	int32(ClassExpr),                 // ClassExpression_Yield_Await : 'class' BindingIdentifier_WithoutImplements TypeParameters ClassTail_Yield_Await
+	int32(ClassExpr),                 // ClassExpression_Yield_Await : 'class' BindingIdentifier_WithoutImplements ClassTail_Yield_Await
+	int32(ClassExpr),                 // ClassExpression_Yield_Await : 'class' TypeParameters ClassTail_Yield_Await
+	int32(ClassExpr),                 // ClassExpression_Yield_Await : 'class' ClassTail_Yield_Await
+	0,                                // ClassTail : ClassHeritage ClassBody
+	0,                                // ClassTail_Await : ClassHeritage_Await ClassBody_Await
+	0,                                // ClassTail_Yield : ClassHeritage_Yield ClassBody_Yield
+	0,                                // ClassTail_Yield_Await : ClassHeritage_Yield_Await ClassBody_Yield_Await
+	0,                                // ClassHeritage : ClassExtendsClause ImplementsClause
+	0,                                // ClassHeritage : ClassExtendsClause
+	0,                                // ClassHeritage : ImplementsClause
+	0,                                // ClassHeritage :
+	0,                                // ClassHeritage_Await : ClassExtendsClause_Await ImplementsClause
+	0,                                // ClassHeritage_Await : ClassExtendsClause_Await
+	0,                                // ClassHeritage_Await : ImplementsClause
+	0,                                // ClassHeritage_Await :
+	0,                                // ClassHeritage_Yield : ClassExtendsClause_Yield ImplementsClause
+	0,                                // ClassHeritage_Yield : ClassExtendsClause_Yield
+	0,                                // ClassHeritage_Yield : ImplementsClause
+	0,                                // ClassHeritage_Yield :
+	0,                                // ClassHeritage_Yield_Await : ClassExtendsClause_Yield_Await ImplementsClause
+	0,                                // ClassHeritage_Yield_Await : ClassExtendsClause_Yield_Await
+	0,                                // ClassHeritage_Yield_Await : ImplementsClause
+	0,                                // ClassHeritage_Yield_Await :
+	0,                                // StartOfExtendsTypeRef : TypeReference 'implements'
+	0,                                // StartOfExtendsTypeRef : TypeReference '{'
+	int32(Extends),                   // ClassExtendsClause : 'extends' lookahead_StartOfExtendsTypeRef TypeReference
+	int32(Extends),                   // ClassExtendsClause : 'extends' lookahead_notStartOfExtendsTypeRef LeftHandSideExpression
+	int32(Extends),                   // ClassExtendsClause_Await : 'extends' lookahead_StartOfExtendsTypeRef TypeReference
+	int32(Extends),                   // ClassExtendsClause_Await : 'extends' lookahead_notStartOfExtendsTypeRef LeftHandSideExpression_Await
+	int32(Extends),                   // ClassExtendsClause_Yield : 'extends' lookahead_StartOfExtendsTypeRef TypeReference
+	int32(Extends),                   // ClassExtendsClause_Yield : 'extends' lookahead_notStartOfExtendsTypeRef LeftHandSideExpression_Yield
+	int32(Extends),                   // ClassExtendsClause_Yield_Await : 'extends' lookahead_StartOfExtendsTypeRef TypeReference
+	int32(Extends),                   // ClassExtendsClause_Yield_Await : 'extends' lookahead_notStartOfExtendsTypeRef LeftHandSideExpression_Yield_Await
+	0,                                // lookahead_StartOfExtendsTypeRef :
+	0,                                // lookahead_notStartOfExtendsTypeRef :
+	int32(TsImplementsClause),        // ImplementsClause : 'implements' TypeReference_list_Comma_separated
+	0,                                // TypeReference_list_Comma_separated : TypeReference_list_Comma_separated ',' TypeReference
+	0,                                // TypeReference_list_Comma_separated : TypeReference
+	int32(ClassBody),                 // ClassBody : '{' .recoveryScope ClassElementList '}'
+	int32(ClassBody),                 // ClassBody : '{' .recoveryScope '}'
+	int32(ClassBody),                 // ClassBody_Await : '{' .recoveryScope ClassElementList_Await '}'
+	int32(ClassBody),                 // ClassBody_Await : '{' .recoveryScope '}'
+	int32(ClassBody),                 // ClassBody_Yield : '{' .recoveryScope ClassElementList_Yield '}'
+	int32(ClassBody),                 // ClassBody_Yield : '{' .recoveryScope '}'
+	int32(ClassBody),                 // ClassBody_Yield_Await : '{' .recoveryScope ClassElementList_Yield_Await '}'
+	int32(ClassBody),                 // ClassBody_Yield_Await : '{' .recoveryScope '}'
+	0,                                // ClassElementList : ClassElement
+	0,                                // ClassElementList : ClassElementList ClassElement
+	0,                                // ClassElementList_Await : ClassElement_Await
+	0,                                // ClassElementList_Await : ClassElementList_Await ClassElement_Await
+	0,                                // ClassElementList_Yield : ClassElement_Yield
+	0,                                // ClassElementList_Yield : ClassElementList_Yield ClassElement_Yield
+	0,                                // ClassElementList_Yield_Await : ClassElement_Yield_Await
+	0,                                // ClassElementList_Yield_Await : ClassElementList_Yield_Await ClassElement_Yield_Await
+	0,                                // Modifier : AccessibilityModifier
+	0,                                // Modifier : Decorator
+	int32(Static),                    // Modifier : 'static'
+	int32(TsAbstract),                // Modifier : 'abstract'
+	int32(TsOverride),                // Modifier : 'override'
+	int32(TsReadonly),                // Modifier : 'readonly'
+	int32(Accessor),                  // Modifier : 'accessor'
+	0,                                // Modifier_WithDeclare : AccessibilityModifier
+	0,                                // Modifier_WithDeclare : Decorator
+	int32(Static),                    // Modifier_WithDeclare : 'static'
+	int32(TsAbstract),                // Modifier_WithDeclare : 'abstract'
+	int32(TsOverride),                // Modifier_WithDeclare : 'override'
+	int32(TsReadonly),                // Modifier_WithDeclare : 'readonly'
+	int32(Accessor),                  // Modifier_WithDeclare : 'accessor'
+	int32(TsDeclare),                 // Modifier_WithDeclare : 'declare'
+	0,                                // Modifiers : Modifier
+	0,                                // Modifiers : Modifiers Modifier
+	0,                                // Modifiers_WithDeclare : Modifier_WithDeclare
+	0,                                // Modifiers_WithDeclare : Modifiers_WithDeclare Modifier_WithDeclare
+	int32(MemberMethod),              // ClassElement : Modifiers_WithDeclare MethodDefinition
+	int32(MemberMethod),              // ClassElement : MethodDefinition
+	int32(MemberVar),                 // ClassElement : Modifiers_WithDeclare FieldDefinition
+	int32(MemberVar),                 // ClassElement : FieldDefinition
+	int32(TsIndexMemberDecl),         // ClassElement : IndexSignature_WithDeclare ';'
+	0,                                // ClassElement : ClassStaticBlock
+	int32(EmptyDecl),                 // ClassElement : ';'
+	0,                                // ClassElement : SyntaxError ';'
+	int32(MemberMethod),              // ClassElement_Await : Modifiers_WithDeclare MethodDefinition_Await
+	int32(MemberMethod),              // ClassElement_Await : MethodDefinition_Await
+	int32(MemberVar),                 // ClassElement_Await : Modifiers_WithDeclare FieldDefinition_Await
+	int32(MemberVar),                 // ClassElement_Await : FieldDefinition_Await
+	int32(TsIndexMemberDecl),         // ClassElement_Await : IndexSignature_WithDeclare ';'
+	0,                                // ClassElement_Await : ClassStaticBlock
+	int32(EmptyDecl),                 // ClassElement_Await : ';'
+	0,                                // ClassElement_Await : SyntaxError ';'
+	int32(MemberMethod),              // ClassElement_Yield : Modifiers_WithDeclare MethodDefinition_Yield
+	int32(MemberMethod),              // ClassElement_Yield : MethodDefinition_Yield
+	int32(MemberVar),                 // ClassElement_Yield : Modifiers_WithDeclare FieldDefinition_Yield
+	int32(MemberVar),                 // ClassElement_Yield : FieldDefinition_Yield
+	int32(TsIndexMemberDecl),         // ClassElement_Yield : IndexSignature_WithDeclare ';'
+	0,                                // ClassElement_Yield : ClassStaticBlock
+	int32(EmptyDecl),                 // ClassElement_Yield : ';'
+	0,                                // ClassElement_Yield : SyntaxError ';'
+	int32(MemberMethod),              // ClassElement_Yield_Await : Modifiers_WithDeclare MethodDefinition_Yield_Await
+	int32(MemberMethod),              // ClassElement_Yield_Await : MethodDefinition_Yield_Await
+	int32(MemberVar),                 // ClassElement_Yield_Await : Modifiers_WithDeclare FieldDefinition_Yield_Await
+	int32(MemberVar),                 // ClassElement_Yield_Await : FieldDefinition_Yield_Await
+	int32(TsIndexMemberDecl),         // ClassElement_Yield_Await : IndexSignature_WithDeclare ';'
+	0,                                // ClassElement_Yield_Await : ClassStaticBlock
+	int32(EmptyDecl),                 // ClassElement_Yield_Await : ';'
+	0,                                // ClassElement_Yield_Await : SyntaxError ';'
+	0,                                // FieldDefinition : PropertyName '?' TypeAnnotationopt Initializeropt_In ';'
+	0,                                // FieldDefinition : PropertyName '!' TypeAnnotationopt Initializeropt_In ';'
+	0,                                // FieldDefinition : PropertyName TypeAnnotationopt Initializeropt_In ';'
+	0,                                // FieldDefinition_Await : PropertyName_Await '?' TypeAnnotationopt Initializeropt_In_Await ';'
+	0,                                // FieldDefinition_Await : PropertyName_Await '!' TypeAnnotationopt Initializeropt_In_Await ';'
+	0,                                // FieldDefinition_Await : PropertyName_Await TypeAnnotationopt Initializeropt_In_Await ';'
+	0,                                // FieldDefinition_Yield : PropertyName_Yield '?' TypeAnnotationopt Initializeropt_In_Yield ';'
+	0,                                // FieldDefinition_Yield : PropertyName_Yield '!' TypeAnnotationopt Initializeropt_In_Yield ';'
+	0,                                // FieldDefinition_Yield : PropertyName_Yield TypeAnnotationopt Initializeropt_In_Yield ';'
+	0,                                // FieldDefinition_Yield_Await : PropertyName_Yield_Await '?' TypeAnnotationopt Initializeropt_In_Yield_Await ';'
+	0,                                // FieldDefinition_Yield_Await : PropertyName_Yield_Await '!' TypeAnnotationopt Initializeropt_In_Yield_Await ';'
+	0,                                // FieldDefinition_Yield_Await : PropertyName_Yield_Await TypeAnnotationopt Initializeropt_In_Yield_Await ';'
+	int32(StaticBlock),               // ClassStaticBlock : 'static' ClassStaticBlockBody
+	int32(Body),                      // ClassStaticBlockBody : '{' .recoveryScope StatementList_Await SyntaxError '}'
+	int32(Body),                      // ClassStaticBlockBody : '{' .recoveryScope StatementList_Await '}'
+	int32(Body),                      // ClassStaticBlockBody : '{' .recoveryScope SyntaxError '}'
+	int32(Body),                      // ClassStaticBlockBody : '{' .recoveryScope '}'
+	0,                                // Module : ModuleBodyopt
+	0,                                // ModuleBody : ModuleItemList
+	0,                                // ModuleItemList : ModuleItem
+	0,                                // ModuleItemList : ModuleItemList ModuleItem
+	0,                                // ModuleItem : ImportDeclaration
+	0,                                // ModuleItem : ImportRequireDeclaration
+	0,                                // ModuleItem : ExportDeclaration
+	0,                                // ModuleItem : StatementListItem
+	int32(ImportDecl),                // ImportDeclaration : 'import' lookahead_notStartOfTypeImport ImportClause FromClause .noLineBreak AssertClause ';'
+	int32(ImportDecl),                // ImportDeclaration : 'import' lookahead_notStartOfTypeImport ImportClause FromClause ';'
+	-1,                               // ImportDeclaration : 'import' lookahead_StartOfTypeImport 'type' ImportClause FromClause .noLineBreak AssertClause ';'
+	-1,                               // ImportDeclaration : 'import' lookahead_StartOfTypeImport 'type' ImportClause FromClause ';'
+	int32(ImportDecl),                // ImportDeclaration : 'import' ModuleSpecifier .noLineBreak AssertClause ';'
+	int32(ImportDecl),                // ImportDeclaration : 'import' ModuleSpecifier ';'
+	0,                                // lookahead_StartOfTypeImport :
+	0,                                // lookahead_notStartOfTypeImport :
+	int32(AssertClause),              // AssertClause : 'assert' '{' AssertEntry_list_Comma_separated ',' '}'
+	int32(AssertClause),              // AssertClause : 'assert' '{' AssertEntry_list_Comma_separated '}'
+	int32(AssertClause),              // AssertClause : 'assert' '{' '}'
+	0,                                // AssertEntry_list_Comma_separated : AssertEntry_list_Comma_separated ',' AssertEntry
+	0,                                // AssertEntry_list_Comma_separated : AssertEntry
+	int32(AssertEntry),               // AssertEntry : AssertionKey ':' StringLiteral
+	int32(AssertionKey),              // AssertionKey : IdentifierName
+	int32(AssertionKey),              // AssertionKey : StringLiteral
+	0,                                // StartOfTypeImport : 'type' '*'
+	0,                                // StartOfTypeImport : 'type' '{'
+	0,                                // StartOfTypeImport : 'type' IdentifierName_WithoutFrom
+	-1,                               // ImportRequireDeclaration : 'export' 'import' lookahead_notStartOfTypeImport BindingIdentifier '=' 'require' '(' ModuleSpecifier ')' ';'
+	int32(TsImportRequireDecl),       // ImportRequireDeclaration : 'import' lookahead_notStartOfTypeImport BindingIdentifier '=' 'require' '(' ModuleSpecifier ')' ';'
+	0,                                // ImportClause : ImportedDefaultBinding
+	0,                                // ImportClause : NameSpaceImport
+	0,                                // ImportClause : NamedImports
+	0,                                // ImportClause : ImportedDefaultBinding ',' NameSpaceImport
+	0,                                // ImportClause : ImportedDefaultBinding ',' NamedImports
+	0,                                // ImportedDefaultBinding : ImportedBinding
+	int32(NameSpaceImport),           // NameSpaceImport : '*' 'as' ImportedBinding
+	0,                                // FromClause : 'from' ModuleSpecifier
+	0,                                // NamedImport_list_Comma_separated : NamedImport_list_Comma_separated ',' NamedImport
+	0,                                // NamedImport_list_Comma_separated : NamedImport
+	int32(NamedImports),              // NamedImports : '{' '}'
+	int32(NamedImports),              // NamedImports : '{' NamedImport_list_Comma_separated ',' '}'
+	int32(NamedImports),              // NamedImports : '{' NamedImport_list_Comma_separated '}'
+	-1,                               // NamedImport : 'type' IdentifierNameRef
+	-1,                               // NamedImport : IdentifierNameRef
+	int32(ImportSpec),                // NamedImport : IdentifierNameRef_WithoutType 'as' ImportedBinding
+	-1,                               // NamedImport : 'type' IdentifierNameRef 'as' ImportedBinding
+	-1,                               // NamedImport : 'type' 'as' ImportedBinding
+	int32(SyntaxProblem),             // NamedImport : error
+	int32(ModuleSpec),                // ModuleSpecifier : StringLiteral
+	0,                                // ImportedBinding : BindingIdentifier
+	-1,                               // ExportDeclaration : 'export' 'type' '*' 'as' ImportedBinding FromClause .noLineBreak AssertClause ';'
+	-1,                               // ExportDeclaration : 'export' 'type' '*' 'as' ImportedBinding FromClause ';'
+	-1,                               // ExportDeclaration : 'export' 'type' '*' FromClause .noLineBreak AssertClause ';'
+	-1,                               // ExportDeclaration : 'export' 'type' '*' FromClause ';'
+	int32(ExportDecl),                // ExportDeclaration : 'export' '*' 'as' ImportedBinding FromClause .noLineBreak AssertClause ';'
+	int32(ExportDecl),                // ExportDeclaration : 'export' '*' 'as' ImportedBinding FromClause ';'
+	int32(ExportDecl),                // ExportDeclaration : 'export' '*' FromClause .noLineBreak AssertClause ';'
+	int32(ExportDecl),                // ExportDeclaration : 'export' '*' FromClause ';'
+	-1,                               // ExportDeclaration : 'export' 'type' ExportClause FromClause .noLineBreak AssertClause ';'
+	-1,                               // ExportDeclaration : 'export' 'type' ExportClause FromClause ';'
+	int32(ExportDecl),                // ExportDeclaration : 'export' ExportClause FromClause .noLineBreak AssertClause ';'
+	int32(ExportDecl),                // ExportDeclaration : 'export' ExportClause FromClause ';'
+	-1,                               // ExportDeclaration : 'export' 'type' ExportClause ';'
+	int32(ExportDecl),                // ExportDeclaration : 'export' ExportClause ';'
+	int32(ExportDecl),                // ExportDeclaration : 'export' VariableStatement
+	int32(ExportDecl),                // ExportDeclaration : Modifiers 'export' Declaration
+	int32(ExportDecl),                // ExportDeclaration : 'export' Declaration
+	int32(ExportDefault),             // ExportDeclaration : 'export' 'default' HoistableDeclaration
+	int32(ExportDefault),             // ExportDeclaration : Modifiers 'export' 'default' ClassDeclaration
+	int32(ExportDefault),             // ExportDeclaration : 'export' 'default' ClassDeclaration
+	int32(ExportDefault),             // ExportDeclaration : 'export' 'default' AssignmentExpression_In_NoFuncClass ';'
+	int32(TsExportAssignment),        // ExportDeclaration : 'export' '=' AssignmentExpression_In_NoFuncClass ';'
+	int32(TsNamespaceExportDecl),     // ExportDeclaration : 'export' 'as' 'namespace' BindingIdentifier ';'
+	int32(ExportClause),              // ExportClause : '{' '}'
+	int32(ExportClause),              // ExportClause : '{' ExportElement_list_Comma_separated ',' '}'
+	int32(ExportClause),              // ExportClause : '{' ExportElement_list_Comma_separated '}'
+	0,                                // ExportElement_list_Comma_separated : ExportElement_list_Comma_separated ',' ExportElement
+	0,                                // ExportElement_list_Comma_separated : ExportElement
+	-1,                               // ExportElement : 'type' IdentifierNameRef
+	-1,                               // ExportElement : IdentifierNameRef
+	int32(ExportSpec),                // ExportElement : IdentifierNameRef_WithoutType 'as' IdentifierNameDecl
+	-1,                               // ExportElement : 'type' IdentifierNameRef 'as' IdentifierNameDecl
+	-1,                               // ExportElement : 'type' 'as' IdentifierNameDecl
+	int32(SyntaxProblem),             // ExportElement : error
+	int32(DecoratorExpr),             // Decorator : '@' DecoratorMemberExpression
+	int32(DecoratorCall),             // Decorator : '@' DecoratorCallExpression
+	0,                                // DecoratorMemberExpression : IdentifierReference
+	-1,                               // DecoratorMemberExpression : DecoratorMemberExpression '.' IdentifierName
+	0,                                // DecoratorCallExpression : DecoratorMemberExpression Arguments
+	0,                                // JSXChild_Await_optlist : JSXChild_Await_optlist JSXChild_Await
+	0,                                // JSXChild_Await_optlist :
+	0,                                // JSXChild_Yield_Await_optlist : JSXChild_Yield_Await_optlist JSXChild_Yield_Await
+	0,                                // JSXChild_Yield_Await_optlist :
+	0,                                // JSXChild_Yield_optlist : JSXChild_Yield_optlist JSXChild_Yield
+	0,                                // JSXChild_Yield_optlist :
+	0,                                // JSXChild_optlist : JSXChild_optlist JSXChild
+	0,                                // JSXChild_optlist :
+	int32(JSXElement),                // JSXElement : JSXSelfClosingElement
+	int32(JSXElement),                // JSXElement : JSXOpeningElement JSXChild_optlist JSXClosingElement
+	int32(JSXElement),                // JSXElement_Await : JSXSelfClosingElement_Await
+	int32(JSXElement),                // JSXElement_Await : JSXOpeningElement_Await JSXChild_Await_optlist JSXClosingElement
+	int32(JSXElement),                // JSXElement_Yield : JSXSelfClosingElement_Yield
+	int32(JSXElement),                // JSXElement_Yield : JSXOpeningElement_Yield JSXChild_Yield_optlist JSXClosingElement
+	int32(JSXElement),                // JSXElement_Yield_Await : JSXSelfClosingElement_Yield_Await
+	int32(JSXElement),                // JSXElement_Yield_Await : JSXOpeningElement_Yield_Await JSXChild_Yield_Await_optlist JSXClosingElement
+	0,                                // JSXAttribute_Await_optlist : JSXAttribute_Await_optlist JSXAttribute_Await
+	0,                                // JSXAttribute_Await_optlist :
+	0,                                // JSXAttribute_Yield_Await_optlist : JSXAttribute_Yield_Await_optlist JSXAttribute_Yield_Await
+	0,                                // JSXAttribute_Yield_Await_optlist :
+	0,                                // JSXAttribute_Yield_optlist : JSXAttribute_Yield_optlist JSXAttribute_Yield
+	0,                                // JSXAttribute_Yield_optlist :
+	0,                                // JSXAttribute_optlist : JSXAttribute_optlist JSXAttribute
+	0,                                // JSXAttribute_optlist :
+	int32(JSXSelfClosingElement),     // JSXSelfClosingElement : '<' JSXElementName TypeArguments JSXAttribute_optlist '/' '>'
+	int32(JSXSelfClosingElement),     // JSXSelfClosingElement : '<' JSXElementName JSXAttribute_optlist '/' '>'
+	int32(JSXSelfClosingElement),     // JSXSelfClosingElement_Await : '<' JSXElementName TypeArguments JSXAttribute_Await_optlist '/' '>'
+	int32(JSXSelfClosingElement),     // JSXSelfClosingElement_Await : '<' JSXElementName JSXAttribute_Await_optlist '/' '>'
+	int32(JSXSelfClosingElement),     // JSXSelfClosingElement_Yield : '<' JSXElementName TypeArguments JSXAttribute_Yield_optlist '/' '>'
+	int32(JSXSelfClosingElement),     // JSXSelfClosingElement_Yield : '<' JSXElementName JSXAttribute_Yield_optlist '/' '>'
+	int32(JSXSelfClosingElement),     // JSXSelfClosingElement_Yield_Await : '<' JSXElementName TypeArguments JSXAttribute_Yield_Await_optlist '/' '>'
+	int32(JSXSelfClosingElement),     // JSXSelfClosingElement_Yield_Await : '<' JSXElementName JSXAttribute_Yield_Await_optlist '/' '>'
+	int32(JSXOpeningElement),         // JSXOpeningElement : '<' JSXElementName TypeArguments JSXAttribute_optlist '>'
+	int32(JSXOpeningElement),         // JSXOpeningElement : '<' JSXElementName JSXAttribute_optlist '>'
+	int32(JSXOpeningElement),         // JSXOpeningElement_Await : '<' JSXElementName TypeArguments JSXAttribute_Await_optlist '>'
+	int32(JSXOpeningElement),         // JSXOpeningElement_Await : '<' JSXElementName JSXAttribute_Await_optlist '>'
+	int32(JSXOpeningElement),         // JSXOpeningElement_Yield : '<' JSXElementName TypeArguments JSXAttribute_Yield_optlist '>'
+	int32(JSXOpeningElement),         // JSXOpeningElement_Yield : '<' JSXElementName JSXAttribute_Yield_optlist '>'
+	int32(JSXOpeningElement),         // JSXOpeningElement_Yield_Await : '<' JSXElementName TypeArguments JSXAttribute_Yield_Await_optlist '>'
+	int32(JSXOpeningElement),         // JSXOpeningElement_Yield_Await : '<' JSXElementName JSXAttribute_Yield_Await_optlist '>'
+	int32(JSXClosingElement),         // JSXClosingElement : '<' '/' JSXElementName '>'
+	int32(JSXFragment),               // JSXFragment : '<' '>' JSXChild_optlist '<' '/' '>'
+	int32(JSXFragment),               // JSXFragment_Await : '<' '>' JSXChild_Await_optlist '<' '/' '>'
+	int32(JSXFragment),               // JSXFragment_Yield : '<' '>' JSXChild_Yield_optlist '<' '/' '>'
+	int32(JSXFragment),               // JSXFragment_Yield_Await : '<' '>' JSXChild_Yield_Await_optlist '<' '/' '>'
+	int32(JSXElementName),            // JSXElementName : jsxIdentifier
+	int32(JSXElementName),            // JSXElementName : jsxIdentifier ':' jsxIdentifier
+	int32(JSXElementName),            // JSXElementName : JSXMemberExpression
+	0,                                // JSXMemberExpression : jsxIdentifier '.' jsxIdentifier
+	0,                                // JSXMemberExpression : JSXMemberExpression '.' jsxIdentifier
+	int32(JSXNormalAttribute),        // JSXAttribute : JSXAttributeName '=' JSXAttributeValue
+	int32(JSXNormalAttribute),        // JSXAttribute : JSXAttributeName
+	int32(JSXSpreadAttribute),        // JSXAttribute : '{' .recoveryScope '...' AssignmentExpression_In '}'
+	int32(JSXNormalAttribute),        // JSXAttribute_Await : JSXAttributeName '=' JSXAttributeValue_Await
+	int32(JSXNormalAttribute),        // JSXAttribute_Await : JSXAttributeName
+	int32(JSXSpreadAttribute),        // JSXAttribute_Await : '{' .recoveryScope '...' AssignmentExpression_In_Await '}'
+	int32(JSXNormalAttribute),        // JSXAttribute_Yield : JSXAttributeName '=' JSXAttributeValue_Yield
+	int32(JSXNormalAttribute),        // JSXAttribute_Yield : JSXAttributeName
+	int32(JSXSpreadAttribute),        // JSXAttribute_Yield : '{' .recoveryScope '...' AssignmentExpression_In_Yield '}'
+	int32(JSXNormalAttribute),        // JSXAttribute_Yield_Await : JSXAttributeName '=' JSXAttributeValue_Yield_Await
+	int32(JSXNormalAttribute),        // JSXAttribute_Yield_Await : JSXAttributeName
+	int32(JSXSpreadAttribute),        // JSXAttribute_Yield_Await : '{' .recoveryScope '...' AssignmentExpression_In_Yield_Await '}'
+	int32(JSXAttributeName),          // JSXAttributeName : jsxIdentifier
+	int32(JSXAttributeName),          // JSXAttributeName : jsxIdentifier ':' jsxIdentifier
+	int32(JSXLiteral),                // JSXAttributeValue : jsxStringLiteral
+	int32(JSXExpr),                   // JSXAttributeValue : '{' .recoveryScope AssignmentExpression_In '}'
+	0,                                // JSXAttributeValue : JSXElement
+	0,                                // JSXAttributeValue : JSXFragment
+	int32(JSXLiteral),                // JSXAttributeValue_Await : jsxStringLiteral
+	int32(JSXExpr),                   // JSXAttributeValue_Await : '{' .recoveryScope AssignmentExpression_In_Await '}'
+	0,                                // JSXAttributeValue_Await : JSXElement_Await
+	0,                                // JSXAttributeValue_Await : JSXFragment_Await
+	int32(JSXLiteral),                // JSXAttributeValue_Yield : jsxStringLiteral
+	int32(JSXExpr),                   // JSXAttributeValue_Yield : '{' .recoveryScope AssignmentExpression_In_Yield '}'
+	0,                                // JSXAttributeValue_Yield : JSXElement_Yield
+	0,                                // JSXAttributeValue_Yield : JSXFragment_Yield
+	int32(JSXLiteral),                // JSXAttributeValue_Yield_Await : jsxStringLiteral
+	int32(JSXExpr),                   // JSXAttributeValue_Yield_Await : '{' .recoveryScope AssignmentExpression_In_Yield_Await '}'
+	0,                                // JSXAttributeValue_Yield_Await : JSXElement_Yield_Await
+	0,                                // JSXAttributeValue_Yield_Await : JSXFragment_Yield_Await
+	int32(JSXText),                   // JSXChild : jsxText
+	0,                                // JSXChild : JSXElement
+	0,                                // JSXChild : JSXFragment
+	int32(JSXExpr),                   // JSXChild : '{' .recoveryScope AssignmentExpressionopt_In '}'
+	int32(JSXSpreadExpr),             // JSXChild : '{' .recoveryScope '...' AssignmentExpressionopt_In '}'
+	int32(JSXText),                   // JSXChild_Await : jsxText
+	0,                                // JSXChild_Await : JSXElement_Await
+	0,                                // JSXChild_Await : JSXFragment_Await
+	int32(JSXExpr),                   // JSXChild_Await : '{' .recoveryScope AssignmentExpressionopt_In_Await '}'
+	int32(JSXSpreadExpr),             // JSXChild_Await : '{' .recoveryScope '...' AssignmentExpressionopt_In_Await '}'
+	int32(JSXText),                   // JSXChild_Yield : jsxText
+	0,                                // JSXChild_Yield : JSXElement_Yield
+	0,                                // JSXChild_Yield : JSXFragment_Yield
+	int32(JSXExpr),                   // JSXChild_Yield : '{' .recoveryScope AssignmentExpressionopt_In_Yield '}'
+	int32(JSXSpreadExpr),             // JSXChild_Yield : '{' .recoveryScope '...' AssignmentExpressionopt_In_Yield '}'
+	int32(JSXText),                   // JSXChild_Yield_Await : jsxText
+	0,                                // JSXChild_Yield_Await : JSXElement_Yield_Await
+	0,                                // JSXChild_Yield_Await : JSXFragment_Yield_Await
+	int32(JSXExpr),                   // JSXChild_Yield_Await : '{' .recoveryScope AssignmentExpressionopt_In_Yield_Await '}'
+	int32(JSXSpreadExpr),             // JSXChild_Yield_Await : '{' .recoveryScope '...' AssignmentExpressionopt_In_Yield_Await '}'
+	0,                                // Type : UnionOrIntersectionOrPrimaryType %prec resolveShift
+	int32(TsConditional),             // Type : UnionOrIntersectionOrPrimaryType 'extends' Type_NoQuest '?' Type ':' Type
+	0,                                // Type : FunctionType
+	0,                                // Type : ConstructorType
+	0,                                // Type : AssertsType
+	0,                                // Type : TypePredicate
+	0,                                // Type_NoQuest : UnionOrIntersectionOrPrimaryType_NoQuest %prec resolveShift
+	0,                                // Type_NoQuest : FunctionType_NoQuest
+	0,                                // Type_NoQuest : ConstructorType_NoQuest
+	0,                                // Type_NoQuest : TypePredicate_NoQuest
+	int32(TsTypePredicate),           // TypePredicate : IdentifierNameRef_WithoutAsserts 'is' Type
+	-1,                               // TypePredicate : 'asserts' lookahead_StartOfIs 'is' Type_NoQuest
+	int32(TsTypePredicate),           // TypePredicate_NoQuest : IdentifierNameRef_WithoutAsserts 'is' Type_NoQuest
+	-1,                               // TypePredicate_NoQuest : 'asserts' lookahead_StartOfIs 'is' Type_NoQuest
+	0,                                // lookahead_StartOfIs :
+	-1,                               // AssertsType : 'asserts' .noLineBreak lookahead_notStartOfIs 'this' 'is' Type
+	-1,                               // AssertsType : 'asserts' .noLineBreak lookahead_notStartOfIs 'this'
+	-1,                               // AssertsType : 'asserts' .noLineBreak lookahead_notStartOfIs IdentifierName_WithoutKeywords_WithoutAs_WithoutSatisfies 'is' Type
+	-1,                               // AssertsType : 'asserts' .noLineBreak lookahead_notStartOfIs IdentifierName_WithoutKeywords_WithoutAs_WithoutSatisfies
+	0,                                // lookahead_notStartOfIs :
+	0,                                // StartOfIs : 'is'
+	0,                                // TypeParameter_list_Comma_separated : TypeParameter_list_Comma_separated ',' TypeParameter
+	0,                                // TypeParameter_list_Comma_separated : TypeParameter
+	int32(TsTypeParameters),          // TypeParameters : '<' TypeParameter_list_Comma_separated ',' '>'
+	int32(TsTypeParameters),          // TypeParameters : '<' TypeParameter_list_Comma_separated '>'
+	int32(TsTypeParameter),           // TypeParameter : VarianceModifier_optlist BindingIdentifier Constraint '=' Type
+	int32(TsTypeParameter),           // TypeParameter : VarianceModifier_optlist BindingIdentifier Constraint
+	int32(TsTypeParameter),           // TypeParameter : VarianceModifier_optlist BindingIdentifier '=' Type
+	int32(TsTypeParameter),           // TypeParameter : VarianceModifier_optlist BindingIdentifier
+	0,                                // VarianceModifier_optlist : VarianceModifier_optlist VarianceModifier
+	0,                                // VarianceModifier_optlist :
+	int32(TsVarianceModifier),        // VarianceModifier : 'in'
+	int32(TsVarianceModifier),        // VarianceModifier : 'out'
+	int32(TsTypeConstraint),          // Constraint : 'extends' Type
+	int32(TsTypeArguments),           // TypeArguments : '<' Type_list_Comma_separated '>'
+	0,                                // Type_list_Comma_separated : Type_list_Comma_separated ',' Type
+	0,                                // Type_list_Comma_separated : Type
+	int32(TsUnionType),               // UnionOrIntersectionOrPrimaryType : UnionOrIntersectionOrPrimaryType '|' IntersectionOrPrimaryType
+	int32(TsUnionType),               // UnionOrIntersectionOrPrimaryType : '|' IntersectionOrPrimaryType
+	0,                                // UnionOrIntersectionOrPrimaryType : IntersectionOrPrimaryType %prec resolveShift
+	int32(TsUnionType),               // UnionOrIntersectionOrPrimaryType_NoQuest : UnionOrIntersectionOrPrimaryType_NoQuest '|' IntersectionOrPrimaryType_NoQuest
+	int32(TsUnionType),               // UnionOrIntersectionOrPrimaryType_NoQuest : '|' IntersectionOrPrimaryType_NoQuest
+	0,                                // UnionOrIntersectionOrPrimaryType_NoQuest : IntersectionOrPrimaryType_NoQuest %prec resolveShift
+	int32(TsIntersectionType),        // IntersectionOrPrimaryType : IntersectionOrPrimaryType '&' TypeOperator
+	int32(TsIntersectionType),        // IntersectionOrPrimaryType : '&' TypeOperator
+	0,                                // IntersectionOrPrimaryType : TypeOperator
+	int32(TsIntersectionType),        // IntersectionOrPrimaryType_NoQuest : IntersectionOrPrimaryType_NoQuest '&' TypeOperator_NoQuest
+	int32(TsIntersectionType),        // IntersectionOrPrimaryType_NoQuest : '&' TypeOperator_NoQuest
+	0,                                // IntersectionOrPrimaryType_NoQuest : TypeOperator_NoQuest
+	0,                                // TypeOperator : PrimaryType
+	int32(TsKeyOfType),               // TypeOperator : 'keyof' TypeOperator
+	int32(TsUniqueType),              // TypeOperator : 'unique' TypeOperator
+	int32(TsReadonlyType),            // TypeOperator : 'readonly' TypeOperator
+	-1,                               // TypeOperator : 'infer' IdentifierName
+	0,                                // TypeOperator_NoQuest : PrimaryType_NoQuest
+	int32(TsKeyOfType),               // TypeOperator_NoQuest : 'keyof' TypeOperator_NoQuest
+	int32(TsUniqueType),              // TypeOperator_NoQuest : 'unique' TypeOperator_NoQuest
+	int32(TsReadonlyType),            // TypeOperator_NoQuest : 'readonly' TypeOperator_NoQuest
+	-1,                               // TypeOperator_NoQuest : 'infer' IdentifierName
+	0,                                // PrimaryType : ParenthesizedType
+	0,                                // PrimaryType : PredefinedType
+	0,                                // PrimaryType : TypeReference
+	0,                                // PrimaryType : ObjectType
+	0,                                // PrimaryType : MappedType
+	0,                                // PrimaryType : ArrayType
+	0,                                // PrimaryType : IndexedAccessType
+	0,                                // PrimaryType : LiteralType
+	0,                                // PrimaryType : TupleType
+	0,                                // PrimaryType : TypeQuery
+	0,                                // PrimaryType : ImportType
+	int32(TsThisType),                // PrimaryType : 'this'
+	int32(TsNonNullableType),         // PrimaryType : PrimaryType .noLineBreak '!'
+	int32(TsNullableType),            // PrimaryType : PrimaryType .noLineBreak '?'
+	0,                                // PrimaryType_NoQuest : ParenthesizedType
+	0,                                // PrimaryType_NoQuest : PredefinedType
+	0,                                // PrimaryType_NoQuest : TypeReference
+	0,                                // PrimaryType_NoQuest : ObjectType
+	0,                                // PrimaryType_NoQuest : MappedType
+	0,                                // PrimaryType_NoQuest : ArrayType_NoQuest
+	0,                                // PrimaryType_NoQuest : IndexedAccessType_NoQuest
+	0,                                // PrimaryType_NoQuest : LiteralType
+	0,                                // PrimaryType_NoQuest : TupleType
+	0,                                // PrimaryType_NoQuest : TypeQuery
+	0,                                // PrimaryType_NoQuest : ImportType
+	int32(TsThisType),                // PrimaryType_NoQuest : 'this'
+	int32(TsNonNullableType),         // PrimaryType_NoQuest : PrimaryType_NoQuest .noLineBreak '!'
+	int32(TsParenthesizedType),       // ParenthesizedType : '(' lookahead_notStartOfFunctionType Type ')'
+	0,                                // lookahead_notStartOfFunctionType :
+	int32(TsLiteralType),             // LiteralType : StringLiteral
+	int32(TsLiteralType),             // LiteralType : '-' NumericLiteral
+	int32(TsLiteralType),             // LiteralType : NumericLiteral
+	int32(TsLiteralType),             // LiteralType : 'null'
+	int32(TsLiteralType),             // LiteralType : 'true'
+	int32(TsLiteralType),             // LiteralType : 'false'
+	int32(TsLiteralType),             // LiteralType : TemplateLiteralType
+	int32(TsPredefinedType),          // PredefinedType : 'any'
+	int32(TsPredefinedType),          // PredefinedType : 'unknown'
+	int32(TsPredefinedType),          // PredefinedType : 'number'
+	int32(TsPredefinedType),          // PredefinedType : 'boolean'
+	int32(TsPredefinedType),          // PredefinedType : 'string'
+	int32(TsPredefinedType),          // PredefinedType : 'symbol'
+	int32(TsPredefinedType),          // PredefinedType : 'void'
+	int32(TsPredefinedType),          // PredefinedType : 'bigint'
+	int32(TsPredefinedType),          // PredefinedType : 'undefined'
+	int32(TsPredefinedType),          // PredefinedType : 'never'
+	int32(TsPredefinedType),          // PredefinedType : 'object'
+	int32(TsTypeReference),           // TypeReference : TypeName .noLineBreak TypeArguments %prec resolveShift
+	int32(TsTypeReference),           // TypeReference : TypeName .noLineBreak %prec resolveShift
+	int32(TsTypeName),                // TypeName : IdentifierReference_WithoutPredefinedTypes
+	-1,                               // TypeName : NamespaceName '.' IdentifierReference_WithDefault
+	0,                                // NamespaceName : IdentifierReference
+	0,                                // NamespaceName : NamespaceName '.' IdentifierReference_WithDefault
+	int32(TsObjectType),              // ObjectType : '{' .recoveryScope lookahead_notStartOfMappedType TypeBody '}'
+	int32(TsObjectType),              // ObjectType : '{' .recoveryScope lookahead_notStartOfMappedType '}'
+	0,                                // lookahead_notStartOfMappedType :
+	0,                                // TypeBody : TypeMemberList
+	0,                                // TypeBody : TypeMemberList ','
+	0,                                // TypeBody : TypeMemberList ';'
+	0,                                // TypeMemberList : TypeMember
+	0,                                // TypeMemberList : TypeMemberList ';' TypeMember
+	0,                                // TypeMemberList : TypeMemberList ',' TypeMember
+	0,                                // TypeMember : PropertySignature
+	0,                                // TypeMember : MethodSignature
+	0,                                // TypeMember : CallSignature
+	0,                                // TypeMember : ConstructSignature
+	0,                                // TypeMember : IndexSignature
+	0,                                // TypeMember : AccessorSignature
+	0,                                // TypeMember : SyntaxError
+	int32(TsArrayType),               // ArrayType : PrimaryType .noLineBreak '[' ']'
+	int32(TsArrayType),               // ArrayType_NoQuest : PrimaryType_NoQuest .noLineBreak '[' ']'
+	int32(TsIndexedAccessType),       // IndexedAccessType : PrimaryType .noLineBreak '[' Type ']'
+	int32(TsIndexedAccessType),       // IndexedAccessType_NoQuest : PrimaryType_NoQuest .noLineBreak '[' Type_NoQuest ']'
+	0,                                // StartOfMappedType : '+' 'readonly'
+	0,                                // StartOfMappedType : '-' 'readonly'
+	0,                                // StartOfMappedType : 'readonly' '[' IdentifierName 'in'
+	0,                                // StartOfMappedType : '[' IdentifierName 'in'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '+' 'readonly' '[' BindingIdentifier 'in' Type 'as' Type ']' '+' '?' TypeAnnotation ';' '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '+' 'readonly' '[' BindingIdentifier 'in' Type 'as' Type ']' '+' '?' TypeAnnotation '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '+' 'readonly' '[' BindingIdentifier 'in' Type 'as' Type ']' '-' '?' TypeAnnotation ';' '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '+' 'readonly' '[' BindingIdentifier 'in' Type 'as' Type ']' '-' '?' TypeAnnotation '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '+' 'readonly' '[' BindingIdentifier 'in' Type 'as' Type ']' '?' TypeAnnotation ';' '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '+' 'readonly' '[' BindingIdentifier 'in' Type 'as' Type ']' '?' TypeAnnotation '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '+' 'readonly' '[' BindingIdentifier 'in' Type 'as' Type ']' TypeAnnotation ';' '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '+' 'readonly' '[' BindingIdentifier 'in' Type 'as' Type ']' TypeAnnotation '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '+' 'readonly' '[' BindingIdentifier 'in' Type ']' '+' '?' TypeAnnotation ';' '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '+' 'readonly' '[' BindingIdentifier 'in' Type ']' '+' '?' TypeAnnotation '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '+' 'readonly' '[' BindingIdentifier 'in' Type ']' '-' '?' TypeAnnotation ';' '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '+' 'readonly' '[' BindingIdentifier 'in' Type ']' '-' '?' TypeAnnotation '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '+' 'readonly' '[' BindingIdentifier 'in' Type ']' '?' TypeAnnotation ';' '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '+' 'readonly' '[' BindingIdentifier 'in' Type ']' '?' TypeAnnotation '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '+' 'readonly' '[' BindingIdentifier 'in' Type ']' TypeAnnotation ';' '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '+' 'readonly' '[' BindingIdentifier 'in' Type ']' TypeAnnotation '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '-' 'readonly' '[' BindingIdentifier 'in' Type 'as' Type ']' '+' '?' TypeAnnotation ';' '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '-' 'readonly' '[' BindingIdentifier 'in' Type 'as' Type ']' '+' '?' TypeAnnotation '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '-' 'readonly' '[' BindingIdentifier 'in' Type 'as' Type ']' '-' '?' TypeAnnotation ';' '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '-' 'readonly' '[' BindingIdentifier 'in' Type 'as' Type ']' '-' '?' TypeAnnotation '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '-' 'readonly' '[' BindingIdentifier 'in' Type 'as' Type ']' '?' TypeAnnotation ';' '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '-' 'readonly' '[' BindingIdentifier 'in' Type 'as' Type ']' '?' TypeAnnotation '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '-' 'readonly' '[' BindingIdentifier 'in' Type 'as' Type ']' TypeAnnotation ';' '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '-' 'readonly' '[' BindingIdentifier 'in' Type 'as' Type ']' TypeAnnotation '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '-' 'readonly' '[' BindingIdentifier 'in' Type ']' '+' '?' TypeAnnotation ';' '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '-' 'readonly' '[' BindingIdentifier 'in' Type ']' '+' '?' TypeAnnotation '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '-' 'readonly' '[' BindingIdentifier 'in' Type ']' '-' '?' TypeAnnotation ';' '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '-' 'readonly' '[' BindingIdentifier 'in' Type ']' '-' '?' TypeAnnotation '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '-' 'readonly' '[' BindingIdentifier 'in' Type ']' '?' TypeAnnotation ';' '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '-' 'readonly' '[' BindingIdentifier 'in' Type ']' '?' TypeAnnotation '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '-' 'readonly' '[' BindingIdentifier 'in' Type ']' TypeAnnotation ';' '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '-' 'readonly' '[' BindingIdentifier 'in' Type ']' TypeAnnotation '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType 'readonly' '[' BindingIdentifier 'in' Type 'as' Type ']' '+' '?' TypeAnnotation ';' '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType 'readonly' '[' BindingIdentifier 'in' Type 'as' Type ']' '+' '?' TypeAnnotation '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType 'readonly' '[' BindingIdentifier 'in' Type 'as' Type ']' '-' '?' TypeAnnotation ';' '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType 'readonly' '[' BindingIdentifier 'in' Type 'as' Type ']' '-' '?' TypeAnnotation '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType 'readonly' '[' BindingIdentifier 'in' Type 'as' Type ']' '?' TypeAnnotation ';' '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType 'readonly' '[' BindingIdentifier 'in' Type 'as' Type ']' '?' TypeAnnotation '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType 'readonly' '[' BindingIdentifier 'in' Type 'as' Type ']' TypeAnnotation ';' '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType 'readonly' '[' BindingIdentifier 'in' Type 'as' Type ']' TypeAnnotation '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType 'readonly' '[' BindingIdentifier 'in' Type ']' '+' '?' TypeAnnotation ';' '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType 'readonly' '[' BindingIdentifier 'in' Type ']' '+' '?' TypeAnnotation '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType 'readonly' '[' BindingIdentifier 'in' Type ']' '-' '?' TypeAnnotation ';' '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType 'readonly' '[' BindingIdentifier 'in' Type ']' '-' '?' TypeAnnotation '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType 'readonly' '[' BindingIdentifier 'in' Type ']' '?' TypeAnnotation ';' '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType 'readonly' '[' BindingIdentifier 'in' Type ']' '?' TypeAnnotation '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType 'readonly' '[' BindingIdentifier 'in' Type ']' TypeAnnotation ';' '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType 'readonly' '[' BindingIdentifier 'in' Type ']' TypeAnnotation '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '[' BindingIdentifier 'in' Type 'as' Type ']' '+' '?' TypeAnnotation ';' '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '[' BindingIdentifier 'in' Type 'as' Type ']' '+' '?' TypeAnnotation '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '[' BindingIdentifier 'in' Type 'as' Type ']' '-' '?' TypeAnnotation ';' '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '[' BindingIdentifier 'in' Type 'as' Type ']' '-' '?' TypeAnnotation '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '[' BindingIdentifier 'in' Type 'as' Type ']' '?' TypeAnnotation ';' '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '[' BindingIdentifier 'in' Type 'as' Type ']' '?' TypeAnnotation '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '[' BindingIdentifier 'in' Type 'as' Type ']' TypeAnnotation ';' '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '[' BindingIdentifier 'in' Type 'as' Type ']' TypeAnnotation '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '[' BindingIdentifier 'in' Type ']' '+' '?' TypeAnnotation ';' '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '[' BindingIdentifier 'in' Type ']' '+' '?' TypeAnnotation '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '[' BindingIdentifier 'in' Type ']' '-' '?' TypeAnnotation ';' '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '[' BindingIdentifier 'in' Type ']' '-' '?' TypeAnnotation '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '[' BindingIdentifier 'in' Type ']' '?' TypeAnnotation ';' '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '[' BindingIdentifier 'in' Type ']' '?' TypeAnnotation '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '[' BindingIdentifier 'in' Type ']' TypeAnnotation ';' '}'
+	int32(TsMappedType),              // MappedType : '{' .recoveryScope lookahead_StartOfMappedType '[' BindingIdentifier 'in' Type ']' TypeAnnotation '}'
+	0,                                // lookahead_StartOfMappedType :
+	0,                                // TupleElementType_list_Comma_separated : TupleElementType_list_Comma_separated ',' TupleElementType
+	0,                                // TupleElementType_list_Comma_separated : TupleElementType
+	int32(TsTupleType),               // TupleType : '[' TupleElementType_list_Comma_separated ',' ']'
+	int32(TsTupleType),               // TupleType : '[' TupleElementType_list_Comma_separated ']'
+	int32(TsTupleType),               // TupleType : '[' ']'
+	0,                                // TupleElementType : lookahead_notStartOfTupleElementName Type
+	int32(NamedTupleMember),          // TupleElementType : lookahead_StartOfTupleElementName IdentifierName '?' ':' Type
+	int32(NamedTupleMember),          // TupleElementType : lookahead_StartOfTupleElementName IdentifierName ':' Type
+	int32(TsRestType),                // TupleElementType : '...' lookahead_notStartOfTupleElementName Type
+	-1,                               // TupleElementType : '...' lookahead_StartOfTupleElementName IdentifierName '?' ':' Type
+	-1,                               // TupleElementType : '...' lookahead_StartOfTupleElementName IdentifierName ':' Type
+	0,                                // lookahead_StartOfTupleElementName :
+	0,                                // lookahead_notStartOfTupleElementName :
+	0,                                // StartOfTupleElementName : IdentifierName '?' ':'
+	0,                                // StartOfTupleElementName : IdentifierName ':'
+	0,                                // StartOfFunctionType : Modifiers BindingIdentifier ':'
+	0,                                // StartOfFunctionType : Modifiers BindingIdentifier ','
+	0,                                // StartOfFunctionType : Modifiers BindingIdentifier '?'
+	0,                                // StartOfFunctionType : Modifiers BindingIdentifier '='
+	0,                                // StartOfFunctionType : Modifiers BindingIdentifier ')' '=>'
+	0,                                // StartOfFunctionType : BindingIdentifier ':'
+	0,                                // StartOfFunctionType : BindingIdentifier ','
+	0,                                // StartOfFunctionType : BindingIdentifier '?'
+	0,                                // StartOfFunctionType : BindingIdentifier '='
+	0,                                // StartOfFunctionType : BindingIdentifier ')' '=>'
+	0,                                // StartOfFunctionType : Modifiers BindingPattern ':'
+	0,                                // StartOfFunctionType : Modifiers BindingPattern ','
+	0,                                // StartOfFunctionType : Modifiers BindingPattern '?'
+	0,                                // StartOfFunctionType : Modifiers BindingPattern '='
+	0,                                // StartOfFunctionType : Modifiers BindingPattern ')' '=>'
+	0,                                // StartOfFunctionType : BindingPattern ':'
+	0,                                // StartOfFunctionType : BindingPattern ','
+	0,                                // StartOfFunctionType : BindingPattern '?'
+	0,                                // StartOfFunctionType : BindingPattern '='
+	0,                                // StartOfFunctionType : BindingPattern ')' '=>'
+	0,                                // StartOfFunctionType : '...'
+	0,                                // StartOfFunctionType : 'this' ':'
+	0,                                // StartOfFunctionType : ')'
+	-1,                               // FunctionType : TypeParameters FunctionTypeParameterList '=>' Type
+	-1,                               // FunctionType : FunctionTypeParameterList '=>' Type
+	-1,                               // FunctionType_NoQuest : TypeParameters FunctionTypeParameterList '=>' Type_NoQuest
+	-1,                               // FunctionType_NoQuest : FunctionTypeParameterList '=>' Type_NoQuest
+	-1,                               // ConstructorType : 'abstract' 'new' TypeParameters ParameterList '=>' Type
+	-1,                               // ConstructorType : 'abstract' 'new' ParameterList '=>' Type
+	-1,                               // ConstructorType : 'new' TypeParameters ParameterList '=>' Type
+	-1,                               // ConstructorType : 'new' ParameterList '=>' Type
+	-1,                               // ConstructorType_NoQuest : 'abstract' 'new' TypeParameters ParameterList '=>' Type_NoQuest
+	-1,                               // ConstructorType_NoQuest : 'abstract' 'new' ParameterList '=>' Type_NoQuest
+	-1,                               // ConstructorType_NoQuest : 'new' TypeParameters ParameterList '=>' Type_NoQuest
+	-1,                               // ConstructorType_NoQuest : 'new' ParameterList '=>' Type_NoQuest
+	int32(TsTypeQuery),               // TypeQuery : 'typeof' TypeQueryExpression
+	int32(TsImportType),              // ImportType : ImportTypeStart .noLineBreak TypeArguments %prec resolveShift
+	int32(TsImportType),              // ImportType : ImportTypeStart .noLineBreak %prec resolveShift
+	-1,                               // ImportTypeStart : 'typeof' 'import' '(' Type ')'
+	int32(TsImportTypeStart),         // ImportTypeStart : 'import' '(' Type ')'
+	int32(TsImportTypeStart),         // ImportTypeStart : ImportTypeStart '.' IdentifierNameRef
+	0,                                // TypeQueryExpression : IdentifierNameRef
+	0,                                // TypeQueryExpression : TypeQueryExpression '.' IdentifierNameRef
+	int32(TsPropertySignature),       // PropertySignature : Modifiers PropertyName_WithoutNew '?' TypeAnnotation
+	int32(TsPropertySignature),       // PropertySignature : Modifiers PropertyName_WithoutNew '?'
+	int32(TsPropertySignature),       // PropertySignature : Modifiers PropertyName_WithoutNew TypeAnnotation
+	int32(TsPropertySignature),       // PropertySignature : Modifiers PropertyName_WithoutNew
+	int32(TsPropertySignature),       // PropertySignature : PropertyName_WithoutNew '?' TypeAnnotation
+	int32(TsPropertySignature),       // PropertySignature : PropertyName_WithoutNew '?'
+	int32(TsPropertySignature),       // PropertySignature : PropertyName_WithoutNew TypeAnnotation
+	int32(TsPropertySignature),       // PropertySignature : PropertyName_WithoutNew
+	-1,                               // PropertySignature : Modifiers 'new' '?' TypeAnnotation
+	-1,                               // PropertySignature : Modifiers 'new' '?'
+	-1,                               // PropertySignature : Modifiers 'new' TypeAnnotation
+	-1,                               // PropertySignature : Modifiers 'new'
+	-1,                               // PropertySignature : 'new' '?' TypeAnnotation
+	-1,                               // PropertySignature : 'new' '?'
+	-1,                               // PropertySignature : 'new' TypeAnnotation
+	-1,                               // PropertySignature : 'new'
+	int32(TsTypeAnnotation),          // TypeAnnotation : ':' Type
+	0,                                // FormalParameters : TypeParameters ParameterList TypeAnnotation
+	0,                                // FormalParameters : TypeParameters ParameterList
+	0,                                // FormalParameters : ParameterList TypeAnnotation
+	0,                                // FormalParameters : ParameterList
+	0,                                // FormalParameters_Await : TypeParameters ParameterList_Await TypeAnnotation
+	0,                                // FormalParameters_Await : TypeParameters ParameterList_Await
+	0,                                // FormalParameters_Await : ParameterList_Await TypeAnnotation
+	0,                                // FormalParameters_Await : ParameterList_Await
+	0,                                // FormalParameters_Yield : TypeParameters ParameterList_Yield TypeAnnotation
+	0,                                // FormalParameters_Yield : TypeParameters ParameterList_Yield
+	0,                                // FormalParameters_Yield : ParameterList_Yield TypeAnnotation
+	0,                                // FormalParameters_Yield : ParameterList_Yield
+	0,                                // FormalParameters_Yield_Await : TypeParameters ParameterList_Yield_Await TypeAnnotation
+	0,                                // FormalParameters_Yield_Await : TypeParameters ParameterList_Yield_Await
+	0,                                // FormalParameters_Yield_Await : ParameterList_Yield_Await TypeAnnotation
+	0,                                // FormalParameters_Yield_Await : ParameterList_Yield_Await
+	int32(TsCallSignature),           // CallSignature : TypeParameters ParameterList TypeAnnotation
+	int32(TsCallSignature),           // CallSignature : TypeParameters ParameterList
+	int32(TsCallSignature),           // CallSignature : ParameterList TypeAnnotation
+	int32(TsCallSignature),           // CallSignature : ParameterList
+	int32(Parameters),                // ParameterList : '(' Parameter_list_Comma_separated ',' ')'
+	int32(Parameters),                // ParameterList : '(' Parameter_list_Comma_separated ')'
+	int32(Parameters),                // ParameterList : '(' ')'
+	int32(Parameters),                // ParameterList_Await : '(' Parameter_Await_list_Comma_separated ',' ')'
+	int32(Parameters),                // ParameterList_Await : '(' Parameter_Await_list_Comma_separated ')'
+	int32(Parameters),                // ParameterList_Await : '(' ')'
+	int32(Parameters),                // ParameterList_Yield : '(' Parameter_Yield_list_Comma_separated ',' ')'
+	int32(Parameters),                // ParameterList_Yield : '(' Parameter_Yield_list_Comma_separated ')'
+	int32(Parameters),                // ParameterList_Yield : '(' ')'
+	int32(Parameters),                // ParameterList_Yield_Await : '(' Parameter_Yield_Await_list_Comma_separated ',' ')'
+	int32(Parameters),                // ParameterList_Yield_Await : '(' Parameter_Yield_Await_list_Comma_separated ')'
+	int32(Parameters),                // ParameterList_Yield_Await : '(' ')'
+	0,                                // Parameter_Await_list_Comma_separated : Parameter_Await_list_Comma_separated ',' Parameter_Await
+	0,                                // Parameter_Await_list_Comma_separated : Parameter_Await
+	0,                                // Parameter_Yield_Await_list_Comma_separated : Parameter_Yield_Await_list_Comma_separated ',' Parameter_Yield_Await
+	0,                                // Parameter_Yield_Await_list_Comma_separated : Parameter_Yield_Await
+	0,                                // Parameter_Yield_list_Comma_separated : Parameter_Yield_list_Comma_separated ',' Parameter_Yield
+	0,                                // Parameter_Yield_list_Comma_separated : Parameter_Yield
+	0,                                // Parameter_list_Comma_separated : Parameter_list_Comma_separated ',' Parameter
+	0,                                // Parameter_list_Comma_separated : Parameter
+	int32(Parameters),                // FunctionTypeParameterList : '(' lookahead_StartOfFunctionType Parameter_list_Comma_separated ',' ')'
+	int32(Parameters),                // FunctionTypeParameterList : '(' lookahead_StartOfFunctionType Parameter_list_Comma_separated ')'
+	int32(Parameters),                // FunctionTypeParameterList : '(' lookahead_StartOfFunctionType ')'
+	0,                                // lookahead_StartOfFunctionType :
+	-1,                               // Parameter : Modifiers BindingIdentifier '?' TypeAnnotation
+	-1,                               // Parameter : Modifiers BindingIdentifier '?'
+	int32(DefaultParameter),          // Parameter : Modifiers BindingIdentifier TypeAnnotation
+	int32(DefaultParameter),          // Parameter : Modifiers BindingIdentifier
+	-1,                               // Parameter : BindingIdentifier '?' TypeAnnotation
+	-1,                               // Parameter : BindingIdentifier '?'
+	int32(DefaultParameter),          // Parameter : BindingIdentifier TypeAnnotation
+	int32(DefaultParameter),          // Parameter : BindingIdentifier
+	-1,                               // Parameter : Modifiers BindingPattern '?' TypeAnnotation
+	-1,                               // Parameter : Modifiers BindingPattern '?'
+	int32(DefaultParameter),          // Parameter : Modifiers BindingPattern TypeAnnotation
+	int32(DefaultParameter),          // Parameter : Modifiers BindingPattern
+	-1,                               // Parameter : BindingPattern '?' TypeAnnotation
+	-1,                               // Parameter : BindingPattern '?'
+	int32(DefaultParameter),          // Parameter : BindingPattern TypeAnnotation
+	int32(DefaultParameter),          // Parameter : BindingPattern
+	int32(DefaultParameter),          // Parameter : Modifiers BindingIdentifier TypeAnnotation Initializer_In
+	int32(DefaultParameter),          // Parameter : Modifiers BindingIdentifier Initializer_In
+	int32(DefaultParameter),          // Parameter : BindingIdentifier TypeAnnotation Initializer_In
+	int32(DefaultParameter),          // Parameter : BindingIdentifier Initializer_In
+	int32(DefaultParameter),          // Parameter : Modifiers BindingPattern TypeAnnotation Initializer_In
+	int32(DefaultParameter),          // Parameter : Modifiers BindingPattern Initializer_In
+	int32(DefaultParameter),          // Parameter : BindingPattern TypeAnnotation Initializer_In
+	int32(DefaultParameter),          // Parameter : BindingPattern Initializer_In
+	int32(RestParameter),             // Parameter : '...' BindingIdentifier TypeAnnotation
+	int32(RestParameter),             // Parameter : '...' BindingIdentifier
+	int32(RestParameter),             // Parameter : '...' BindingPattern TypeAnnotation
+	int32(RestParameter),             // Parameter : '...' BindingPattern
+	int32(TsThisParameter),           // Parameter : 'this' TypeAnnotation
+	0,                                // Parameter : SyntaxError
+	-1,                               // Parameter_Await : Modifiers BindingIdentifier '?' TypeAnnotation
+	-1,                               // Parameter_Await : Modifiers BindingIdentifier '?'
+	int32(DefaultParameter),          // Parameter_Await : Modifiers BindingIdentifier TypeAnnotation
+	int32(DefaultParameter),          // Parameter_Await : Modifiers BindingIdentifier
+	-1,                               // Parameter_Await : BindingIdentifier '?' TypeAnnotation
+	-1,                               // Parameter_Await : BindingIdentifier '?'
+	int32(DefaultParameter),          // Parameter_Await : BindingIdentifier TypeAnnotation
+	int32(DefaultParameter),          // Parameter_Await : BindingIdentifier
+	-1,                               // Parameter_Await : Modifiers BindingPattern_Await '?' TypeAnnotation
+	-1,                               // Parameter_Await : Modifiers BindingPattern_Await '?'
+	int32(DefaultParameter),          // Parameter_Await : Modifiers BindingPattern_Await TypeAnnotation
+	int32(DefaultParameter),          // Parameter_Await : Modifiers BindingPattern_Await
+	-1,                               // Parameter_Await : BindingPattern_Await '?' TypeAnnotation
+	-1,                               // Parameter_Await : BindingPattern_Await '?'
+	int32(DefaultParameter),          // Parameter_Await : BindingPattern_Await TypeAnnotation
+	int32(DefaultParameter),          // Parameter_Await : BindingPattern_Await
+	int32(DefaultParameter),          // Parameter_Await : Modifiers BindingIdentifier TypeAnnotation Initializer_In_Await
+	int32(DefaultParameter),          // Parameter_Await : Modifiers BindingIdentifier Initializer_In_Await
+	int32(DefaultParameter),          // Parameter_Await : BindingIdentifier TypeAnnotation Initializer_In_Await
+	int32(DefaultParameter),          // Parameter_Await : BindingIdentifier Initializer_In_Await
+	int32(DefaultParameter),          // Parameter_Await : Modifiers BindingPattern_Await TypeAnnotation Initializer_In_Await
+	int32(DefaultParameter),          // Parameter_Await : Modifiers BindingPattern_Await Initializer_In_Await
+	int32(DefaultParameter),          // Parameter_Await : BindingPattern_Await TypeAnnotation Initializer_In_Await
+	int32(DefaultParameter),          // Parameter_Await : BindingPattern_Await Initializer_In_Await
+	int32(RestParameter),             // Parameter_Await : '...' BindingIdentifier TypeAnnotation
+	int32(RestParameter),             // Parameter_Await : '...' BindingIdentifier
+	int32(RestParameter),             // Parameter_Await : '...' BindingPattern_Await TypeAnnotation
+	int32(RestParameter),             // Parameter_Await : '...' BindingPattern_Await
+	int32(TsThisParameter),           // Parameter_Await : 'this' TypeAnnotation
+	0,                                // Parameter_Await : SyntaxError
+	-1,                               // Parameter_Yield : Modifiers BindingIdentifier '?' TypeAnnotation
+	-1,                               // Parameter_Yield : Modifiers BindingIdentifier '?'
+	int32(DefaultParameter),          // Parameter_Yield : Modifiers BindingIdentifier TypeAnnotation
+	int32(DefaultParameter),          // Parameter_Yield : Modifiers BindingIdentifier
+	-1,                               // Parameter_Yield : BindingIdentifier '?' TypeAnnotation
+	-1,                               // Parameter_Yield : BindingIdentifier '?'
+	int32(DefaultParameter),          // Parameter_Yield : BindingIdentifier TypeAnnotation
+	int32(DefaultParameter),          // Parameter_Yield : BindingIdentifier
+	-1,                               // Parameter_Yield : Modifiers BindingPattern_Yield '?' TypeAnnotation
+	-1,                               // Parameter_Yield : Modifiers BindingPattern_Yield '?'
+	int32(DefaultParameter),          // Parameter_Yield : Modifiers BindingPattern_Yield TypeAnnotation
+	int32(DefaultParameter),          // Parameter_Yield : Modifiers BindingPattern_Yield
+	-1,                               // Parameter_Yield : BindingPattern_Yield '?' TypeAnnotation
+	-1,                               // Parameter_Yield : BindingPattern_Yield '?'
+	int32(DefaultParameter),          // Parameter_Yield : BindingPattern_Yield TypeAnnotation
+	int32(DefaultParameter),          // Parameter_Yield : BindingPattern_Yield
+	int32(DefaultParameter),          // Parameter_Yield : Modifiers BindingIdentifier TypeAnnotation Initializer_In_Yield
+	int32(DefaultParameter),          // Parameter_Yield : Modifiers BindingIdentifier Initializer_In_Yield
+	int32(DefaultParameter),          // Parameter_Yield : BindingIdentifier TypeAnnotation Initializer_In_Yield
+	int32(DefaultParameter),          // Parameter_Yield : BindingIdentifier Initializer_In_Yield
+	int32(DefaultParameter),          // Parameter_Yield : Modifiers BindingPattern_Yield TypeAnnotation Initializer_In_Yield
+	int32(DefaultParameter),          // Parameter_Yield : Modifiers BindingPattern_Yield Initializer_In_Yield
+	int32(DefaultParameter),          // Parameter_Yield : BindingPattern_Yield TypeAnnotation Initializer_In_Yield
+	int32(DefaultParameter),          // Parameter_Yield : BindingPattern_Yield Initializer_In_Yield
+	int32(RestParameter),             // Parameter_Yield : '...' BindingIdentifier TypeAnnotation
+	int32(RestParameter),             // Parameter_Yield : '...' BindingIdentifier
+	int32(RestParameter),             // Parameter_Yield : '...' BindingPattern_Yield TypeAnnotation
+	int32(RestParameter),             // Parameter_Yield : '...' BindingPattern_Yield
+	int32(TsThisParameter),           // Parameter_Yield : 'this' TypeAnnotation
+	0,                                // Parameter_Yield : SyntaxError
+	-1,                               // Parameter_Yield_Await : Modifiers BindingIdentifier '?' TypeAnnotation
+	-1,                               // Parameter_Yield_Await : Modifiers BindingIdentifier '?'
+	int32(DefaultParameter),          // Parameter_Yield_Await : Modifiers BindingIdentifier TypeAnnotation
+	int32(DefaultParameter),          // Parameter_Yield_Await : Modifiers BindingIdentifier
+	-1,                               // Parameter_Yield_Await : BindingIdentifier '?' TypeAnnotation
+	-1,                               // Parameter_Yield_Await : BindingIdentifier '?'
+	int32(DefaultParameter),          // Parameter_Yield_Await : BindingIdentifier TypeAnnotation
+	int32(DefaultParameter),          // Parameter_Yield_Await : BindingIdentifier
+	-1,                               // Parameter_Yield_Await : Modifiers BindingPattern_Yield_Await '?' TypeAnnotation
+	-1,                               // Parameter_Yield_Await : Modifiers BindingPattern_Yield_Await '?'
+	int32(DefaultParameter),          // Parameter_Yield_Await : Modifiers BindingPattern_Yield_Await TypeAnnotation
+	int32(DefaultParameter),          // Parameter_Yield_Await : Modifiers BindingPattern_Yield_Await
+	-1,                               // Parameter_Yield_Await : BindingPattern_Yield_Await '?' TypeAnnotation
+	-1,                               // Parameter_Yield_Await : BindingPattern_Yield_Await '?'
+	int32(DefaultParameter),          // Parameter_Yield_Await : BindingPattern_Yield_Await TypeAnnotation
+	int32(DefaultParameter),          // Parameter_Yield_Await : BindingPattern_Yield_Await
+	int32(DefaultParameter),          // Parameter_Yield_Await : Modifiers BindingIdentifier TypeAnnotation Initializer_In_Yield_Await
+	int32(DefaultParameter),          // Parameter_Yield_Await : Modifiers BindingIdentifier Initializer_In_Yield_Await
+	int32(DefaultParameter),          // Parameter_Yield_Await : BindingIdentifier TypeAnnotation Initializer_In_Yield_Await
+	int32(DefaultParameter),          // Parameter_Yield_Await : BindingIdentifier Initializer_In_Yield_Await
+	int32(DefaultParameter),          // Parameter_Yield_Await : Modifiers BindingPattern_Yield_Await TypeAnnotation Initializer_In_Yield_Await
+	int32(DefaultParameter),          // Parameter_Yield_Await : Modifiers BindingPattern_Yield_Await Initializer_In_Yield_Await
+	int32(DefaultParameter),          // Parameter_Yield_Await : BindingPattern_Yield_Await TypeAnnotation Initializer_In_Yield_Await
+	int32(DefaultParameter),          // Parameter_Yield_Await : BindingPattern_Yield_Await Initializer_In_Yield_Await
+	int32(RestParameter),             // Parameter_Yield_Await : '...' BindingIdentifier TypeAnnotation
+	int32(RestParameter),             // Parameter_Yield_Await : '...' BindingIdentifier
+	int32(RestParameter),             // Parameter_Yield_Await : '...' BindingPattern_Yield_Await TypeAnnotation
+	int32(RestParameter),             // Parameter_Yield_Await : '...' BindingPattern_Yield_Await
+	int32(TsThisParameter),           // Parameter_Yield_Await : 'this' TypeAnnotation
+	0,                                // Parameter_Yield_Await : SyntaxError
+	int32(TsPublic),                  // AccessibilityModifier : 'public'
+	int32(TsPrivate),                 // AccessibilityModifier : 'private'
+	int32(TsProtected),               // AccessibilityModifier : 'protected'
+	int32(TsConstructSignature),      // ConstructSignature : Modifiers 'new' TypeParameters ParameterList TypeAnnotation
+	int32(TsConstructSignature),      // ConstructSignature : Modifiers 'new' TypeParameters ParameterList
+	int32(TsConstructSignature),      // ConstructSignature : Modifiers 'new' ParameterList TypeAnnotation
+	int32(TsConstructSignature),      // ConstructSignature : Modifiers 'new' ParameterList
+	int32(TsConstructSignature),      // ConstructSignature : 'new' TypeParameters ParameterList TypeAnnotation
+	int32(TsConstructSignature),      // ConstructSignature : 'new' TypeParameters ParameterList
+	int32(TsConstructSignature),      // ConstructSignature : 'new' ParameterList TypeAnnotation
+	int32(TsConstructSignature),      // ConstructSignature : 'new' ParameterList
+	-1,                               // IndexSignature : Modifiers '[' IdentifierName ':' Type ']' TypeAnnotation
+	-1,                               // IndexSignature : '[' IdentifierName ':' Type ']' TypeAnnotation
+	-1,                               // IndexSignature_WithDeclare : Modifiers_WithDeclare '[' IdentifierName ':' Type ']' TypeAnnotation
+	-1,                               // IndexSignature_WithDeclare : '[' IdentifierName ':' Type ']' TypeAnnotation
+	int32(TsMethodSignature),         // MethodSignature : Modifiers PropertyName_WithoutNew '?' FormalParameters
+	int32(TsMethodSignature),         // MethodSignature : Modifiers PropertyName_WithoutNew FormalParameters
+	int32(TsMethodSignature),         // MethodSignature : PropertyName_WithoutNew '?' FormalParameters
+	int32(TsMethodSignature),         // MethodSignature : PropertyName_WithoutNew FormalParameters
+	-1,                               // MethodSignature : Modifiers 'new' '?' FormalParameters
+	-1,                               // MethodSignature : 'new' '?' FormalParameters
+	int32(Getter),                    // AccessorSignature : Modifiers 'get' PropertyName '(' ')' TypeAnnotationopt
+	int32(Getter),                    // AccessorSignature : 'get' PropertyName '(' ')' TypeAnnotationopt
+	int32(Setter),                    // AccessorSignature : Modifiers 'set' PropertyName '(' PropertySetParameterList ')'
+	int32(Setter),                    // AccessorSignature : 'set' PropertyName '(' PropertySetParameterList ')'
+	int32(TsTypeAliasDecl),           // TypeAliasDeclaration : 'type' BindingIdentifier TypeParameters '=' Type ';'
+	int32(TsTypeAliasDecl),           // TypeAliasDeclaration : 'type' BindingIdentifier '=' Type ';'
+	int32(TsInterface),               // InterfaceDeclaration : 'interface' BindingIdentifier TypeParametersopt InterfaceExtendsClause ObjectType
+	int32(TsInterface),               // InterfaceDeclaration : 'interface' BindingIdentifier TypeParametersopt ObjectType
+	int32(TsInterfaceExtends),        // InterfaceExtendsClause : 'extends' TypeReference_list_Comma_separated
+	-1,                               // EnumDeclaration : 'const' 'enum' BindingIdentifier EnumBody
+	int32(TsEnum),                    // EnumDeclaration : 'enum' BindingIdentifier EnumBody
+	int32(TsEnumBody),                // EnumBody : '{' .recoveryScope EnumMember_list_Comma_separated ',' '}'
+	int32(TsEnumBody),                // EnumBody : '{' .recoveryScope EnumMember_list_Comma_separated '}'
+	int32(TsEnumBody),                // EnumBody : '{' .recoveryScope '}'
+	0,                                // EnumMember_list_Comma_separated : EnumMember_list_Comma_separated ',' EnumMember
+	0,                                // EnumMember_list_Comma_separated : EnumMember
+	int32(TsEnumMember),              // EnumMember : PropertyName
+	int32(TsEnumMember),              // EnumMember : PropertyName '=' AssignmentExpression_In
+	int32(TsEnumMember),              // EnumMember : PropertyName '=' BrokenExpr
+	int32(TsNamespace),               // NamespaceDeclaration : 'namespace' IdentifierPath NamespaceBody
+	int32(TsNamespace),               // NamespaceDeclaration : 'module' IdentifierPath NamespaceBody
+	0,                                // IdentifierPath : BindingIdentifier
+	0,                                // IdentifierPath : IdentifierPath '.' BindingIdentifier
+	int32(TsNamespaceBody),           // NamespaceBody : '{' .recoveryScope ModuleItemList '}'
+	int32(TsNamespaceBody),           // NamespaceBody : '{' .recoveryScope '}'
+	int32(TsImportAliasDecl),         // ImportAliasDeclaration : 'import' lookahead_notStartOfTypeImport BindingIdentifier '=' EntityName ';'
+	0,                                // EntityName : NamespaceName
+	int32(TsAmbientVar),              // AmbientDeclaration : 'declare' AmbientVariableDeclaration
+	int32(TsAmbientFunc),             // AmbientDeclaration : 'declare' AmbientFunctionDeclaration
+	int32(TsAmbientClass),            // AmbientDeclaration : 'declare' AmbientClassDeclaration
+	int32(TsAmbientInterface),        // AmbientDeclaration : 'declare' AmbientInterfaceDeclaration
+	int32(TsAmbientEnum),             // AmbientDeclaration : 'declare' AmbientEnumDeclaration
+	int32(TsAmbientNamespace),        // AmbientDeclaration : 'declare' AmbientNamespaceDeclaration
+	int32(TsAmbientModule),           // AmbientDeclaration : 'declare' AmbientModuleDeclaration
+	int32(TsAmbientGlobal),           // AmbientDeclaration : 'declare' AmbientGlobalDeclaration
+	int32(TsAmbientTypeAlias),        // AmbientDeclaration : 'declare' TypeAliasDeclaration
+	-1,                               // AmbientVariableDeclaration : 'var' AmbientBindingList ';'
+	-1,                               // AmbientVariableDeclaration : 'let' AmbientBindingList ';'
+	-1,                               // AmbientVariableDeclaration : 'const' AmbientBindingList ';'
+	0,                                // AmbientBindingList : AmbientBinding
+	0,                                // AmbientBindingList : AmbientBindingList ',' AmbientBinding
+	int32(TsAmbientBinding),          // AmbientBinding : BindingIdentifier TypeAnnotation Initializer_In
+	int32(TsAmbientBinding),          // AmbientBinding : BindingIdentifier TypeAnnotation
+	int32(TsAmbientBinding),          // AmbientBinding : BindingIdentifier Initializer_In
+	int32(TsAmbientBinding),          // AmbientBinding : BindingIdentifier
+	0,                                // AmbientFunctionDeclaration : 'function' BindingIdentifier FormalParameters ';'
+	0,                                // AmbientClassDeclaration : Modifiers 'class' BindingIdentifier TypeParametersopt ClassTail
+	0,                                // AmbientClassDeclaration : 'class' BindingIdentifier TypeParametersopt ClassTail
+	0,                                // AmbientInterfaceDeclaration : Modifiers 'interface' BindingIdentifier TypeParametersopt InterfaceExtendsClause ObjectType
+	0,                                // AmbientInterfaceDeclaration : Modifiers 'interface' BindingIdentifier TypeParametersopt ObjectType
+	0,                                // AmbientInterfaceDeclaration : 'interface' BindingIdentifier TypeParametersopt InterfaceExtendsClause ObjectType
+	0,                                // AmbientInterfaceDeclaration : 'interface' BindingIdentifier TypeParametersopt ObjectType
+	-1,                               // AmbientEnumDeclaration : 'const' 'enum' BindingIdentifier EnumBody
+	0,                                // AmbientEnumDeclaration : 'enum' BindingIdentifier EnumBody
+	0,                                // AmbientNamespaceDeclaration : 'namespace' IdentifierPath AmbientNamespaceBody
+	0,                                // AmbientGlobalDeclaration : 'global' '{' .recoveryScope ModuleBodyopt '}'
+	0,                                // AmbientGlobalDeclaration : 'global' ';'
+	0,                                // AmbientNamespaceBody : '{' .recoveryScope AmbientNamespaceElement_list '}'
+	0,                                // AmbientNamespaceBody : '{' .recoveryScope '}'
+	0,                                // AmbientNamespaceElement_list : AmbientNamespaceElement_list AmbientNamespaceElement
+	0,                                // AmbientNamespaceElement_list : AmbientNamespaceElement
+	int32(TsAmbientVar),              // AmbientNamespaceElement : 'export' AmbientVariableDeclaration
+	int32(TsAmbientVar),              // AmbientNamespaceElement : AmbientVariableDeclaration
+	int32(TsAmbientFunc),             // AmbientNamespaceElement : 'export' AmbientFunctionDeclaration
+	int32(TsAmbientFunc),             // AmbientNamespaceElement : AmbientFunctionDeclaration
+	int32(TsAmbientClass),            // AmbientNamespaceElement : 'export' AmbientClassDeclaration
+	int32(TsAmbientClass),            // AmbientNamespaceElement : AmbientClassDeclaration
+	int32(TsAmbientInterface),        // AmbientNamespaceElement : 'export' AmbientInterfaceDeclaration
+	int32(TsAmbientInterface),        // AmbientNamespaceElement : AmbientInterfaceDeclaration
+	int32(TsAmbientEnum),             // AmbientNamespaceElement : 'export' AmbientEnumDeclaration
+	int32(TsAmbientEnum),             // AmbientNamespaceElement : AmbientEnumDeclaration
+	int32(TsAmbientNamespace),        // AmbientNamespaceElement : 'export' AmbientNamespaceDeclaration
+	int32(TsAmbientNamespace),        // AmbientNamespaceElement : AmbientNamespaceDeclaration
+	int32(TsAmbientModule),           // AmbientNamespaceElement : 'export' AmbientModuleDeclaration
+	int32(TsAmbientModule),           // AmbientNamespaceElement : AmbientModuleDeclaration
+	int32(TsAmbientImportAlias),      // AmbientNamespaceElement : 'export' ImportAliasDeclaration
+	int32(TsAmbientImportAlias),      // AmbientNamespaceElement : ImportAliasDeclaration
+	int32(TsAmbientTypeAlias),        // AmbientNamespaceElement : 'export' TypeAliasDeclaration
+	int32(TsAmbientTypeAlias),        // AmbientNamespaceElement : TypeAliasDeclaration
+	int32(TsAmbientExportDecl),       // AmbientNamespaceElement : 'export' ExportClause ';'
+	-1,                               // AmbientModuleDeclaration : 'module' StringLiteral AmbientModuleBody
+	-1,                               // AmbientModuleDeclaration : 'module' StringLiteral ';'
+	0,                                // AmbientModuleDeclaration : 'module' IdentifierPath AmbientModuleBody
+	0,                                // AmbientModuleDeclaration : 'module' IdentifierPath ';'
+	0,                                // AmbientModuleBody : '{' .recoveryScope AmbientModuleElement_list '}'
+	0,                                // AmbientModuleBody : '{' .recoveryScope '}'
+	0,                                // AmbientModuleElement_list : AmbientModuleElement_list AmbientModuleElement
+	0,                                // AmbientModuleElement_list : AmbientModuleElement
+	0,                                // AmbientModuleElement : ImportDeclaration
+	int32(TsAmbientVar),              // AmbientModuleElement : 'export' AmbientVariableDeclaration
+	int32(TsAmbientVar),              // AmbientModuleElement : AmbientVariableDeclaration
+	int32(TsAmbientFunc),             // AmbientModuleElement : 'export' AmbientFunctionDeclaration
+	int32(TsAmbientFunc),             // AmbientModuleElement : AmbientFunctionDeclaration
+	int32(TsAmbientClass),            // AmbientModuleElement : 'export' AmbientClassDeclaration
+	int32(TsAmbientClass),            // AmbientModuleElement : AmbientClassDeclaration
+	int32(TsAmbientInterface),        // AmbientModuleElement : 'export' AmbientInterfaceDeclaration
+	int32(TsAmbientInterface),        // AmbientModuleElement : AmbientInterfaceDeclaration
+	int32(TsAmbientEnum),             // AmbientModuleElement : 'export' AmbientEnumDeclaration
+	int32(TsAmbientEnum),             // AmbientModuleElement : AmbientEnumDeclaration
+	int32(TsAmbientNamespace),        // AmbientModuleElement : 'export' AmbientNamespaceDeclaration
+	int32(TsAmbientNamespace),        // AmbientModuleElement : AmbientNamespaceDeclaration
+	int32(TsAmbientModule),           // AmbientModuleElement : 'export' AmbientModuleDeclaration
+	int32(TsAmbientModule),           // AmbientModuleElement : AmbientModuleDeclaration
+	int32(TsAmbientImportAlias),      // AmbientModuleElement : 'export' ImportAliasDeclaration
+	int32(TsAmbientImportAlias),      // AmbientModuleElement : ImportAliasDeclaration
+	int32(TsAmbientTypeAlias),        // AmbientModuleElement : 'export' TypeAliasDeclaration
+	int32(TsAmbientTypeAlias),        // AmbientModuleElement : TypeAliasDeclaration
+	int32(TsAmbientExportDecl),       // AmbientModuleElement : 'export' ExportClause ';'
+	int32(ExportDefault),             // AmbientModuleElement : 'export' 'default' AssignmentExpression_In_NoFuncClass ';'
+	int32(TsExportAssignment),        // AmbientModuleElement : 'export' '=' AssignmentExpression_In_NoFuncClass ';'
+	0,                                // Elisionopt : Elision
+	0,                                // Elisionopt :
+	0,                                // TypeAnnotationopt : TypeAnnotation
+	0,                                // TypeAnnotationopt :
+	0,                                // Initializeropt : Initializer
+	0,                                // Initializeropt :
+	0,                                // Initializeropt_Await : Initializer_Await
+	0,                                // Initializeropt_Await :
+	0,                                // Initializeropt_In : Initializer_In
+	0,                                // Initializeropt_In :
+	0,                                // Initializeropt_In_Await : Initializer_In_Await
+	0,                                // Initializeropt_In_Await :
+	0,                                // Initializeropt_In_Yield : Initializer_In_Yield
+	0,                                // Initializeropt_In_Yield :
+	0,                                // Initializeropt_In_Yield_Await : Initializer_In_Yield_Await
+	0,                                // Initializeropt_In_Yield_Await :
+	0,                                // Initializeropt_Yield : Initializer_Yield
+	0,                                // Initializeropt_Yield :
+	0,                                // Initializeropt_Yield_Await : Initializer_Yield_Await
+	0,                                // Initializeropt_Yield_Await :
+	0,                                // BindingRestElementopt : BindingRestElement
+	0,                                // BindingRestElementopt :
+	0,                                // ElementElisionopt : ElementElision
+	0,                                // ElementElisionopt :
+	0,                                // Expressionopt_In : Expression_In
+	0,                                // Expressionopt_In :
+	0,                                // Expressionopt_In_Await : Expression_In_Await
+	0,                                // Expressionopt_In_Await :
+	0,                                // Expressionopt_In_Yield : Expression_In_Yield
+	0,                                // Expressionopt_In_Yield :
+	0,                                // Expressionopt_In_Yield_Await : Expression_In_Yield_Await
+	0,                                // Expressionopt_In_Yield_Await :
+	0,                                // CaseClausesopt : CaseClauses
+	0,                                // CaseClausesopt :
+	0,                                // CaseClausesopt_Await : CaseClauses_Await
+	0,                                // CaseClausesopt_Await :
+	0,                                // CaseClausesopt_Yield : CaseClauses_Yield
+	0,                                // CaseClausesopt_Yield :
+	0,                                // CaseClausesopt_Yield_Await : CaseClauses_Yield_Await
+	0,                                // CaseClausesopt_Yield_Await :
+	0,                                // TypeParametersopt : TypeParameters
+	0,                                // TypeParametersopt :
+	0,                                // ModuleBodyopt : ModuleBody
+	0,                                // ModuleBodyopt :
+	0,                                // AssignmentExpressionopt_In : AssignmentExpression_In
+	0,                                // AssignmentExpressionopt_In :
+	0,                                // AssignmentExpressionopt_In_Await : AssignmentExpression_In_Await
+	0,                                // AssignmentExpressionopt_In_Await :
+	0,                                // AssignmentExpressionopt_In_Yield : AssignmentExpression_In_Yield
+	0,                                // AssignmentExpressionopt_In_Yield :
+	0,                                // AssignmentExpressionopt_In_Yield_Await : AssignmentExpression_In_Yield_Await
+	0,                                // AssignmentExpressionopt_In_Yield_Await :
+	-1,                               // lookahead rule
+	-1,                               // lookahead rule
+	-1,                               // lookahead rule
+	-1,                               // lookahead rule
+	-1,                               // lookahead rule
+	-1,                               // lookahead rule
+	-1,                               // lookahead rule
+	-1,                               // lookahead rule
+	-1,                               // lookahead rule
+}
+
 // set(precede SEMICOLON) = ERROR, IDENTIFIER, PRIVATEIDENTIFIER, AWAIT, BREAK, CASE, CATCH, CLASS, CONST, CONTINUE, DEBUGGER, DEFAULT, DELETE, DO, ELSE, EXPORT, EXTENDS, FINALLY, FOR, FUNCTION, IF, IMPORT, IN, INSTANCEOF, NEW, RETURN, SUPER, SWITCH, THIS, THROW, TRY, TYPEOF, VAR, VOID, WHILE, WITH, YIELD, ENUM, NULL, TRUE, FALSE, AS, ASSERT, ASSERTS, ASYNC, FROM, GET, LET, OF, SET, STATIC, TARGET, SATISFIES, OUT, IMPLEMENTS, INTERFACE, PRIVATE, PROTECTED, PUBLIC, ANY, UNKNOWN, BOOLEAN, NUMBER, STRING, SYMBOL, BIGINT, UNDEFINED, NEVER, OBJECT, ABSTRACT, CONSTRUCTOR, DECLARE, GLOBAL, IS, MODULE, NAMESPACE, OVERRIDE, REQUIRE, TYPE, ACCESSOR, READONLY, KEYOF, UNIQUE, INFER, LBRACE, RBRACE, LPAREN, RPAREN, RBRACK, SEMICOLON, GT, PLUSPLUS, MINUSMINUS, EXCL, QUEST, COLON, ASSIGNGT, NUMERICLITERAL, STRINGLITERAL, NOSUBSTITUTIONTEMPLATE, TEMPLATETAIL, REGULAREXPRESSIONLITERAL
 var beforeSemi = [...]token.Type{
 	2, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
