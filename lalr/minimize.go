@@ -16,6 +16,9 @@ const (
 	sigError     = 3
 	sigLookahead = 4
 	sigPartition = 5
+	sigStart     = 6
+	sigFinal     = 7
+	sigMarker    = 8
 )
 
 func computeRuleClasses(t *Tables, g *Grammar) []int {
@@ -56,11 +59,37 @@ func computeRuleClasses(t *Tables, g *Grammar) []int {
 	return ruleClass
 }
 
-func partitionStatesByAction(t *Tables, ruleClass []int, numStates int) ([]int, *container.IntSliceSet) {
+func partitionStatesByAction(t *Tables, g *Grammar, ruleClass []int, numStates int) ([]int, *container.IntSliceSet) {
+	// The generated code refers to some states by number: input start states (which must
+	// keep their index), final states (reaching one terminates parsing), and states listed
+	// in markers (e.g. for semicolon insertion or error recovery in the JS grammar). Such
+	// states get a unique signature suffix so that they never merge with other states.
+	var actionSignature func(s int) []int
+	extra := make([][]int, numStates)
+	for i := range g.Inputs {
+		extra[i] = append(extra[i], sigStart, i)
+	}
+	for i, s := range t.FinalStates {
+		extra[s] = append(extra[s], sigFinal, i)
+	}
+	for m, marker := range t.Markers {
+		if marker.Name == "lr0" || marker.Name == "greedy" {
+			// These markers only affect the construction of states.
+			continue
+		}
+		for _, s := range marker.States {
+			extra[s] = append(extra[s], sigMarker, m)
+		}
+	}
+
 	// Initial partitions based on reductions and actions
 	// Signature of a state:
-	//    Action[s], plus LALR entries substituting rule -> ruleClass
+	//    Action[s], plus LALR entries substituting rule -> ruleClass, plus "extra"
 	stateSignature := func(s int) []int {
+		ret := actionSignature(s)
+		return append(ret, extra[s]...)
+	}
+	actionSignature = func(s int) []int {
 		act := t.Action[s]
 		if act >= 0 {
 			return []int{sigReduce, ruleClass[act]}
@@ -161,7 +190,7 @@ func refinePartitions(partition []int, partitions *container.IntSliceSet, t *Tab
 func minimize(t *Tables, g *Grammar) {
 	numStates := t.NumStates
 	ruleClass := computeRuleClasses(t, g)
-	partition, partitions := partitionStatesByAction(t, ruleClass, numStates)
+	partition, partitions := partitionStatesByAction(t, g, ruleClass, numStates)
 	partition, partitions = refinePartitions(partition, partitions, t)
 
 	if partitions.Len() == numStates {

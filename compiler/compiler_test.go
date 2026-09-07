@@ -728,8 +728,8 @@ S2 : a ;
   State 1 -> State 12 on symbol 'S1'
   State 2 -> State 13 on symbol 'S2'
 `,
-			wantOn: `Transitions for lookaheadCollision (minimize ON) (States: 12):
-  State 10 -> State 11 on symbol 'eoi'
+			wantOn: `Transitions for lookaheadCollision (minimize ON) (States: 14):
+  State 10 -> State 13 on symbol 'eoi'
   State 0 -> State 3 on symbol 'a'
   State 1 -> State 5 on symbol 'a'
   State 2 -> State 6 on symbol 'a'
@@ -740,7 +740,7 @@ S2 : a ;
   State 4 -> State 7 on symbol 'R2'
   State 4 -> State 9 on symbol 'lookahead_S2'
   State 1 -> State 11 on symbol 'S1'
-  State 2 -> State 11 on symbol 'S2'
+  State 2 -> State 12 on symbol 'S2'
 `,
 		},
 		{
