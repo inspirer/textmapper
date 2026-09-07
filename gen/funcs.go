@@ -39,6 +39,7 @@ var funcMap = template.FuncMap{
 	"ref":                 ref,
 	"minus1":              minus1,
 	"sub":                 sub,
+	"mul":                 func(a, b int) int { return a * b },
 	"go_parser_action":    goParserAction,
 	"cc_parser_action":    ccParserAction,
 	"cc_action_func":      ccActionFunc,

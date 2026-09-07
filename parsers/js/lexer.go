@@ -95,12 +95,12 @@ restart:
 		if uint(l.ch) < tmRuneClassLen {
 			ch = int(tmRuneClass[l.ch])
 		} else if l.ch < 0 {
-			state = int(tmLexerAction[state*tmNumClasses])
+			state = int(tmLexerAction[state])
 			continue
 		} else {
 			ch = mapRune(l.ch)
 		}
-		state = int(tmLexerAction[state*tmNumClasses+ch])
+		state = int(tmLexerAction[state+ch])
 		if state > tmFirstRule {
 			hash = hash*uint32(31) + uint32(l.ch)
 			if l.ch == '\n' {

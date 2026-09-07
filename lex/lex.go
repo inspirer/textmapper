@@ -165,6 +165,29 @@ func (t *Tables) CompressedMap(start rune) []CompressedEntry {
 	return ret
 }
 
+// DfaRows returns the transition table with target states multiplied by stride, so that
+// the generated lexer can index rows directly (tmLexerAction[row+class]) instead of
+// computing state*NumSymbols on every step.
+func (t *Tables) DfaRows(stride int) []int {
+	ret := make([]int, len(t.Dfa))
+	for i, v := range t.Dfa {
+		if v >= 0 {
+			v *= stride
+		}
+		ret[i] = v
+	}
+	return ret
+}
+
+// StateMapRows returns StateMap with states multiplied by stride (see DfaRows).
+func (t *Tables) StateMapRows(stride int) []int {
+	ret := make([]int, len(t.StateMap))
+	for i, v := range t.StateMap {
+		ret[i] = v * stride
+	}
+	return ret
+}
+
 // ActionStart returns the index of the very first action.
 func (t *Tables) ActionStart() int {
 	return -1 - len(t.Backtrack)

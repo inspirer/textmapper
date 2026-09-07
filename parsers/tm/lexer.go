@@ -85,7 +85,7 @@ restart:
 		if uint(l.ch) < tmRuneClassLen {
 			ch = int(tmRuneClass[l.ch])
 		} else if l.ch < 0 {
-			state = int(tmLexerAction[state*tmNumClasses])
+			state = int(tmLexerAction[state])
 			if state > tmFirstRule && state < 0 {
 				state = (-1 - state) * 2
 				backupRule = tmBacktracking[state]
@@ -97,7 +97,7 @@ restart:
 		} else {
 			ch = 1
 		}
-		state = int(tmLexerAction[state*tmNumClasses+ch])
+		state = int(tmLexerAction[state+ch])
 		if state > tmFirstRule {
 			if state < 0 {
 				state = (-1 - state) * 2

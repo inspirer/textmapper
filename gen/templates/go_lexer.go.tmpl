@@ -113,7 +113,7 @@ restart:
 {{ end -}}
 	l.tokenOffset = l.offset
 
-	state := {{ if gt (len .Lexer.StartConditions) 1 }}tmStateMap[l.State]{{else}}{{index .Lexer.Tables.StateMap 0}}{{end}}
+	state := {{ if gt (len .Lexer.StartConditions) 1 }}tmStateMap[l.State]{{else}}{{mul (index .Lexer.Tables.StateMap 0) .Lexer.Tables.NumSymbols}}{{end}}
 {{ if .Lexer.ClassActions -}}
 	hash := uint32(0)
 {{ end -}}
@@ -129,7 +129,7 @@ restart:
 		if uint(l.ch) < tmRuneClassLen {
 			ch = int(tmRuneClass[l.ch])
 		} else if l.ch < 0 {
-			state = int(tmLexerAction[state*tmNumClasses])
+			state = int(tmLexerAction[state])
 {{ if .Lexer.Tables.Backtrack -}}
 			if state > tmFirstRule && state < 0 {
 				state = (-1 - state) * 2
@@ -149,7 +149,7 @@ restart:
 			ch = {{.Lexer.Tables.LastMapEntry.Target}}
 {{ end -}}
 		}
-		state = int(tmLexerAction[state*tmNumClasses+ch])
+		state = int(tmLexerAction[state+ch])
 		if state > tmFirstRule {
 {{ if .Lexer.Tables.Backtrack -}}
 			if state < 0 {

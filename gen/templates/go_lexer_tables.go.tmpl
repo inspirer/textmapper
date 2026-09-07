@@ -34,14 +34,14 @@ func mapRune(c rune) int {
 }
 
 // Latin-1 characters.
-var tmRuneClass = []uint{{$runeType}}{
+var tmRuneClass = [...]uint{{$runeType}}{
 {{- int_array (.Lexer.Tables.SymbolArr 256) "\t" 79 -}}
 }
 
 const tmRuneClassLen = 256
 const tmFirstRule = {{.Lexer.Tables.ActionStart}}
 
-var tmRuneRanges = []mapRange{
+var tmRuneRanges = [...]mapRange{
 {{range .Lexer.Tables.CompressedMap 256}}	{ {{- .Lo}}, {{.Hi}}, {{.DefaultVal}}, {{if .Vals}}[]uint{{$runeType}}{
 {{- int_array .Vals "\t\t" 78}}	}{{else}}nil{{end -}} },
 {{end -}}
@@ -49,7 +49,7 @@ var tmRuneRanges = []mapRange{
 
 {{else -}}
 {{ $runeArr := .Lexer.Tables.SymbolArr 0 -}}
-var tmRuneClass = []uint{{$runeType}}{
+var tmRuneClass = [...]uint{{$runeType}}{
 {{- int_array $runeArr "\t" 79 -}}
 }
 
@@ -58,26 +58,31 @@ const tmFirstRule = {{.Lexer.Tables.ActionStart}}
 
 {{end -}}
 {{ if gt (len .Lexer.StartConditions) 1 -}}
-var tmStateMap = []int{
-{{- int_array .Lexer.Tables.StateMap "\t" 79 -}}
+// tmStateMap maps start conditions to rows of tmLexerAction.
+var tmStateMap = [...]int{
+{{- int_array (.Lexer.Tables.StateMapRows .Lexer.Tables.NumSymbols) "\t" 79 -}}
 }
 
 {{end -}}
 {{if .Lexer.RuleToken -}}
-var tmToken = []{{template "tokenType" .}}{
+var tmToken = [...]{{template "tokenType" .}}{
 {{- int_array .Lexer.RuleToken "\t" 79 -}}
 }
 
 {{end -}}
-var tmLexerAction = []int{{bits_per_element .Lexer.Tables.Dfa}}{
-{{- int_array .Lexer.Tables.Dfa "\t" 79 -}}
+{{ $dfa := .Lexer.Tables.DfaRows .Lexer.Tables.NumSymbols -}}
+// tmLexerAction is the DFA transition table. Rows are indexed by state*tmNumClasses and
+// hold either the next row (>= 0) or an action (<= tmFirstRule, or a backtracking
+// checkpoint in between).
+var tmLexerAction = [...]int{{bits_per_element $dfa}}{
+{{- int_array $dfa "\t" 79 -}}
 }
 
 {{- if .Lexer.Tables.Backtrack}}
 
-var tmBacktracking = []int{
+var tmBacktracking = [...]int{
 {{- range .Lexer.Tables.Backtrack}}
-	{{.Action}}, {{.NextState}},{{if .Details}} // {{.Details}}{{end}}
+	{{.Action}}, {{mul .NextState $.Lexer.Tables.NumSymbols}},{{if .Details}} // {{.Details}}{{end}}
 {{- end}}
 }
 {{- end}}
