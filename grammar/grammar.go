@@ -238,6 +238,7 @@ type Lexer struct {
 	InvalidToken    int
 	RuleToken       []int    // maps actions into tokens; empty if the mapping is 1:1
 	UsedFlags       []string // list of used flags inside mapped tokens
+	Accel           *lex.Accelerators
 }
 
 // Rule is a parser rule with a semantic action.
@@ -290,7 +291,6 @@ type Options struct {
 	MaxLookahead           int    // If set, all lookaheads expressions will be validated to fit this limit.
 	OptInstantiationSuffix string // Suffix that triggers auto-instantiation optional nonterminals (e.g. "opt" or "_opt").
 	AliasIncludesOptSuffix bool   // Whether the default alias of a non-terminal symbol includes the opt suffix.
-
 
 	DisableSyntax  []string // Lists grammar syntaxes that should be disabled.
 	ExpansionLimit int      // Error if a rule expansion produces more than this many rules.

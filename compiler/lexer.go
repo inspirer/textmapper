@@ -111,6 +111,18 @@ func (c *lexerCompiler) compile(file ast.File) {
 		out.RuleToken = nil
 	}
 
+	if out.Tables != nil {
+		// Space tokens without semantic actions are silently skipped by the generated
+		// lexer, so runs of them can be consumed without stepping the DFA.
+		skippable := make(map[int]bool)
+		for _, a := range out.Actions {
+			if a.Space && a.Code == "" {
+				skippable[a.Action] = true
+			}
+		}
+		out.Accel = out.Tables.Accelerators(func(action int) bool { return skippable[action] })
+	}
+
 	for _, p := range c.patterns {
 		for name, unused := range p.unused {
 			c.Errorf(unused, "unused pattern '%v'", name)

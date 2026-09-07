@@ -3,6 +3,7 @@
 package simple
 
 import (
+	"math/bits"
 	"strings"
 	"unicode/utf8"
 
@@ -83,6 +84,48 @@ restart:
 				l.ch = r
 			} else {
 				l.ch = -1 // EOI
+			}
+
+			if t := tmLexerAction[state+tmNumClasses]; t != 0 {
+				// Accelerator: consume the run of characters on which this state loops
+				// back to itself, eight bytes at a time.
+				tbl := &tmScanTables[t-1]
+				src := l.source
+				start := l.offset
+				o := start
+				for o+8 <= len(src) {
+					w := uint64(tbl[src[o]]) | uint64(tbl[src[o+1]])<<8 |
+						uint64(tbl[src[o+2]])<<16 | uint64(tbl[src[o+3]])<<24 |
+						uint64(tbl[src[o+4]])<<32 | uint64(tbl[src[o+5]])<<40 |
+						uint64(tbl[src[o+6]])<<48 | uint64(tbl[src[o+7]])<<56
+					if w != 0 {
+						o += bits.TrailingZeros64(w) >> 3
+						goto scanned
+					}
+					o += 8
+				}
+				for o < len(src) && tbl[src[o]] == 0 {
+					o++
+				}
+			scanned:
+				if o != start {
+					if tmScanNewline[t-1] {
+						l.line += strings.Count(src[start:o], "\n")
+					}
+					l.offset = o
+					l.scanOffset = o
+					if o < len(src) {
+						r, w := rune(src[o]), 1
+						if r >= 0x80 {
+							// not ASCII
+							r, w = utf8.DecodeRuneInString(src[o:])
+						}
+						l.scanOffset += w
+						l.ch = r
+					} else {
+						l.ch = -1 // EOI
+					}
+				}
 			}
 		}
 	}

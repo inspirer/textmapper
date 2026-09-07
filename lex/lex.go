@@ -167,16 +167,32 @@ func (t *Tables) CompressedMap(start rune) []CompressedEntry {
 
 // DfaRows returns the transition table with target states multiplied by stride, so that
 // the generated lexer can index rows directly (tmLexerAction[row+class]) instead of
-// computing state*NumSymbols on every step.
-func (t *Tables) DfaRows(stride int) []int {
-	ret := make([]int, len(t.Dfa))
-	for i, v := range t.Dfa {
-		if v >= 0 {
-			v *= stride
+// computing state*NumSymbols on every step. If extra is not nil, each row gets an
+// additional trailing column holding extra[state] (and stride must be NumSymbols+1).
+func (t *Tables) DfaRows(stride int, extra []int) []int {
+	numStates := len(t.Dfa) / t.NumSymbols
+	ret := make([]int, 0, numStates*stride)
+	for s := 0; s < numStates; s++ {
+		for _, v := range t.Dfa[s*t.NumSymbols : (s+1)*t.NumSymbols] {
+			if v >= 0 {
+				v *= stride
+			}
+			ret = append(ret, v)
 		}
-		ret[i] = v
+		if extra != nil {
+			ret = append(ret, extra[s])
+		}
 	}
 	return ret
+}
+
+// Stride returns the length of a row in DfaRows: one column per symbol class plus one for
+// the self-loop accelerator index, if there are any.
+func (t *Tables) Stride(accel *Accelerators) int {
+	if accel.HasSelfLoops() {
+		return t.NumSymbols + 1
+	}
+	return t.NumSymbols
 }
 
 // StateMapRows returns StateMap with states multiplied by stride (see DfaRows).

@@ -32,6 +32,7 @@ var funcMap = template.FuncMap{
 	"has_prefix":          strings.HasPrefix,
 	"sum":                 sum,
 	"string_switch":       asStringSwitch,
+	"byte_string_switch":  asByteStringSwitch,
 	"quote":               strconv.Quote,
 	"join":                strings.Join,
 	"concat":              concat,
@@ -229,7 +230,19 @@ type stringSwitchCase struct {
 	Action int
 }
 
+// asStringSwitch builds a keyword switch keyed by the rune-based hash used by the
+// TypeScript and C++ lexers.
 func asStringSwitch(m map[string]int) stringSwitch {
+	return buildStringSwitch(m, stringHash)
+}
+
+// asByteStringSwitch builds a keyword switch keyed by the byte-based hash used by the Go
+// lexers (tmHash).
+func asByteStringSwitch(m map[string]int) stringSwitch {
+	return buildStringSwitch(m, byteStringHash)
+}
+
+func buildStringSwitch(m map[string]int, hashFunc func(string) uint32) stringSwitch {
 	size := uint32(8)
 	for int(size) < len(m) {
 		size *= 2
@@ -244,7 +257,7 @@ func asStringSwitch(m map[string]int) stringSwitch {
 	index := make(map[uint32]int)
 	ret := stringSwitch{Size: size}
 	for _, str := range list {
-		hash := stringHash(str)
+		hash := hashFunc(str)
 		rng := hash % size
 		i, ok := index[rng]
 		if !ok {
@@ -268,6 +281,17 @@ func stringHash(s string) uint32 {
 	var hash uint32
 	for _, r := range s {
 		hash = hash*uint32(31) + uint32(r)
+	}
+	return hash
+}
+
+// byteStringHash must match tmHash in the generated Go lexers. Hashing bytes (rather than
+// runes) is fine since the hash only narrows down keyword candidates before an exact
+// string comparison.
+func byteStringHash(s string) uint32 {
+	var hash uint32
+	for i := 0; i < len(s); i++ {
+		hash = hash*uint32(31) + uint32(s[i])
 	}
 	return hash
 }

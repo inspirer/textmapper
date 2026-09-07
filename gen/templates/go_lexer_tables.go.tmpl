@@ -60,7 +60,7 @@ const tmFirstRule = {{.Lexer.Tables.ActionStart}}
 {{ if gt (len .Lexer.StartConditions) 1 -}}
 // tmStateMap maps start conditions to rows of tmLexerAction.
 var tmStateMap = [...]int{
-{{- int_array (.Lexer.Tables.StateMapRows .Lexer.Tables.NumSymbols) "\t" 79 -}}
+{{- int_array (.Lexer.Tables.StateMapRows (.Lexer.Tables.Stride .Lexer.Accel)) "\t" 79 -}}
 }
 
 {{end -}}
@@ -70,10 +70,14 @@ var tmToken = [...]{{template "tokenType" .}}{
 }
 
 {{end -}}
-{{ $dfa := .Lexer.Tables.DfaRows .Lexer.Tables.NumSymbols -}}
-// tmLexerAction is the DFA transition table. Rows are indexed by state*tmNumClasses and
+{{ $stride := .Lexer.Tables.Stride .Lexer.Accel -}}
+{{ $dfa := .Lexer.Tables.DfaRows $stride .Lexer.Accel.SelfLoop -}}
+// tmLexerAction is the DFA transition table. Rows are indexed by state*tmLexerStride and
 // hold either the next row (>= 0) or an action (<= tmFirstRule, or a backtracking
-// checkpoint in between).
+// checkpoint in between).{{if .Lexer.Accel.HasSelfLoops}} The last column of each row is the 1-based index of the
+// tmScanTables entry for the state, or 0.{{end}}
+const tmLexerStride = {{$stride}}
+
 var tmLexerAction = [...]int{{bits_per_element $dfa}}{
 {{- int_array $dfa "\t" 79 -}}
 }
@@ -82,7 +86,32 @@ var tmLexerAction = [...]int{{bits_per_element $dfa}}{
 
 var tmBacktracking = [...]int{
 {{- range .Lexer.Tables.Backtrack}}
-	{{.Action}}, {{mul .NextState $.Lexer.Tables.NumSymbols}},{{if .Details}} // {{.Details}}{{end}}
+	{{.Action}}, {{mul .NextState $stride}},{{if .Details}} // {{.Details}}{{end}}
 {{- end}}
 }
+{{- end}}
+{{- if .Lexer.Accel.HasSpaceSkip}}
+
+// tmSpaceSkip[startCondition] is a 128-bit set of ASCII bytes that always form a
+// one-character space token, so runs of them can be skipped without running the DFA.
+var tmSpaceSkip = [...][2]uint64{
+{{- range .Lexer.Accel.SpaceSkip}}
+	{ {{- printf "%#x, %#x" (index . 0) (index . 1) -}} },
+{{- end}}
+}
+{{- end}}
+{{- if .Lexer.Accel.HasSelfLoops}}
+
+// tmScanTables[i][b] == 0 iff byte b keeps the DFA in the state(s) referring to table i,
+// which lets the lexer consume runs of such bytes without stepping the DFA.
+var tmScanTables = [...][256]uint8{
+{{- range $i, $set := .Lexer.Accel.ByteSets}}
+	{
+{{- int_array ($.Lexer.Accel.ByteSet $i) "\t\t" 78 -}}
+	},
+{{- end}}
+}
+
+// tmScanNewline[i] reports whether tmScanTables[i] contains '\n'.
+var tmScanNewline = [...]bool{ {{- range $i, $v := .Lexer.Accel.HasNewline}}{{if $i}}, {{end}}{{$v}}{{end -}} }
 {{- end}}

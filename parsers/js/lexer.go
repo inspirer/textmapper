@@ -3,6 +3,7 @@
 package js
 
 import (
+	"math/bits"
 	"strings"
 	"unicode/utf8"
 
@@ -85,11 +86,43 @@ func (l *Lexer) Next() token.Type {
 
 	prevLine := l.tokenLine
 restart:
+	if uint(l.ch) < 128 && tmSpaceSkip[l.State][l.ch>>6]&(1<<(uint(l.ch)&63)) != 0 {
+		// Accelerator: skip a run of characters that each form a one-character space
+		// token in the current start condition.
+		set := &tmSpaceSkip[l.State]
+		src := l.source
+		o := l.offset
+		for {
+			if src[o] == '\n' {
+				l.line++
+			}
+			o++
+			if o == len(src) {
+				break
+			}
+			c := src[o]
+			if c >= 128 || set[c>>6]&(1<<(c&63)) == 0 {
+				break
+			}
+		}
+		l.offset = o
+		l.scanOffset = o
+		if o < len(src) {
+			r, w := rune(src[o]), 1
+			if r >= 0x80 {
+				// not ASCII
+				r, w = utf8.DecodeRuneInString(src[o:])
+			}
+			l.scanOffset += w
+			l.ch = r
+		} else {
+			l.ch = -1 // EOI
+		}
+	}
 	l.tokenLine = l.line
 	l.tokenOffset = l.offset
 
 	state := tmStateMap[l.State]
-	hash := uint32(0)
 	for state >= 0 {
 		var ch int
 		if uint(l.ch) < tmRuneClassLen {
@@ -102,7 +135,6 @@ restart:
 		}
 		state = int(tmLexerAction[state+ch])
 		if state > tmFirstRule {
-			hash = hash*uint32(31) + uint32(l.ch)
 			if l.ch == '\n' {
 				l.line++
 			}
@@ -121,12 +153,55 @@ restart:
 			} else {
 				l.ch = -1 // EOI
 			}
+
+			if t := tmLexerAction[state+tmNumClasses]; t != 0 {
+				// Accelerator: consume the run of characters on which this state loops
+				// back to itself, eight bytes at a time.
+				tbl := &tmScanTables[t-1]
+				src := l.source
+				start := l.offset
+				o := start
+				for o+8 <= len(src) {
+					w := uint64(tbl[src[o]]) | uint64(tbl[src[o+1]])<<8 |
+						uint64(tbl[src[o+2]])<<16 | uint64(tbl[src[o+3]])<<24 |
+						uint64(tbl[src[o+4]])<<32 | uint64(tbl[src[o+5]])<<40 |
+						uint64(tbl[src[o+6]])<<48 | uint64(tbl[src[o+7]])<<56
+					if w != 0 {
+						o += bits.TrailingZeros64(w) >> 3
+						goto scanned
+					}
+					o += 8
+				}
+				for o < len(src) && tbl[src[o]] == 0 {
+					o++
+				}
+			scanned:
+				if o != start {
+					if tmScanNewline[t-1] {
+						l.line += strings.Count(src[start:o], "\n")
+					}
+					l.offset = o
+					l.scanOffset = o
+					if o < len(src) {
+						r, w := rune(src[o]), 1
+						if r >= 0x80 {
+							// not ASCII
+							r, w = utf8.DecodeRuneInString(src[o:])
+						}
+						l.scanOffset += w
+						l.ch = r
+					} else {
+						l.ch = -1 // EOI
+					}
+				}
+			}
 		}
 	}
 
 	rule := tmFirstRule - state
 	switch rule {
 	case 6:
+		hash := tmHash(l.source[l.tokenOffset:l.offset])
 		hh := hash & 127
 		switch hh {
 		case 1:
@@ -740,6 +815,16 @@ func (l *Lexer) rewind(offset int) {
 	} else {
 		l.ch = -1 // EOI
 	}
+}
+
+// tmHash computes the hash of a token's text, which the keyword switches use to
+// narrow down the candidates before comparing strings.
+func tmHash(s string) uint32 {
+	var hash uint32
+	for i := 0; i < len(s); i++ {
+		hash = hash*31 + uint32(s[i])
+	}
+	return hash
 }
 
 func (l *Lexer) pushState(newState int) {
