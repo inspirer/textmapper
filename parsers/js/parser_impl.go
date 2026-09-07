@@ -62,23 +62,26 @@ func (p *Parser) parse(ctx context.Context, start, end int16, stream *TokenStrea
 			entry.sym.symbol = tmRuleSymbol[rule]
 			rhs := stack[len(stack)-ln:]
 			stack = stack[:len(stack)-ln]
-			for ln > 0 && rhs[ln-1].sym.offset == rhs[ln-1].sym.endoffset {
-				ln--
+			// Note: trimming trailing empty symbols via a shrinking slice (rather than
+			// an index) lets the compiler drop the bounds checks below.
+			nonEmpty := rhs
+			for len(nonEmpty) > 0 && nonEmpty[len(nonEmpty)-1].sym.offset == nonEmpty[len(nonEmpty)-1].sym.endoffset {
+				nonEmpty = nonEmpty[:len(nonEmpty)-1]
 			}
-			if ln == 0 {
+			if len(nonEmpty) == 0 {
 				if p.next.symbol == noToken {
 					p.next = stream.next(stack, end)
 				}
 				entry.sym.offset, entry.sym.endoffset = p.next.offset, p.next.offset
 			} else {
-				entry.sym.offset = rhs[0].sym.offset
-				entry.sym.endoffset = rhs[ln-1].sym.endoffset
+				entry.sym.offset = nonEmpty[0].sym.offset
+				entry.sym.endoffset = nonEmpty[len(nonEmpty)-1].sym.endoffset
 			}
 			p.applyRule(ctx, rule, &entry, rhs, stream, &s)
 			if debugSyntax {
 				fmt.Printf("reduced to: %v\n", symbolName(entry.sym.symbol))
 			}
-			state = gotoState(stack[len(stack)-1].state, entry.sym.symbol)
+			state = gotoNT(stack[len(stack)-1].state, entry.sym.symbol)
 			entry.state = state
 			stack = append(stack, entry)
 

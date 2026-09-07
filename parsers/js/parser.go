@@ -104,7 +104,7 @@ func reduceAll(stack []stackEntry, state int16, symbol int32, endState int16) (i
 					stack2 = stack2alloc[:0]
 				}
 			}
-			state = gotoState(state, symbol)
+			state = gotoNT(state, symbol)
 			stack2 = append(stack2, state)
 		} else {
 			return state, action < -1
@@ -113,14 +113,22 @@ func reduceAll(stack []stackEntry, state int16, symbol int32, endState int16) (i
 	return state, symbol == eoiToken
 }
 
+// gotoNT returns the state to go to after reducing to a nonterminal. Unlike
+// gotoState, it must not be called for terminals, which keeps it small enough
+// for the compiler to inline it into the parsing loops.
+func gotoNT(state int16, symbol int32) int16 {
+	const numTokens = 158
+	pos := tmGoto[symbol-numTokens] + int32(state)
+	if pos >= 0 && pos < tmTableLen && tmCheck[pos] == int16(state) {
+		return int16(tmTable[pos])
+	}
+	return int16(tmDefGoto[symbol-numTokens])
+}
+
 func gotoState(state int16, symbol int32) int16 {
 	const numTokens = 158
 	if symbol >= numTokens {
-		pos := tmGoto[symbol-numTokens] + int32(state)
-		if pos >= 0 && pos < tmTableLen && tmCheck[pos] == int16(state) {
-			return int16(tmTable[pos])
-		}
-		return int16(tmDefGoto[symbol-numTokens])
+		return gotoNT(state, symbol)
 	}
 
 	// Shifting a token.
@@ -331,7 +339,7 @@ func lookahead(ctx context.Context, ts *TokenStream, next symbol, start, end int
 			if debugSyntax {
 				fmt.Printf("lookahead reduced to: %v\n", symbolName(entry.sym.symbol))
 			}
-			state = gotoState(stack[len(stack)-1].state, entry.sym.symbol)
+			state = gotoNT(stack[len(stack)-1].state, entry.sym.symbol)
 			entry.state = state
 			stack = append(stack, entry)
 

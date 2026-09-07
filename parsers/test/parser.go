@@ -106,14 +106,15 @@ func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) (int
 			var entry stackEntry
 			entry.sym.symbol = tmRuleSymbol[rule]
 			rhs := stack[len(stack)-ln:]
-			if ln == 0 {
+			nonEmpty := rhs
+			if len(nonEmpty) == 0 {
 				if p.next.symbol == noToken {
 					p.fetchNext(ctx, lexer, stack)
 				}
 				entry.sym.offset, entry.sym.endoffset = p.next.offset, p.next.offset
 			} else {
-				entry.sym.offset = rhs[0].sym.offset
-				entry.sym.endoffset = rhs[ln-1].sym.endoffset
+				entry.sym.offset = nonEmpty[0].sym.offset
+				entry.sym.endoffset = nonEmpty[len(nonEmpty)-1].sym.endoffset
 			}
 			if err := p.applyRule(ctx, rule, &entry, stack, lexer, &s); err != nil {
 				return nil, err
@@ -122,7 +123,7 @@ func (p *Parser) parse(ctx context.Context, start, end int16, lexer *Lexer) (int
 			if debugSyntax {
 				fmt.Printf("reduced to: %v\n", symbolName(entry.sym.symbol))
 			}
-			state = gotoState(stack[len(stack)-1].state, entry.sym.symbol)
+			state = gotoNT(stack[len(stack)-1].state, entry.sym.symbol)
 			entry.state = state
 			stack = append(stack, entry)
 
@@ -191,6 +192,11 @@ func lalr(action, next int32) int32 {
 		}
 	}
 	return tmLalr[a+1]
+}
+
+// gotoNT returns the state to go to after reducing to a nonterminal.
+func gotoNT(state int16, symbol int32) int16 {
+	return gotoState(state, symbol)
 }
 
 func gotoState(state int16, symbol int32) int16 {
@@ -315,7 +321,7 @@ func lookahead(ctx context.Context, l *Lexer, next symbol, start, end int16, s *
 			if debugSyntax {
 				fmt.Printf("lookahead reduced to: %v\n", symbolName(entry.sym.symbol))
 			}
-			state = gotoState(stack[len(stack)-1].state, entry.sym.symbol)
+			state = gotoNT(stack[len(stack)-1].state, entry.sym.symbol)
 			entry.state = state
 			stack = append(stack, entry)
 

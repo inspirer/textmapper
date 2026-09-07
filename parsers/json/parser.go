@@ -92,14 +92,15 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) error {
 			var entry stackEntry
 			entry.sym.symbol = tmRuleSymbol[rule]
 			rhs := stack[len(stack)-ln:]
-			if ln == 0 {
+			nonEmpty := rhs
+			if len(nonEmpty) == 0 {
 				if p.next.symbol == noToken {
 					p.fetchNext(lexer, stack)
 				}
 				entry.sym.offset, entry.sym.endoffset = p.next.offset, p.next.offset
 			} else {
-				entry.sym.offset = rhs[0].sym.offset
-				entry.sym.endoffset = rhs[ln-1].sym.endoffset
+				entry.sym.offset = nonEmpty[0].sym.offset
+				entry.sym.endoffset = nonEmpty[len(nonEmpty)-1].sym.endoffset
 			}
 			if err := p.applyRule(rule, &entry, stack, lexer); err != nil {
 				return err
@@ -108,7 +109,7 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) error {
 			if debugSyntax {
 				fmt.Printf("reduced to: %v\n", symbolName(entry.sym.symbol))
 			}
-			state = gotoState(stack[len(stack)-1].state, entry.sym.symbol)
+			state = gotoNT(stack[len(stack)-1].state, entry.sym.symbol)
 			entry.state = state
 			stack = append(stack, entry)
 
@@ -153,14 +154,22 @@ func (p *Parser) parse(start, end int8, lexer *Lexer) error {
 	return nil
 }
 
+// gotoNT returns the state to go to after reducing to a nonterminal. Unlike
+// gotoState, it must not be called for terminals, which keeps it small enough
+// for the compiler to inline it into the parsing loops.
+func gotoNT(state int8, symbol int32) int8 {
+	const numTokens = 19
+	pos := tmGoto[symbol-numTokens] + int32(state)
+	if pos >= 0 && pos < tmTableLen && tmCheck[pos] == int8(state) {
+		return int8(tmTable[pos])
+	}
+	return int8(tmDefGoto[symbol-numTokens])
+}
+
 func gotoState(state int8, symbol int32) int8 {
 	const numTokens = 19
 	if symbol >= numTokens {
-		pos := tmGoto[symbol-numTokens] + int32(state)
-		if pos >= 0 && pos < tmTableLen && tmCheck[pos] == int8(state) {
-			return int8(tmTable[pos])
-		}
-		return int8(tmDefGoto[symbol-numTokens])
+		return gotoNT(state, symbol)
 	}
 
 	// Shifting a token.
@@ -246,7 +255,7 @@ func lookahead(l *Lexer, next symbol, start, end int8) bool {
 			if debugSyntax {
 				fmt.Printf("lookahead reduced to: %v\n", symbolName(entry.sym.symbol))
 			}
-			state = gotoState(stack[len(stack)-1].state, entry.sym.symbol)
+			state = gotoNT(stack[len(stack)-1].state, entry.sym.symbol)
 			entry.state = state
 			stack = append(stack, entry)
 

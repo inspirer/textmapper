@@ -98,17 +98,20 @@ func (p *Parser) parse(ctx context.Context, start, end int16, stream *TokenStrea
 			var entry stackEntry
 			entry.sym.symbol = tmRuleSymbol[rule]
 			rhs := stack[len(stack)-ln:]
-			for ln > 0 && rhs[ln-1].sym.offset == rhs[ln-1].sym.endoffset {
-				ln--
+			nonEmpty := rhs
+			// Note: trimming trailing empty symbols via a shrinking slice (rather than
+			// an index) lets the compiler drop the bounds checks below.
+			for len(nonEmpty) > 0 && nonEmpty[len(nonEmpty)-1].sym.offset == nonEmpty[len(nonEmpty)-1].sym.endoffset {
+				nonEmpty = nonEmpty[:len(nonEmpty)-1]
 			}
-			if ln == 0 {
+			if len(nonEmpty) == 0 {
 				if p.next.symbol == noToken {
 					p.next = stream.next(stack, end)
 				}
 				entry.sym.offset, entry.sym.endoffset = p.next.offset, p.next.offset
 			} else {
-				entry.sym.offset = rhs[0].sym.offset
-				entry.sym.endoffset = rhs[ln-1].sym.endoffset
+				entry.sym.offset = nonEmpty[0].sym.offset
+				entry.sym.endoffset = nonEmpty[len(nonEmpty)-1].sym.endoffset
 			}
 			if err := p.applyRule(ctx, rule, &entry, stack, stream); err != nil {
 				return err
@@ -117,7 +120,7 @@ func (p *Parser) parse(ctx context.Context, start, end int16, stream *TokenStrea
 			if debugSyntax {
 				fmt.Printf("reduced to: %v\n", symbolName(entry.sym.symbol))
 			}
-			state = gotoState(stack[len(stack)-1].state, entry.sym.symbol)
+			state = gotoNT(stack[len(stack)-1].state, entry.sym.symbol)
 			entry.state = state
 			stack = append(stack, entry)
 
@@ -226,7 +229,7 @@ func reduceAll(stack []stackEntry, state int16, symbol int32, endState int16) (i
 					stack2 = stack2alloc[:0]
 				}
 			}
-			state = gotoState(state, symbol)
+			state = gotoNT(state, symbol)
 			stack2 = append(stack2, state)
 		} else {
 			return state, action < -1
@@ -342,14 +345,22 @@ func (p *Parser) recoverFromError(ctx context.Context, stream *TokenStream, stac
 	}
 }
 
+// gotoNT returns the state to go to after reducing to a nonterminal. Unlike
+// gotoState, it must not be called for terminals, which keeps it small enough
+// for the compiler to inline it into the parsing loops.
+func gotoNT(state int16, symbol int32) int16 {
+	const numTokens = 83
+	pos := tmGoto[symbol-numTokens] + int32(state)
+	if pos >= 0 && pos < tmTableLen && tmCheck[pos] == int16(state) {
+		return int16(tmTable[pos])
+	}
+	return int16(tmDefGoto[symbol-numTokens])
+}
+
 func gotoState(state int16, symbol int32) int16 {
 	const numTokens = 83
 	if symbol >= numTokens {
-		pos := tmGoto[symbol-numTokens] + int32(state)
-		if pos >= 0 && pos < tmTableLen && tmCheck[pos] == int16(state) {
-			return int16(tmTable[pos])
-		}
-		return int16(tmDefGoto[symbol-numTokens])
+		return gotoNT(state, symbol)
 	}
 
 	// Shifting a token.
