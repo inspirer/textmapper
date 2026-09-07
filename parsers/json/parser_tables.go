@@ -40,15 +40,15 @@ func symbolName(sym int32) string {
 	return fmt.Sprintf("nonterminal(%d)", sym)
 }
 
-var tmDefGoto = []int32{
+var tmDefGoto = [...]int32{
 	46, 40, 9, 10, 11, 12, 13, 24, 25, 14, 16, 17, 18, 28, 31, 26,
 }
 
-var tmGoto = []int32{
+var tmGoto = [...]int32{
 	-35, -35, 14, 6, -35, 11, -35, 16, -35, 18, -35, -35, -35, -35, -35, -35,
 }
 
-var tmDefAct = []int32{
+var tmDefAct = [...]int32{
 	-1, 20, -1, 17, 18, 10, 11, 12, 13, 0, 15, 32, 14, -1, 16, 28, -1, -1, -1,
 	-1, -1, 27, 33, -1, 25, -1, -1, 29, -1, -1, -1, -1, 22, 19, 8, 9, 1, 2, 3, 4,
 	24, 6, 5, 7, 26, 21, -1, -1, -1,
@@ -56,7 +56,7 @@ var tmDefAct = []int32{
 
 const tmActionBase = -19
 
-var tmAction = []int32{
+var tmAction = [...]int32{
 	13, -19, -2, -19, -19, -19, -19, -19, -19, -19, -19, -19, -19, 3, -19, -19,
 	-1, -4, 8, 15, 13, -19, -19, 16, -19, 30, 17, -19, 18, 28, 9, 33, -19, -19,
 	-19, -19, -19, -19, -19, -19, -19, -19, -19, -19, -19, -19, 31, -19, -19,
@@ -64,24 +64,24 @@ var tmAction = []int32{
 
 const tmTableLen = 48
 
-var tmTable = []int8{
+var tmTable = [...]int8{
 	36, -23, -4, 31, 30, -21, -22, 47, -5, -6, -24, -7, -8, -9, -10, 36, 15, -4,
 	35, -25, -34, -35, -31, -5, -6, -25, -7, -8, -9, -10, 36, -50, -4, 34, 27,
 	41, -47, -32, -36, -37, 42, -38, -39, -40, 0, -41, 44, 43,
 }
 
-var tmCheck = []int8{
+var tmCheck = [...]int8{
 	2, 5, 4, 5, 5, 2, 7, 1, 10, 11, 2, 13, 14, 15, 16, 2, 2, 4, 3, 10, 3, 3, 6,
 	10, 11, 10, 13, 14, 15, 16, 2, 0, 4, 3, 20, 29, 3, 7, 10, 11, 29, 13, 14, 15,
 	-1, 17, 30, 29,
 }
 
-var tmRuleLen = []int8{
+var tmRuleLen = [...]int8{
 	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 0, 5, 4, 0, 3, 1,
 	3, 3, 1, 3, 1, 0, 0, 0, 0, 0, 0,
 }
 
-var tmRuleSymbol = []int32{
+var tmRuleSymbol = [...]int32{
 	19, 20, 20, 20, 20, 20, 20, 20, 20, 20, 21, 21, 21, 21, 21, 21, 21, 21, 21,
 	22, 23, 24, 24, 25, 26, 27, 27, 28, 29, 29, 30, 30, 31, 32, 33, 34, 25,
 }
@@ -126,9 +126,9 @@ var tmRuleType = [...]NodeType{
 }
 
 // set(first JSONValue_A) = LBRACE, LBRACK, JSONSTRING, JSONNUMBER, NULL, TRUE, FALSE, CHAR_A
-var Literals = []token.Type{
+var Literals = [...]token.Type{
 	2, 4, 10, 11, 13, 14, 15, 16,
 }
 
 // set(follow ERROR) =
-var afterErr = []token.Type{}
+var afterErr = [...]token.Type{}

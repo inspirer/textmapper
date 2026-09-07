@@ -35,60 +35,60 @@ func symbolName(sym int32) string {
 }
 
 {{ if .Parser.Tables.Optimized -}}
-var tmDefGoto = []int32{
+var tmDefGoto = [...]int32{
 {{- int_array .Parser.Tables.Optimized.DefGoto "\t" 79 -}}
 }
 
-var tmGoto = []int32{
+var tmGoto = [...]int32{
 {{- int_array .Parser.Tables.Optimized.Goto "\t" 79 -}}
 }
 
-var tmDefAct = []int32{
+var tmDefAct = [...]int32{
 {{- int_array .Parser.Tables.Optimized.DefAct "\t" 79 -}}
 }
 
 const tmActionBase = {{.Parser.Tables.Optimized.Base}}
 
-var tmAction = []int32{
+var tmAction = [...]int32{
 {{- int_array .Parser.Tables.Optimized.Action "\t" 79 -}}
 }
 
 const tmTableLen = {{len .Parser.Tables.Optimized.Table}}
 
-var tmTable = []int{{bits_per_element .Parser.Tables.Optimized.Table}}{
+var tmTable = [...]int{{bits_per_element .Parser.Tables.Optimized.Table}}{
 {{- int_array .Parser.Tables.Optimized.Table "\t" 79 -}}
 }
 
-var tmCheck = []int{{bits_per_element .Parser.Tables.Optimized.Check}}{
+var tmCheck = [...]int{{bits_per_element .Parser.Tables.Optimized.Check}}{
 {{- int_array .Parser.Tables.Optimized.Check "\t" 79 -}}
 }
 
 {{ else -}}
-var tmAction = []int32{
+var tmAction = [...]int32{
 {{- int_array .Parser.Tables.Action "\t" 79 -}}
 }
 {{- if .Parser.Tables.Lalr}}
 
-var tmLalr = []int32{
+var tmLalr = [...]int32{
 {{- int_array .Parser.Tables.Lalr "\t" 79 -}}
 }
 {{- end}}
 
-var tmGoto = []int32{
+var tmGoto = [...]int32{
 {{- int_array .Parser.Tables.Goto "\t" 79 -}}
 }
 
 {{$stateType := bits_per_element .Parser.Tables.FromTo -}}
-var tmFromTo = []int{{$stateType}}{
+var tmFromTo = [...]int{{$stateType}}{
 {{- int_array .Parser.Tables.FromTo "\t" 79 -}}
 }
 
 {{ end -}}
-var tmRuleLen = []int{{bits_per_element .Parser.Tables.RuleLen}}{
+var tmRuleLen = [...]int{{bits_per_element .Parser.Tables.RuleLen}}{
 {{- int_array .Parser.Tables.RuleLen "\t" 79 -}}
 }
 
-var tmRuleSymbol = []int32{
+var tmRuleSymbol = [...]int32{
 {{- int_array .Parser.Tables.RuleSymbol "\t" 79 -}}
 }
 
@@ -121,7 +121,7 @@ var tmRuleType = [...]{{template "nodeTypeRef" $}}{
 {{- range .Sets}}
 
 // {{.Expr}} = {{.ValueString $}}
-var {{.Name}} = []{{template "tokenType" .}}{
+var {{.Name}} = [...]{{template "tokenType" .}}{
 {{- if gt (len .Terminals) 0 -}}
 {{- int_array .Terminals "\t" 79 -}}
 {{- end -}}
