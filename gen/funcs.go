@@ -18,6 +18,7 @@ import (
 
 var funcMap = template.FuncMap{
 	"needs_cast":          needsCast,
+	"has_custom_template": func(string) bool { return false }, // replaced per file in Generate
 	"hex":                 hex,
 	"bits":                bits,
 	"bits_per_element":    bitsPerElement,

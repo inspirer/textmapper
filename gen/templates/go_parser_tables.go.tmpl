@@ -137,6 +137,17 @@ var tmRuleAction = [...]int32{
 {{- end}}
 }
 
+{{- if and .Options.TokenStream (.ReportTokens true) (not (has_custom_template "customReportNext")) }}
+
+// tmReportedTokens[t] is true for the terminals that the token stream reports to the
+// listener when they get shifted.
+var tmReportedTokens = [{{template "tokenPkg" $}}NumTokens]bool{
+{{- range .ReportTokens false}}
+	{{template "tokenPkg" $}}{{.ID}}: true,
+{{- end}}
+}
+{{- end}}
+
 {{- range .Sets}}
 
 // {{.Expr}} = {{.ValueString $}}

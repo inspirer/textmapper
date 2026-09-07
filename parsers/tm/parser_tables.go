@@ -1395,6 +1395,10 @@ var tmRuleAction = [...]int32{
 	0,                           // rawTypeopt :
 }
 
+// tmReportedTokens[t] is true for the terminals that the token stream reports to the
+// listener when they get shifted.
+var tmReportedTokens = [token.NumTokens]bool{}
+
 // set(follow ERROR) = SCON, REM, COLONCOLON, OR, SEMICOLON, DOT, COMMA, RBRACK, LPAREN, LPARENQUESTASSIGN, MINUSGT, RPAREN, RBRACE, LT, DOLLAR, ERROR, ID, QUOTED_ID, SEPARATOR, SET, ASSERT, BRACKETS, CLASS, EMPTY, EXPECT, EXPECTMINUSRR, EXPLICIT, EXTEND, FLAG, GENERATE, GLOBAL, INJECT, INLINE, INPUT, INTERFACE, LALR, LANGUAGE, LAYOUT, LEFT, LEXER, LOOKAHEAD, NOMINUSEOI, NONASSOC, NONEMPTY, PARAM, PARSER, PREC, RIGHT, CHAR_S, SHIFT, SPACE, CHAR_X, CODE
 var afterErr = [...]token.Type{
 	2, 8, 9, 10, 15, 16, 17, 20, 21, 22, 23, 24, 25, 26, 36, 40, 41, 42, 46, 47,

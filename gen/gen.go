@@ -136,6 +136,15 @@ func Generate(g *grammar.Grammar, w Writer, opts Options) error {
 			return fmt.Errorf("error in inline template: %v", err)
 		}
 
+		tmpl.Funcs(template.FuncMap{
+			// has_custom_template reports whether a grammar (or an overlay) provides a
+			// non-empty body for a customization point.
+			"has_custom_template": func(name string) bool {
+				t := tmpl.Lookup(name)
+				return t != nil && t.Tree != nil && t.Tree.Root != nil && len(t.Tree.Root.Nodes) > 0
+			},
+		})
+
 		var buf strings.Builder
 		err = tmpl.Execute(&buf, g)
 		if err != nil {

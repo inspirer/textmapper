@@ -69,8 +69,16 @@ func (s *TokenStream) reportIgnored(ctx context.Context, tok symbol) {
 }
 
 // flush is called for every "shifted" token to report it together with any pending tokens
-// to the listener.
+// to the listener. The common case (nothing pending and a token nobody listens to) is
+// handled inline; flushSlow does the actual reporting.
 func (s *TokenStream) flush(ctx context.Context, sym symbol) {
+	if len(s.pending) == 0 && (uint32(sym.symbol) >= uint32(len(tmReportedTokens)) || !tmReportedTokens[sym.symbol]) {
+		return
+	}
+	s.flushSlow(ctx, sym)
+}
+
+func (s *TokenStream) flushSlow(ctx context.Context, sym symbol) {
 	if s.listener == nil {
 		return
 	}
