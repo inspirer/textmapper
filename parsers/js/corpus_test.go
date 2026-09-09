@@ -2,6 +2,9 @@ package js_test
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/binary"
+	"fmt"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -164,4 +167,76 @@ func BenchmarkCorpus(b *testing.B) {
 			}
 		}
 	})
+}
+
+// TestCorpusHash prints hashes over everything the parser and the lexer produce for the
+// corpus (listener events, syntax errors, return values; token kinds, offsets, lines and
+// lexer states), for the original files and for mutated variants of them. Run it before
+// and after a change to the generator and compare the two outputs: identical hashes mean
+// the change is unobservable.
+//
+//	TM_JS_CORPUS=... go test -run TestCorpusHash -v ./parsers/js | grep HASH
+func TestCorpusHash(t *testing.T) {
+	files := loadCorpus(t)
+	var buf [40]byte
+	word := func(h interface{ Write([]byte) (int, error) }, vals ...int) {
+		for i, v := range vals {
+			binary.LittleEndian.PutUint64(buf[8*i:], uint64(v))
+		}
+		h.Write(buf[:8*len(vals)])
+	}
+
+	events := sha256.New()
+	var numEvents, numErrors int
+	var s js.TokenStream
+	var p js.Parser
+	ctx := context.Background()
+	parse := func(src string, d js.Dialect) {
+		p.Init(func(se js.SyntaxError) bool {
+			numErrors++
+			word(events, -1, se.Offset, se.Endoffset)
+			return true
+		}, func(nt js.NodeType, o, e int) {
+			numEvents++
+			word(events, int(nt), o, e)
+		})
+		s.Init(src, func(nt js.NodeType, o, e int) {
+			word(events, int(nt)+1000, o, e)
+		})
+		s.SetDialect(d)
+		fmt.Fprintf(events, "ret=%v\n", p.ParseModule(ctx, &s))
+	}
+
+	tokens := sha256.New()
+	var numTokens int
+	l := new(js.Lexer)
+	lex := func(src string, d js.Dialect) {
+		l.Init(src)
+		l.Dialect = d
+		for {
+			tok := l.Next()
+			start, end := l.Pos()
+			word(tokens, int(tok), start, end, l.Line(), l.State)
+			numTokens++
+			if tok == token.EOI {
+				break
+			}
+		}
+	}
+
+	for i, f := range files {
+		parse(f.content, f.dialect)
+		lex(f.content, f.dialect)
+		if i%5 == 0 && len(f.content) > 100 {
+			// Mutations: drop a chunk, insert garbage, truncate.
+			src := f.content
+			k := (i * 7919) % (len(src) - 50)
+			for _, m := range []string{src[:k] + src[k+30:], src[:k] + " ) } ] ;; if ( " + src[k:], src[:k], src[:k] + " /* \" ' ` \\ \xff\xfe é "} {
+				parse(m, f.dialect)
+				lex(m, f.dialect)
+			}
+		}
+	}
+	fmt.Printf("EVENTHASH %x events=%d errors=%d\n", events.Sum(nil), numEvents, numErrors)
+	fmt.Printf("TOKENHASH %x tokens=%d\n", tokens.Sum(nil), numTokens)
 }
