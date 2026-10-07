@@ -123,6 +123,9 @@ MultiLineComment:  /\/\*/ (space)
 
 :: parser lalr(2)
 
+%generate plusMinus = set('-' | '+');
+%generate plusMinusArrow = set(plusMinus | '->');
+
 %input Test, Decl1;
 
 %inject SingleLineComment -> SingleLineComment;
