@@ -300,6 +300,7 @@ func lookahead(ctx context.Context, ts *TokenStream, next symbol, start, end int
 	if ret, ok := s.cacheGet(key); ok {
 		return ret, nil
 	}
+	s.enterLookahead(next.offset)
 
 	var allocated [128]stackEntry
 	state := start
@@ -332,6 +333,7 @@ func lookahead(ctx context.Context, ts *TokenStream, next symbol, start, end int
 			stack = stack[:len(stack)-ln]
 			sym, err := lookaheadRule(ctx, &stream, next, rule, s)
 			if err != nil {
+				s.laDepth--
 				return false, err
 			}
 			if sym != 0 {
@@ -349,6 +351,7 @@ func lookahead(ctx context.Context, ts *TokenStream, next symbol, start, end int
 				// Note: checking for context cancellation is expensive so we do it from time to time.
 				select {
 				case <-ctx.Done():
+					s.laDepth--
 					return false, ctx.Err()
 				default:
 				}
@@ -373,6 +376,7 @@ func lookahead(ctx context.Context, ts *TokenStream, next symbol, start, end int
 		}
 	}
 
+	s.laDepth--
 	s.cachePut(key, state == end)
 	if debugSyntax {
 		fmt.Printf("lookahead done: %v\n", state == end)

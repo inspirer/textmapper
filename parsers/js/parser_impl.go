@@ -19,9 +19,14 @@ func (p *Parser) Init(eh ErrorHandler, l Listener) {
 	p.listener = l
 }
 
-// lookaheadCacheSize is the number of memoized lookahead results. The cache is
-// direct-mapped and lives inside the session (i.e. on the stack): a miss only
-// costs time, never correctness.
+// lookaheadCacheSize is the number of memoized lookahead results kept in a
+// direct-mapped cache inside the session (i.e. on the stack).
+//
+// Results that can still be requested (at or after the start of the outermost
+// running lookahead) are never dropped: on collision, they spill into a lazily
+// allocated map. Otherwise, deeply nested lookaheads keep re-evaluating evicted
+// results, which takes exponential time. Results before that offset are safe to
+// overwrite since the parser never goes back.
 const lookaheadCacheSize = 128
 
 type lookaheadCacheEntry struct {
@@ -31,6 +36,10 @@ type lookaheadCacheEntry struct {
 
 type session struct {
 	shiftCounter int32
+	laDepth      int32 // the number of running lookaheads
+	laFloor      int   // start offset of the outermost running lookahead
+	spillMax     int   // max offset of entries in spill
+	spill        map[uint64]bool
 	cache        [lookaheadCacheSize]lookaheadCacheEntry
 }
 
@@ -39,12 +48,35 @@ func (s *session) cacheGet(key uint64) (value, ok bool) {
 	if e.key == key {
 		return e.value, true
 	}
-	return false, false
+	if len(s.spill) > 0 {
+		value, ok = s.spill[key]
+	}
+	return value, ok
 }
 
 func (s *session) cachePut(key uint64, value bool) {
 	e := &s.cache[(key*0x9e3779b97f4a7c15)>>(64-7)]
+	if e.key != key && e.key != 0 {
+		if offset := int(e.key & (1<<40 - 1)); offset >= s.laFloor {
+			// Do not lose live entries.
+			if s.spill == nil {
+				s.spill = make(map[uint64]bool)
+			}
+			s.spill[e.key] = e.value
+			s.spillMax = max(s.spillMax, offset)
+		}
+	}
 	e.key, e.value = key, value
+}
+
+func (s *session) enterLookahead(offset int) {
+	if s.laDepth == 0 {
+		s.laFloor = offset
+		if s.spillMax < offset && len(s.spill) > 0 {
+			clear(s.spill)
+		}
+	}
+	s.laDepth++
 }
 
 func (p *Parser) parse(ctx context.Context, start, end int16, stream *TokenStream) error {
