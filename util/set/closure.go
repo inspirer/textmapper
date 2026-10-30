@@ -158,7 +158,7 @@ func (c *Closure) slowClosure(component []int, onStack container.BitSet) {
 			case intersection:
 				res.Inverse = true
 				for _, w := range c.nodes[v].edges {
-					res = container.Intersect(res, c.nodes[w].IntSet, c.buf)
+					res = c.intern(container.Intersect(res, c.nodes[w].IntSet, c.buf))
 				}
 			case union:
 				res = fs.IntSet

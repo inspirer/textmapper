@@ -133,6 +133,34 @@ func TestClosureIntersection(t *testing.T) {
 	}
 }
 
+func TestClosureIntersectionComplementAliasing(t *testing.T) {
+	c := set.NewClosure(16)
+	structural := c.Add([]int{10, 20, 30})
+	plain := c.Complement(structural, nil) // ~[10 20 30]
+	notDot := c.Complement(c.Add([]int{2}), nil)
+	pos := c.Add([]int{1, 2, 10, 20, 40})
+
+	i1 := c.Intersect(plain, notDot)
+	i2 := c.Intersect(plain, pos)
+
+	if err := c.Compute(); err != nil {
+		t.Errorf("Compute() failed with %v", err)
+	}
+	var want = []struct {
+		*set.FutureSet
+		want string
+	}{
+		{plain, "~[10 20 30]"},
+		{i1, "~[2 10 20 30]"},
+		{i2, "[1 2 40]"},
+	}
+	for i, exp := range want {
+		if got, want := exp.FutureSet.IntSet.String(), exp.want; got != want {
+			t.Errorf("#%v = %v, want: %v", i+1, got, want)
+		}
+	}
+}
+
 func TestClosureComplement(t *testing.T) {
 	c := set.NewClosure(0)
 	fs1 := c.Add([]int{1, 2, 3, 4, 5, 6, 9})
