@@ -97,6 +97,10 @@ var setTests = []struct {
 	{`%input A; Z: set(~(b | c)); A: a b c d e;`, []string{
 		"EOI | a | d | e",
 	}},
+	{`%input A; A: a b c d e; %generate plain = set(~(d | e)); Z: set(plain & ~b);`, []string{
+		"EOI | a | b | c",
+		"EOI | a | c",
+	}},
 	{`%input A; Z: set(A); A: a set(~A) b;`, []string{
 		"ERR: input:1:31: set complement cannot transitively depend on itself",
 	}},
